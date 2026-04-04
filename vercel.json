@@ -10,8 +10,6 @@
       ]
     }
   ],
-  "rewrites": [
-    { "source": "/", "destination": "/educri.html" }
-  ]
+  "outputDirectory": "public"
 }
 
