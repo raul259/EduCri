@@ -297,6 +297,14 @@
             <p class="mt-6 text-white/60 text-sm">
                 <span id="authSwitchText">¿No tienes cuenta?</span> <a id="authSwitchLink" href="#" onclick="toggleAuthMode(event)" class="text-white font-semibold hover:underline">Regístrate</a>
             </p>
+
+            <div id="loginLoadingState" class="hidden mt-6 flex flex-col items-center gap-3">
+                <svg class="animate-spin h-8 w-8 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"></path>
+                </svg>
+                <p class="text-white/80 text-sm">Cargando datos...</p>
+            </div>
         </div>
         
         <!-- Decoraciones de fondo -->
@@ -311,16 +319,16 @@
         <!-- Header Móvil -->
         <header class="lg:hidden bg-gradient-to-r from-blue-600 to-pink-500 text-white p-4 sticky top-0 z-40 shadow-lg">
             <div class="flex items-center justify-between">
-                <button onclick="toggleSidebar()" class="p-2 hover:bg-white/20 rounded-lg transition-colors" aria-label="Abrir menú de navegación" aria-expanded="false" id="sidebarToggleBtn">
-                    <i class="fas fa-bars text-xl" aria-hidden="true"></i>
+                <button onclick="toggleSidebar()" class="p-2 hover:bg-white/20 rounded-lg transition-colors">
+                    <i class="fas fa-bars text-xl"></i>
                 </button>
                 <div class="flex items-center gap-2">
                     <span class="text-2xl">&#128017;</span>
                     <span class="font-display font-bold text-xl">EduCri</span>
                 </div>
-                <button onclick="showNotifications()" class="p-2 hover:bg-white/20 rounded-lg transition-colors relative" aria-label="Ver notificaciones">
-                    <i class="fas fa-bell text-xl" aria-hidden="true"></i>
-                    <span id="mobileNotificationBadge" class="absolute top-1 right-1 w-2 h-2 bg-yellow-400 rounded-full notification-badge hidden" aria-hidden="true"></span>
+                <button onclick="showNotifications()" class="p-2 hover:bg-white/20 rounded-lg transition-colors relative">
+                    <i class="fas fa-bell text-xl"></i>
+                    <span id="mobileNotificationBadge" class="absolute top-1 right-1 w-2 h-2 bg-yellow-400 rounded-full notification-badge hidden"></span>
                 </button>
             </div>
         </header>
@@ -345,42 +353,42 @@
                     </div>
                 </div>
                 
-                <nav class="p-4 space-y-2" aria-label="Navegación principal">
-                    <button onclick="showSection('dashboard', this)" data-section="dashboard" class="sidebar-item active w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left" aria-current="page">
-                        <i class="fas fa-home w-5" aria-hidden="true"></i>
+                <nav class="p-4 space-y-2">
+                    <button onclick="showSection('dashboard', this)" data-section="dashboard" class="sidebar-item active w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left">
+                        <i class="fas fa-home w-5"></i>
                         <span>Dashboard</span>
                     </button>
                     <button onclick="showSection('aulas', this)" data-section="aulas" class="sidebar-item w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left">
-                        <i class="fas fa-chalkboard w-5" aria-hidden="true"></i>
+                        <i class="fas fa-chalkboard w-5"></i>
                         <span>Aulas</span>
-                        <span id="sidebarAulasCount" class="ml-auto bg-pink-500 text-xs px-2 py-1 rounded-full" aria-label="clases">0</span>
+                        <span id="sidebarAulasCount" class="ml-auto bg-pink-500 text-xs px-2 py-1 rounded-full">0</span>
                     </button>
                     <button onclick="showSection('calendario', this)" data-section="calendario" class="sidebar-item w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left">
-                        <i class="fas fa-calendar-alt w-5" aria-hidden="true"></i>
+                        <i class="fas fa-calendar-alt w-5"></i>
                         <span>Calendario</span>
                     </button>
                     <button onclick="showSection('asistencia', this)" data-section="asistencia" class="sidebar-item w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left">
-                        <i class="fas fa-clipboard-check w-5" aria-hidden="true"></i>
+                        <i class="fas fa-clipboard-check w-5"></i>
                         <span>Asistencia</span>
                     </button>
                     <button onclick="showSection('notificaciones', this)" data-section="notificaciones" class="sidebar-item w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left">
-                        <i class="fas fa-bell w-5" aria-hidden="true"></i>
+                        <i class="fas fa-bell w-5"></i>
                         <span>Notificaciones</span>
-                        <span id="notificationsSidebarCount" class="ml-auto bg-red-500 text-xs px-2 py-1 rounded-full hidden" aria-label="notificaciones pendientes">0</span>
+                        <span id="notificationsSidebarCount" class="ml-auto bg-red-500 text-xs px-2 py-1 rounded-full hidden">0</span>
                     </button>
                     <button onclick="showSection('perfil', this)" data-section="perfil" class="sidebar-item w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left">
-                        <i class="fas fa-user-gear w-5" aria-hidden="true"></i>
+                        <i class="fas fa-user-gear w-5"></i>
                         <span>Perfil</span>
                     </button>
                     <button onclick="showSection('moderador', this)" data-section="moderador" class="sidebar-item w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left hidden">
-                        <i class="fas fa-user-shield w-5" aria-hidden="true"></i>
+                        <i class="fas fa-user-shield w-5"></i>
                         <span>Moderador</span>
                     </button>
                 </nav>
-
+                
                 <div class="absolute bottom-0 left-0 right-0 p-4 border-t border-white/10">
                     <button onclick="logout()" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-red-400 hover:bg-red-500/10 transition-colors">
-                        <i class="fas fa-sign-out-alt w-5" aria-hidden="true"></i>
+                        <i class="fas fa-sign-out-alt w-5"></i>
                         <span>Cerrar Sesión</span>
                     </button>
                 </div>
@@ -399,12 +407,12 @@
                         <p class="text-gray-500 text-sm mt-1" id="currentDate"></p>
                     </div>
                     <div class="flex items-center gap-4">
-                        <button onclick="showNotifications()" class="relative p-2 text-gray-600 hover:bg-gray-100 rounded-full transition-colors" aria-label="Ver notificaciones">
-                            <i class="fas fa-bell text-xl" aria-hidden="true"></i>
-                            <span id="desktopNotificationBadge" class="absolute top-0 right-0 w-3 h-3 bg-red-500 rounded-full border-2 border-white notification-badge hidden" aria-hidden="true"></span>
+                        <button onclick="showNotifications()" class="relative p-2 text-gray-600 hover:bg-gray-100 rounded-full transition-colors">
+                            <i class="fas fa-bell text-xl"></i>
+                            <span id="desktopNotificationBadge" class="absolute top-0 right-0 w-3 h-3 bg-red-500 rounded-full border-2 border-white notification-badge hidden"></span>
                         </button>
                         <div class="flex items-center gap-3 pl-4 border-l border-gray-200">
-                            <img id="desktopUserAvatar" src="https://ui-avatars.com/api/?name=Usuario&background=random" class="w-10 h-10 rounded-full shadow-md" alt="Profile">
+                            <img id="desktopUserAvatar" src="https://ui-avatars.com/api/?name=Usuario&background=random" class="w-10 h-10 rounded-full shadow-md" alt="Profile" loading="lazy">
                             <div class="hidden md:block">
                                 <p id="desktopUserName" class="font-semibold text-sm">Usuario</p>
                                 <p id="desktopUserRole" class="text-xs text-gray-500">Profesor</p>
@@ -530,25 +538,25 @@
                         <div class="flex items-center justify-between">
                             <h2 class="font-display text-2xl font-bold text-gray-800">Calendario Académico</h2>
                             <div class="flex gap-2">
-                                <button onclick="changeMonth(-1)" class="p-2 hover:bg-gray-200 rounded-lg transition-colors" aria-label="Mes anterior">
-                                    <i class="fas fa-chevron-left" aria-hidden="true"></i>
+                                <button onclick="changeMonth(-1)" class="p-2 hover:bg-gray-200 rounded-lg transition-colors">
+                                    <i class="fas fa-chevron-left"></i>
                                 </button>
-                                <h3 id="calendarMonthYear" class="font-semibold text-lg min-w-[150px] text-center" aria-live="polite"></h3>
-                                <button onclick="changeMonth(1)" class="p-2 hover:bg-gray-200 rounded-lg transition-colors" aria-label="Mes siguiente">
-                                    <i class="fas fa-chevron-right" aria-hidden="true"></i>
+                                <h3 id="calendarMonthYear" class="font-semibold text-lg min-w-[150px] text-center"></h3>
+                                <button onclick="changeMonth(1)" class="p-2 hover:bg-gray-200 rounded-lg transition-colors">
+                                    <i class="fas fa-chevron-right"></i>
                                 </button>
                             </div>
                         </div>
 
                         <div class="bg-white rounded-2xl shadow-lg p-6">
                             <div class="grid grid-cols-7 gap-px bg-gray-200 rounded-xl overflow-hidden">
-                                <div class="bg-gray-50 p-4 text-center font-semibold text-gray-600">Dom</div>
                                 <div class="bg-gray-50 p-4 text-center font-semibold text-gray-600">Lun</div>
                                 <div class="bg-gray-50 p-4 text-center font-semibold text-gray-600">Mar</div>
                                 <div class="bg-gray-50 p-4 text-center font-semibold text-gray-600">Mié</div>
                                 <div class="bg-gray-50 p-4 text-center font-semibold text-gray-600">Jue</div>
                                 <div class="bg-gray-50 p-4 text-center font-semibold text-gray-600">Vie</div>
                                 <div class="bg-gray-50 p-4 text-center font-semibold text-gray-600">Sáb</div>
+                                <div class="bg-gray-50 p-4 text-center font-semibold text-gray-600">Dom</div>
                             </div>
                             <div id="mainCalendar" class="grid grid-cols-7 gap-px bg-gray-200">
                                 <!-- Días del calendario -->
@@ -575,16 +583,6 @@
                                 <option value="">Seleccionar clase...</option>
                             </select>
                         </div>
-                        <div class="flex flex-col sm:flex-row gap-3">
-                            <input type="text" id="attendanceSearch" placeholder="Buscar alumno..." oninput="filterAttendanceList()" class="flex-1 px-4 py-2 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500">
-                            <select id="attendanceStatusFilter" onchange="filterAttendanceList()" class="px-4 py-2 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500">
-                                <option value="">Todos los estados</option>
-                                <option value="present">Solo presentes</option>
-                                <option value="absent">Solo ausentes</option>
-                                <option value="late">Solo con retardo</option>
-                                <option value="">Sin registrar</option>
-                            </select>
-                        </div>
 
                         <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
                             <div class="p-6 border-b border-gray-200 flex items-center justify-between">
@@ -592,14 +590,7 @@
                                     <input type="date" id="attendanceDate" class="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" onchange="loadAttendance()">
                                     <span class="text-gray-500" id="attendanceStats"></span>
                                 </div>
-                                <div class="flex gap-2">
-                                    <button onclick="exportAttendanceCSV()" class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-colors flex items-center gap-2">
-                                        <i class="fas fa-file-csv"></i> Exportar CSV
-                                    </button>
-                                    <button onclick="saveAttendance()" class="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 transition-colors flex items-center gap-2">
-                                        <i class="fas fa-save"></i> Guardar
-                                    </button>
-                                </div>
+                                <span class="text-xs text-gray-400 italic">Los cambios se guardan automáticamente</span>
                             </div>
                             
                             <div class="overflow-x-auto">
@@ -611,7 +602,6 @@
                                             <th class="px-6 py-4 text-center text-sm font-semibold text-gray-600">Ausente</th>
                                             <th class="px-6 py-4 text-center text-sm font-semibold text-gray-600">Tarde</th>
                                             <th class="px-6 py-4 text-left text-sm font-semibold text-gray-600">Notas</th>
-                                            <th class="px-6 py-4 text-left text-sm font-semibold text-gray-600">% Asistencia</th>
                                         </tr>
                                     </thead>
                                     <tbody id="attendanceList" class="divide-y divide-gray-200">
@@ -693,9 +683,7 @@
                                         <option value="soldaditos">Soldaditos</option>
                                         <option value="vencedores">Vencedores</option>
                                     </select>
-                                    <select id="studentTeacherId" name="studentTeacherId" required class="form-input">
-                                        <option value="">Profesor responsable...</option>
-                                    </select>
+                                    <p class="text-xs text-gray-500">Los alumnos se guardan sin profesor fijo (asignación rotativa).</p>
                                     <button type="submit" class="form-button-primary bg-blue-600 hover:bg-blue-700">Guardar Alumno</button>
                                 </form>
                             </div>
@@ -705,8 +693,9 @@
                                 <form onsubmit="addAssignment(event)" class="space-y-3">
                                     <input name="assignmentTitle" required placeholder="Título de la tarea" class="form-input">
                                     <select id="assignmentTeacherId" name="assignmentTeacherId" required class="form-input">
-                                        <option value="">Profesor asignado...</option>
+                                        <option value="">Profesor asignado (cuenta aprobada)...</option>
                                     </select>
+                                    <p class="text-xs text-gray-500">Para asignar tareas, el profesor debe tener usuario real en Supabase.</p>
                                     <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
                                         <select name="assignmentClass" required class="form-input">
                                             <option value="">Clase...</option>
@@ -724,6 +713,32 @@
                                     <button type="submit" class="form-button-primary bg-pink-600 hover:bg-pink-700">Asignar Tarea</button>
                                 </form>
                             </div>
+                        </div>
+
+                        <div class="bg-white rounded-2xl shadow-lg p-6">
+                            <div class="flex items-center justify-between mb-4">
+                                <h3 class="font-display text-lg font-bold text-gray-800">Profesores para Clases</h3>
+                                <span id="classTeachersCount" class="text-sm text-gray-500">0 profesores</span>
+                            </div>
+                            <form onsubmit="addClassTeacher(event)" class="grid grid-cols-1 md:grid-cols-3 gap-3 mb-3">
+                                <input name="classTeacherName" required placeholder="Nombre completo del profesor" class="form-input md:col-span-2">
+                                <input name="classTeacherPhone" placeholder="Teléfono (opcional)" class="form-input">
+                                <button type="submit" class="form-button-primary bg-indigo-600 hover:bg-indigo-700 md:col-span-3">Añadir al catálogo</button>
+                            </form>
+                            <p class="text-xs text-gray-500 mb-3">Este catálogo se usa para autocompletar el campo profesor al crear clases.</p>
+                            <div id="classTeachersList" class="space-y-2 text-sm text-gray-700"></div>
+                        </div>
+
+                        <div class="bg-white rounded-2xl shadow-lg p-6">
+                            <h3 class="font-display text-lg font-bold text-gray-800 mb-4">Asignar Titular y Auxiliar por Clase</h3>
+                            <form id="classTeacherAssignmentForm" onsubmit="updateClassTeacherAssignment(event)" class="space-y-3">
+                                <select id="moderatorClassSelect" name="classId" required class="form-input" onchange="syncClassTeacherInputsFromSelectedClass()">
+                                    <option value="">Selecciona una clase...</option>
+                                </select>
+                                <input id="classMainTeacherInput" name="mainTeacher" list="classTeacherSuggestions" required placeholder="Profesor titular" class="form-input">
+                                <input id="classAssistantTeacherInput" name="assistantTeacher" list="classTeacherSuggestions" placeholder="Profesor auxiliar (opcional)" class="form-input">
+                                <button type="submit" class="form-button-primary bg-violet-600 hover:bg-violet-700">Guardar asignación</button>
+                            </form>
                         </div>
 
                         <div class="bg-white rounded-2xl shadow-lg p-6">
@@ -777,12 +792,12 @@
     </div>
 
     <!-- MODAL: Añadir Nueva Clase -->
-    <div id="addClassModal" class="modal fixed inset-0 z-50 items-center justify-center p-4 bg-black/50 backdrop-blur-sm" role="dialog" aria-modal="true" aria-labelledby="addClassModalTitle">
+    <div id="addClassModal" class="modal fixed inset-0 z-50 items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
         <div class="bg-white rounded-3xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto animate-slide-up">
             <div class="p-6 border-b border-gray-200 flex items-center justify-between sticky top-0 bg-white z-10 rounded-t-3xl">
-                <h3 id="addClassModalTitle" class="font-display text-xl font-bold text-gray-800">Añadir Nueva Clase</h3>
-                <button onclick="closeAddClassModal()" class="w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition-colors" aria-label="Cerrar modal">
-                    <i class="fas fa-times text-gray-600" aria-hidden="true"></i>
+                <h3 class="font-display text-xl font-bold text-gray-800">Añadir Nueva Clase</h3>
+                <button onclick="closeAddClassModal()" class="w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition-colors">
+                    <i class="fas fa-times text-gray-600"></i>
                 </button>
             </div>
             
@@ -806,15 +821,20 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2">Profesor</label>
-                        <input type="text" name="teacher" required class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="Nombre del profesor">
+                        <input type="text" name="teacher" list="classTeacherSuggestions" required class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="Nombre del profesor">
+                        <datalist id="classTeacherSuggestions"></datalist>
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Aula / Sala</label>
-                        <input type="text" name="classroom" required class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="Ej: Aula 301">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Profesor auxiliar (opcional)</label>
+                        <input type="text" name="assistantTeacher" list="classTeacherSuggestions" class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="Nombre del profesor auxiliar">
                     </div>
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Aula / Sala</label>
+                        <input type="text" name="classroom" required class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="Ej: Aula 301">
+                    </div>
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2">Día asignado</label>
                         <select name="day" required class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
@@ -861,7 +881,7 @@
     </div>
 
     <!-- MODAL: Ver Temario -->
-    <div id="viewSyllabusModal" class="modal fixed inset-0 z-50 items-center justify-center p-4 bg-black/50 backdrop-blur-sm" role="dialog" aria-modal="true" aria-labelledby="syllabusTitle">
+    <div id="viewSyllabusModal" class="modal fixed inset-0 z-50 items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
         <div class="bg-white rounded-3xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-hidden animate-slide-up flex flex-col">
             <div class="p-6 border-b border-gray-200 flex items-center justify-between bg-gray-50">
                 <div>
@@ -870,17 +890,16 @@
                 </div>
                 <div class="flex gap-2">
                     <a id="downloadPdfBtn" href="#" download class="px-4 py-2 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition-colors flex items-center gap-2">
-                        <i class="fas fa-download" aria-hidden="true"></i> Descargar
+                        <i class="fas fa-download"></i> Descargar
                     </a>
-                    <button onclick="closeViewSyllabusModal()" class="w-8 h-8 rounded-full bg-gray-200 hover:bg-gray-300 flex items-center justify-center transition-colors" aria-label="Cerrar modal">
-                        <i class="fas fa-times text-gray-600" aria-hidden="true"></i>
+                    <button onclick="closeViewSyllabusModal()" class="w-8 h-8 rounded-full bg-gray-200 hover:bg-gray-300 flex items-center justify-center transition-colors">
+                        <i class="fas fa-times text-gray-600"></i>
                     </button>
                 </div>
             </div>
             <div class="flex-1 bg-gray-100 p-6 overflow-auto">
                 <div id="pdfViewer" class="bg-white rounded-lg shadow-lg min-h-[600px] flex items-center justify-center">
-                    <!-- Contenido dinámico: iframe si hay URL, placeholder si no -->
-                    <div id="pdfPlaceholder" class="text-center p-8">
+                    <div class="text-center p-8">
                         <i class="fas fa-file-pdf text-6xl text-red-500 mb-4"></i>
                         <p class="text-gray-600">Vista previa del PDF</p>
                         <p class="text-sm text-gray-400 mt-2" id="pdfNameDisplay"></p>
@@ -891,22 +910,2467 @@
     </div>
 
     <!-- Toast Notifications -->
-    <div id="toastContainer" class="fixed bottom-4 right-4 z-50 space-y-2 pointer-events-none" role="status" aria-live="polite" aria-atomic="false"></div>
+    <div id="toastContainer" class="fixed bottom-4 right-4 z-50 space-y-2 pointer-events-none"></div>
 
-    <script src="utils.js"></script>
-    <script src="state.js"></script>
-    <script src="classes-ui.js"></script>
-    <script src="calendar-ui.js"></script>
-    <script src="attendance-main.js"></script>
-    <script src="notifications-ui.js"></script>
-    <script src="dashboard.js"></script>
-    <script src="teacher-profiles.js"></script>
-    <script src="students-ui.js"></script>
-    <script src="assignments-ui.js"></script>
-    <script src="profile-ui.js"></script>
-    <script src="nav-ui.js"></script>
-    <script src="auth-ui.js"></script>
-    <script src="realtime.js"></script>
-    <script src="main.js"></script>
+    <script>
+        // Estado global
+        let currentUser = null;
+        const SUPABASE_URL = window.EDUCRI_SUPABASE_URL || '';
+        const SUPABASE_ANON_KEY = window.EDUCRI_SUPABASE_ANON_KEY || '';
+        const hasSupabaseConfig = SUPABASE_URL.length > 0
+            && SUPABASE_ANON_KEY.length > 0
+            && typeof window.supabase !== 'undefined';
+        const supabaseClient = hasSupabaseConfig
+            ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
+            : null;
+
+        const DEFAULT_AULAS = [
+            {
+                id: 1,
+                name: 'Corderitos',
+                category: 'corderitos',
+                teacher: 'Prof. Cordero',
+                assistantTeacher: '',
+                classroom: 'Sala C1',
+                day: 'Lunes',
+                time: '09:00',
+                description: 'Clase base del grupo Corderitos',
+                pdfName: 'temario_corderitos.pdf',
+                pdfData: null,
+                color: 'from-blue-500 to-cyan-400'
+            },
+            {
+                id: 2,
+                name: 'Soldaditos',
+                category: 'soldaditos',
+                teacher: 'Prof. Valiente',
+                assistantTeacher: '',
+                classroom: 'Sala S1',
+                day: 'Miércoles',
+                time: '14:00',
+                description: 'Clase base del grupo Soldaditos',
+                pdfName: 'temario_soldaditos.pdf',
+                pdfData: null,
+                color: 'from-purple-500 to-pink-500'
+            },
+            {
+                id: 3,
+                name: 'Vencedores',
+                category: 'vencedores',
+                teacher: 'Prof. Victoria',
+                assistantTeacher: '',
+                classroom: 'Sala V1',
+                day: 'Viernes',
+                time: '11:00',
+                description: 'Clase base del grupo Vencedores',
+                pdfName: 'temario_vencedores.pdf',
+                pdfData: null,
+                color: 'from-pink-500 to-orange-400'
+            }
+        ];
+
+        function safeParseJSON(key, fallback) {
+            try {
+                const raw = localStorage.getItem(key);
+                if(!raw) return fallback;
+                const parsed = JSON.parse(raw);
+
+                if(Array.isArray(fallback) && !Array.isArray(parsed)) return fallback;
+                if(!Array.isArray(fallback) && typeof fallback === 'object' && fallback !== null) {
+                    if(typeof parsed !== 'object' || parsed === null || Array.isArray(parsed)) return fallback;
+                }
+
+                return parsed;
+            } catch (error) {
+                console.warn(`No se pudo parsear ${key} desde localStorage`, error);
+                return fallback;
+            }
+        }
+
+        function escapeHtml(value) {
+            const str = String(value ?? '');
+            const htmlEscapes = {
+                '&': '&amp;',
+                '<': '&lt;',
+                '>': '&gt;',
+                '"': '&quot;',
+                "'": '&#39;',
+                '`': '&#96;'
+            };
+            return str.replace(/[&<>"'`]/g, (char) => htmlEscapes[char]);
+        }
+
+        let aulas = [];
+        let attendance = safeParseJSON('educri_attendance', {});
+        let currentMonth = new Date();
+        let selectedDate = new Date();
+        let currentFilter = 'todas';
+        let authMode = 'login';
+        let currentRole = 'profesor';
+        let students = safeParseJSON('educri_students', []);
+        let moderatorAssignments = safeParseJSON('educri_assignments', []);
+        let teacherProfiles = safeParseJSON('educri_teacher_profiles', []);
+        let classTeachersCatalog = safeParseJSON('educri_class_teachers_catalog', []);
+        let dismissedNotifications = safeParseJSON('educri_dismissed_notifications', []);
+        let currentAttendanceEntries = {};
+        let _cachedAvatarName = null;
+        let studentsPage = 1;
+        let studentsPageSize = 6;
+        let studentsSearch = '';
+        let assignmentsPage = 1;
+        let assignmentsPageSize = 6;
+        let assignmentsSearch = '';
+
+        function mapDbClassToUi(row) {
+            return {
+                id: Number(row.id),
+                name: String(row.name || '').trim(),
+                category: String(row.category || 'otros').trim(),
+                teacher: String(row.teacher || '').trim(),
+                assistantTeacher: String(row.assistant_teacher || '').trim(),
+                classroom: String(row.classroom || '').trim(),
+                day: String(row.day || '').trim(),
+                time: String(row.time || '').trim(),
+                description: String(row.description || '').trim(),
+                pdfName: String(row.pdf_name || 'temario.pdf').trim(),
+                color: String(row.color || 'from-blue-500 to-cyan-400').trim()
+            };
+        }
+
+        function mapUiClassToDb(aula) {
+            return {
+                user_id: currentUser?.id || null,
+                name: aula.name,
+                category: aula.category,
+                teacher: aula.teacher,
+                assistant_teacher: aula.assistantTeacher || null,
+                classroom: aula.classroom,
+                day: aula.day,
+                time: aula.time,
+                description: aula.description,
+                pdf_name: aula.pdfName,
+                color: aula.color
+            };
+        }
+
+        function refreshUIData() {
+            updateDateDisplay();
+            renderAulas();
+            renderUpcomingClasses();
+            renderMiniCalendar();
+            renderMainCalendar();
+            populateClassSelect();
+            renderClassTeacherSuggestions();
+            populateModeratorClassSelect();
+            document.getElementById('attendanceDate').valueAsDate = new Date();
+            renderNotifications();
+            updateDashboardStats();
+        }
+
+        function setLoginLoading(isLoading) {
+            const spinner = document.getElementById('loginLoadingState');
+            const btn = document.getElementById('authSubmitBtn');
+            const switchLink = document.getElementById('authSwitchLink');
+            if(spinner) spinner.classList.toggle('hidden', !isLoading);
+            if(btn) btn.disabled = isLoading;
+            if(switchLink) switchLink.style.pointerEvents = isLoading ? 'none' : '';
+        }
+
+        function showLoginScreen() {
+            document.getElementById('mainApp').classList.add('hidden');
+            document.getElementById('loginScreen').classList.remove('hidden');
+        }
+
+        function setAuthMode(mode) {
+            authMode = mode === 'register' ? 'register' : 'login';
+            const submitBtn = document.getElementById('authSubmitBtn');
+            const switchText = document.getElementById('authSwitchText');
+            const switchLink = document.getElementById('authSwitchLink');
+            const confirmWrap = document.getElementById('confirmPasswordWrap');
+            const confirmInput = document.getElementById('confirmPasswordInput');
+            const teacherFieldsWrap = document.getElementById('teacherRegisterFields');
+            const registerFullName = document.getElementById('registerFullName');
+            const registerBirthDate = document.getElementById('registerBirthDate');
+            const registerPhone = document.getElementById('registerPhone');
+            const registerExperience = document.getElementById('registerExperience');
+
+            if(submitBtn) {
+                submitBtn.textContent = authMode === 'register' ? 'Crear Cuenta' : 'Iniciar Sesión';
+            }
+
+            if(confirmWrap && confirmInput) {
+                if(authMode === 'register') {
+                    confirmWrap.classList.remove('hidden');
+                    confirmInput.required = true;
+                } else {
+                    confirmWrap.classList.add('hidden');
+                    confirmInput.required = false;
+                    confirmInput.value = '';
+                }
+            }
+
+            if(teacherFieldsWrap) {
+                if(authMode === 'register') {
+                    teacherFieldsWrap.classList.remove('hidden');
+                    if(registerFullName) registerFullName.required = true;
+                    if(registerBirthDate) registerBirthDate.required = true;
+                    if(registerPhone) registerPhone.required = true;
+                    if(registerExperience) registerExperience.required = true;
+                } else {
+                    teacherFieldsWrap.classList.add('hidden');
+                    if(registerFullName) registerFullName.required = false;
+                    if(registerBirthDate) registerBirthDate.required = false;
+                    if(registerPhone) registerPhone.required = false;
+                    if(registerExperience) registerExperience.required = false;
+                }
+            }
+
+            if(switchText && switchLink) {
+                if(authMode === 'register') {
+                    switchText.textContent = '¿Ya tienes cuenta?';
+                    switchLink.textContent = 'Inicia sesión';
+                } else {
+                    switchText.textContent = '¿No tienes cuenta?';
+                    switchLink.textContent = 'Regístrate';
+                }
+            }
+        }
+
+        function toggleAuthMode(e) {
+            if(e) e.preventDefault();
+            setAuthMode(authMode === 'login' ? 'register' : 'login');
+        }
+
+        function getTeacherProfileFromMetadata(user = currentUser) {
+            const metadata = user?.user_metadata || {};
+            return {
+                full_name: String(metadata.full_name || '').trim(),
+                birth_date: String(metadata.birth_date || '').trim(),
+                phone: String(metadata.phone || '').trim(),
+                has_cds: Boolean(metadata.has_cds),
+                received_holy_spirit: Boolean(metadata.received_holy_spirit),
+                teaching_experience: String(metadata.teaching_experience || '').trim()
+            };
+        }
+
+        function renderTeacherProfileForm() {
+            const profile = getTeacherProfileFromMetadata();
+            const fullNameInput = document.getElementById('profileFullName');
+            const birthDateInput = document.getElementById('profileBirthDate');
+            const phoneInput = document.getElementById('profilePhone');
+            const hasCdsInput = document.getElementById('profileHasCds');
+            const holySpiritInput = document.getElementById('profileHolySpirit');
+            const experienceInput = document.getElementById('profileExperience');
+
+            if(fullNameInput) fullNameInput.value = profile.full_name;
+            if(birthDateInput) birthDateInput.value = profile.birth_date;
+            if(phoneInput) phoneInput.value = profile.phone;
+            if(hasCdsInput) hasCdsInput.checked = profile.has_cds;
+            if(holySpiritInput) holySpiritInput.checked = profile.received_holy_spirit;
+            if(experienceInput) experienceInput.value = profile.teaching_experience;
+        }
+
+        function updateHeaderProfileDisplay() {
+            const profile = getTeacherProfileFromMetadata();
+            const name = profile.full_name || currentUser?.email || 'Usuario';
+
+            const desktopName = document.getElementById('desktopUserName');
+            const desktopRole = document.getElementById('desktopUserRole');
+            const desktopAvatar = document.getElementById('desktopUserAvatar');
+
+            if(desktopName) desktopName.textContent = name;
+            if(desktopRole) desktopRole.textContent = currentRole === 'moderador' ? 'Moderador' : 'Profesor';
+            if(desktopAvatar && name !== _cachedAvatarName) {
+                desktopAvatar.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=random`;
+                _cachedAvatarName = name;
+            }
+        }
+
+        function getCurrentUserRole() {
+            const role = String(currentUser?.user_metadata?.role || 'profesor').toLowerCase().trim();
+            return role === 'moderador' ? 'moderador' : 'profesor';
+        }
+
+        function getAllowedSectionsByRole(role = currentRole) {
+            if(role === 'moderador') {
+                return ['dashboard', 'aulas', 'calendario', 'asistencia', 'notificaciones', 'perfil', 'moderador'];
+            }
+            return ['dashboard', 'asistencia', 'notificaciones', 'perfil'];
+        }
+
+        function refreshRoleAccessUI() {
+            currentRole = getCurrentUserRole();
+            const allowed = getAllowedSectionsByRole(currentRole);
+            document.querySelectorAll('.sidebar-item[data-section]').forEach((btn) => {
+                const section = btn.getAttribute('data-section');
+                btn.classList.toggle('hidden', !allowed.includes(section));
+            });
+        }
+
+        function getTeacherNameById(teacherId) {
+            const match = teacherProfiles.find((p) => String(p.user_id) === String(teacherId));
+            return match?.full_name || 'Profesor';
+        }
+
+        function getMergedClassTeacherNames() {
+            const names = [];
+
+            classTeachersCatalog.forEach((t) => {
+                const name = String(t.name || '').trim();
+                if(name) names.push(name);
+            });
+
+            teacherProfiles.forEach((p) => {
+                const name = String(p.full_name || '').trim();
+                if(name) names.push(name);
+            });
+
+            aulas.forEach((a) => {
+                const name = String(a.teacher || '').trim();
+                if(name) names.push(name);
+                const assistantName = String(a.assistantTeacher || '').trim();
+                if(assistantName) names.push(assistantName);
+            });
+
+            const unique = new Map();
+            names.forEach((name) => {
+                const key = name.toLowerCase();
+                if(!unique.has(key)) unique.set(key, name);
+            });
+
+            return Array.from(unique.values()).sort((a, b) => a.localeCompare(b, 'es'));
+        }
+
+        function renderClassTeacherSuggestions() {
+            const datalist = document.getElementById('classTeacherSuggestions');
+            if(!datalist) return;
+            const names = getMergedClassTeacherNames();
+            datalist.innerHTML = names.map((name) => `<option value="${escapeHtml(name)}"></option>`).join('');
+        }
+
+        function populateModeratorClassSelect() {
+            const select = document.getElementById('moderatorClassSelect');
+            if(!select) return;
+            const previous = String(select.value || '');
+
+            select.innerHTML = '<option value="">Selecciona una clase...</option>';
+            aulas
+                .slice()
+                .sort((a, b) => String(a.name || '').localeCompare(String(b.name || ''), 'es'))
+                .forEach((aula) => {
+                    const option = document.createElement('option');
+                    option.value = String(aula.id);
+                    option.textContent = `${aula.name} (${getCategoryName(aula.category || 'otros')})`;
+                    select.appendChild(option);
+                });
+
+            if(previous && aulas.some((a) => String(a.id) === previous)) {
+                select.value = previous;
+            }
+            syncClassTeacherInputsFromSelectedClass();
+        }
+
+        function syncClassTeacherInputsFromSelectedClass() {
+            const select = document.getElementById('moderatorClassSelect');
+            const titularInput = document.getElementById('classMainTeacherInput');
+            const assistantInput = document.getElementById('classAssistantTeacherInput');
+            if(!select || !titularInput || !assistantInput) return;
+
+            const classId = String(select.value || '').trim();
+            if(!classId) {
+                titularInput.value = '';
+                assistantInput.value = '';
+                return;
+            }
+
+            const selectedClass = aulas.find((a) => String(a.id) === classId);
+            if(!selectedClass) return;
+
+            titularInput.value = String(selectedClass.teacher || '');
+            assistantInput.value = String(selectedClass.assistantTeacher || '');
+        }
+
+        async function updateClassTeacherAssignment(e) {
+            e.preventDefault();
+            if(currentRole !== 'moderador') {
+                showToast('Solo moderador puede editar asignaciones de clase.', 'warning');
+                return;
+            }
+
+            const form = e.target;
+            const classId = String(form.classId?.value || '').trim();
+            const mainTeacher = String(form.mainTeacher?.value || '').trim();
+            const assistantTeacher = String(form.assistantTeacher?.value || '').trim();
+
+            if(!classId || !mainTeacher) {
+                showToast('Selecciona clase y profesor titular.', 'warning');
+                return;
+            }
+
+            if(assistantTeacher && assistantTeacher.toLowerCase() === mainTeacher.toLowerCase()) {
+                showToast('El profesor auxiliar no puede ser igual al titular.', 'warning');
+                return;
+            }
+
+            const classIndex = aulas.findIndex((a) => String(a.id) === classId);
+            if(classIndex < 0) {
+                showToast('No se encontró la clase seleccionada.', 'error');
+                return;
+            }
+
+            if(supabaseClient && currentUser?.id) {
+                const { error } = await supabaseClient
+                    .from('classes')
+                    .update({
+                        teacher: mainTeacher,
+                        assistant_teacher: assistantTeacher || null
+                    })
+                    .eq('id', Number(classId));
+
+                if(error) {
+                    console.error('No se pudo actualizar titular/auxiliar', error);
+                    showToast(getDataErrorMessage(error, 'No se pudo guardar la asignación de profesores.'), 'error');
+                    return;
+                }
+            } else {
+                localStorage.setItem('educri_aulas', JSON.stringify(aulas));
+            }
+
+            aulas[classIndex] = {
+                ...aulas[classIndex],
+                teacher: mainTeacher,
+                assistantTeacher: assistantTeacher || ''
+            };
+            renderAulas();
+            renderUpcomingClasses();
+            renderClassTeacherSuggestions();
+            populateModeratorClassSelect();
+            showToast(supabaseClient ? 'Titular y auxiliar actualizados.' : 'Asignación guardada en modo local.', 'success');
+        }
+
+        function renderClassTeachersCatalog() {
+            const list = document.getElementById('classTeachersList');
+            const count = document.getElementById('classTeachersCount');
+            if(!list || !count) return;
+
+            count.textContent = `${classTeachersCatalog.length} profesores`;
+
+            if(!classTeachersCatalog.length) {
+                list.innerHTML = '<p class="text-gray-500">No has añadido profesores al catálogo todavía.</p>';
+                renderClassTeacherSuggestions();
+                return;
+            }
+
+            list.innerHTML = classTeachersCatalog
+                .slice()
+                .sort((a, b) => String(a.name || '').localeCompare(String(b.name || ''), 'es'))
+                .map((teacher) => `
+                    <div class="border border-gray-200 rounded-xl p-3 flex items-center justify-between gap-3">
+                        <div>
+                            <p class="font-semibold text-gray-800">${escapeHtml(teacher.name || 'Profesor')}</p>
+                            <p class="text-xs text-gray-500">${escapeHtml(teacher.phone || 'Sin teléfono')}</p>
+                        </div>
+                        <button data-tid="${escapeHtml(String(teacher.id || ''))}" class="remove-catalog-teacher-btn text-red-600 hover:text-red-700 text-xs font-medium">Quitar</button>
+                    </div>
+                `).join('');
+
+            list.querySelectorAll('.remove-catalog-teacher-btn').forEach((btn) => {
+                btn.addEventListener('click', () => removeClassTeacher(btn.dataset.tid));
+            });
+
+            renderClassTeacherSuggestions();
+        }
+
+        function addClassTeacher(e) {
+            e.preventDefault();
+            if(currentRole !== 'moderador') {
+                showToast('Solo moderador puede gestionar el catálogo de profesores.', 'warning');
+                return;
+            }
+
+            const form = e.target;
+            const name = String(form.classTeacherName?.value || '').trim();
+            const phone = String(form.classTeacherPhone?.value || '').trim();
+
+            if(name.length < 6) {
+                showToast('Escribe nombre completo del profesor.', 'warning');
+                return;
+            }
+
+            const exists = classTeachersCatalog.some((t) => String(t.name || '').toLowerCase() === name.toLowerCase());
+            if(exists) {
+                showToast('Ese profesor ya está en el catálogo.', 'warning');
+                return;
+            }
+
+            classTeachersCatalog.unshift({
+                id: crypto.randomUUID(),
+                name,
+                phone
+            });
+            localStorage.setItem('educri_class_teachers_catalog', JSON.stringify(classTeachersCatalog));
+            form.reset();
+            renderClassTeachersCatalog();
+            showToast('Profesor añadido al catálogo. Se usa al crear clases (campo Profesor).', 'success');
+        }
+
+        function removeClassTeacher(id) {
+            classTeachersCatalog = classTeachersCatalog.filter((t) => String(t.id) !== String(id));
+            localStorage.setItem('educri_class_teachers_catalog', JSON.stringify(classTeachersCatalog));
+            renderClassTeachersCatalog();
+            showToast('Profesor eliminado del catálogo.', 'info');
+        }
+
+        function renderTeacherOptions() {
+            const options = teacherProfiles
+                .filter((p) => p.approval_status === 'approved')
+                .sort((a, b) => String(a.full_name || '').localeCompare(String(b.full_name || '')));
+            const assignmentSelect = document.getElementById('assignmentTeacherId');
+            const studentSelect = document.getElementById('studentTeacherId');
+
+            if(assignmentSelect) assignmentSelect.innerHTML = '<option value="">Profesor asignado (cuenta aprobada)...</option>';
+            if(studentSelect) studentSelect.innerHTML = '<option value="">Profesor responsable (cuenta aprobada)...</option>';
+
+            options.forEach((p) => {
+                const value = String(p.user_id);
+                const label = p.full_name || p.user_id;
+
+                if(assignmentSelect) {
+                    const option = document.createElement('option');
+                    option.value = value;
+                    option.textContent = label;
+                    assignmentSelect.appendChild(option);
+                }
+
+                if(studentSelect) {
+                    const option = document.createElement('option');
+                    option.value = value;
+                    option.textContent = label;
+                    studentSelect.appendChild(option);
+                }
+            });
+
+            if(options.length === 0) {
+                if(assignmentSelect) {
+                    const option = document.createElement('option');
+                    option.value = '';
+                    option.textContent = 'No hay profesores aprobados aún';
+                    option.disabled = true;
+                    assignmentSelect.appendChild(option);
+                }
+                if(studentSelect) {
+                    const option = document.createElement('option');
+                    option.value = '';
+                    option.textContent = 'No hay profesores aprobados aún';
+                    option.disabled = true;
+                    studentSelect.appendChild(option);
+                }
+            }
+        }
+
+        async function loadTeacherProfilesFromStorage() {
+            if(!supabaseClient || !currentUser?.id) {
+                teacherProfiles = safeParseJSON('educri_teacher_profiles', []);
+                renderTeacherOptions();
+                renderTeacherApprovals();
+                return;
+            }
+
+            const { data, error } = await supabaseClient
+                .from('teacher_profiles')
+                .select('user_id,full_name,approval_status,phone,teaching_experience,created_at')
+                .order('full_name', { ascending: true });
+
+            if(error) {
+                console.error('Error cargando perfiles de profesor', error);
+                teacherProfiles = safeParseJSON('educri_teacher_profiles', []);
+                renderTeacherOptions();
+                renderTeacherApprovals();
+                renderClassTeacherSuggestions();
+                return;
+            }
+
+            teacherProfiles = Array.isArray(data) ? data : [];
+            localStorage.setItem('educri_teacher_profiles', JSON.stringify(teacherProfiles));
+            renderTeacherOptions();
+            renderTeacherApprovals();
+            renderClassTeacherSuggestions();
+        }
+
+        function renderTeacherApprovals() {
+            const list = document.getElementById('teacherApprovalsList');
+            const count = document.getElementById('teacherApprovalsCount');
+            if(!list || !count) return;
+
+            const pending = teacherProfiles.filter((p) => p.approval_status === 'pending');
+            count.textContent = `${pending.length} pendientes`;
+
+            if(!pending.length) {
+                list.innerHTML = '<p class="text-gray-500">No hay profesores pendientes por validar.</p>';
+                return;
+            }
+
+            list.innerHTML = pending.map((profile) => `
+                <div class="border border-gray-200 rounded-xl p-3">
+                    <div class="flex items-start justify-between gap-3">
+                        <div>
+                            <p class="font-semibold text-gray-800">${escapeHtml(profile.full_name || 'Profesor sin nombre')}</p>
+                            <p class="text-xs text-gray-500 mt-1">${escapeHtml(profile.phone || 'Sin teléfono')}</p>
+                            <p class="text-xs text-gray-500 mt-1">${escapeHtml(profile.teaching_experience || 'Sin experiencia registrada')}</p>
+                        </div>
+                        <div class="flex gap-2">
+                            <button data-uid="${escapeHtml(String(profile.user_id))}" data-action="approved" class="approval-action-btn px-3 py-1 rounded-lg bg-green-100 text-green-700 hover:bg-green-200 text-xs">Aprobar</button>
+                            <button data-uid="${escapeHtml(String(profile.user_id))}" data-action="rejected" class="approval-action-btn px-3 py-1 rounded-lg bg-red-100 text-red-700 hover:bg-red-200 text-xs">Rechazar</button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+
+            list.querySelectorAll('.approval-action-btn').forEach((btn) => {
+                btn.addEventListener('click', () => {
+                    updateTeacherApprovalStatus(btn.dataset.uid, btn.dataset.action);
+                });
+            });
+        }
+
+        async function updateTeacherApprovalStatus(userId, status) {
+            if(currentRole !== 'moderador') {
+                showToast('Solo moderador puede validar profesores.', 'warning');
+                return;
+            }
+
+            if(!supabaseClient || !currentUser?.id) {
+                teacherProfiles = teacherProfiles.map((p) => p.user_id === userId ? { ...p, approval_status: status } : p);
+                localStorage.setItem('educri_teacher_profiles', JSON.stringify(teacherProfiles));
+                renderTeacherApprovals();
+                renderTeacherOptions();
+                showToast('Estado actualizado en modo local.', 'success');
+                return;
+            }
+
+            const payload = {
+                approval_status: status,
+                approved_by: currentUser.id,
+                approved_at: new Date().toISOString(),
+                updated_at: new Date().toISOString()
+            };
+
+            const { error } = await supabaseClient
+                .from('teacher_profiles')
+                .update(payload)
+                .eq('user_id', userId);
+
+            if(error) {
+                console.error('No se pudo actualizar validación de profesor', error);
+                showToast(getDataErrorMessage(error, 'No se pudo actualizar la validación del profesor.'), 'error');
+                return;
+            }
+
+            await loadTeacherProfilesFromStorage();
+            showToast(status === 'approved' ? 'Profesor aprobado.' : 'Profesor rechazado.', 'success');
+        }
+
+        async function loadModeratorAssignmentsFromStorage() {
+            if(!supabaseClient || !currentUser?.id) {
+                moderatorAssignments = safeParseJSON('educri_assignments', []);
+                renderAssignmentsList();
+                return;
+            }
+
+            const { data, error } = await supabaseClient
+                .from('teacher_tasks')
+                .select('id,teacher_id,class_category,title,notes,day,time,created_at')
+                .is('deleted_at', null)
+                .order('created_at', { ascending: false });
+
+            if(error) {
+                console.error('Error cargando tareas asignadas', error);
+                moderatorAssignments = safeParseJSON('educri_assignments', []);
+                renderAssignmentsList();
+                return;
+            }
+
+            moderatorAssignments = (Array.isArray(data) ? data : []).map((row) => ({
+                id: row.id,
+                teacher_id: row.teacher_id,
+                teacher_name: getTeacherNameById(row.teacher_id),
+                class_category: row.class_category,
+                title: row.title,
+                notes: row.notes || '',
+                day: row.day,
+                time: row.time
+            }));
+
+            localStorage.setItem('educri_assignments', JSON.stringify(moderatorAssignments));
+            renderAssignmentsList();
+        }
+
+        async function loadStudentsFromStorage() {
+            if(!supabaseClient || !currentUser?.id) {
+                students = safeParseJSON('educri_students', []);
+                renderStudentsList();
+                return;
+            }
+
+            const { data, error } = await supabaseClient
+                .from('students')
+                .select('id,full_name,class_category,teacher_id,created_by,created_at')
+                .is('deleted_at', null)
+                .order('created_at', { ascending: false });
+
+            if(error) {
+                console.error('Error cargando alumnos', error);
+                students = safeParseJSON('educri_students', []);
+                renderStudentsList();
+                return;
+            }
+
+            students = (Array.isArray(data) ? data : []).map((row) => ({
+                id: row.id,
+                name: row.full_name,
+                classroom: row.class_category,
+                teacher_id: row.teacher_id,
+                teacher: row.teacher_id ? getTeacherNameById(row.teacher_id) : 'Sin asignar'
+            }));
+
+            localStorage.setItem('educri_students', JSON.stringify(students));
+            renderStudentsList();
+        }
+
+        function renderStudentsList() {
+            const list = document.getElementById('studentsList');
+            const count = document.getElementById('studentsCount');
+            const pageInfo = document.getElementById('studentsPageInfo');
+            if(!list || !count) return;
+
+            const pagination = window.EducriModerator?.filterAndPaginate
+                ? window.EducriModerator.filterAndPaginate(
+                    students,
+                    studentsSearch,
+                    (student, q) =>
+                        String(student.name || '').toLowerCase().includes(q)
+                        || String(student.classroom || '').toLowerCase().includes(q),
+                    studentsPage,
+                    studentsPageSize
+                )
+                : { filtered: students, pageItems: students, totalPages: 1, currentPage: 1 };
+            const filtered = pagination.filtered;
+            const pageItems = pagination.pageItems;
+            studentsPage = pagination.currentPage;
+            const totalPages = pagination.totalPages;
+
+            if(!filtered.length) {
+                count.textContent = '0 alumnos';
+                if(pageInfo) pageInfo.textContent = 'Página 1 de 1';
+                list.innerHTML = '<p class="text-gray-500">No hay resultados.</p>';
+                return;
+            }
+
+            count.textContent = `${filtered.length} alumnos`;
+            if(pageInfo) pageInfo.textContent = `Página ${studentsPage} de ${totalPages}`;
+            list.innerHTML = pageItems.map((student) => `
+                <div class="border border-gray-200 rounded-xl p-3 flex items-center justify-between gap-2">
+                    <div>
+                        <p class="font-semibold text-gray-800">${escapeHtml(student.name)}</p>
+                        <p class="text-xs text-gray-500">Clase: ${escapeHtml(getCategoryName(student.classroom || 'otros'))} · Profesor: Rotativo</p>
+                    </div>
+                    <button data-sid="${escapeHtml(String(student.id))}" class="remove-student-btn text-red-500 hover:text-red-700 text-xs">Eliminar</button>
+                </div>
+            `).join('');
+            list.querySelectorAll('.remove-student-btn').forEach((btn) => {
+                btn.addEventListener('click', () => removeStudent(btn.dataset.sid));
+            });
+        }
+
+        function renderAssignmentsList() {
+            const list = document.getElementById('assignmentsList');
+            const count = document.getElementById('assignmentsCount');
+            const pageInfo = document.getElementById('assignmentsPageInfo');
+            if(!list || !count) return;
+
+            const pagination = window.EducriModerator?.filterAndPaginate
+                ? window.EducriModerator.filterAndPaginate(
+                    moderatorAssignments,
+                    assignmentsSearch,
+                    (task, q) =>
+                        String(task.title || '').toLowerCase().includes(q)
+                        || String(task.teacher_name || getTeacherNameById(task.teacher_id)).toLowerCase().includes(q)
+                        || String(task.class_category || '').toLowerCase().includes(q),
+                    assignmentsPage,
+                    assignmentsPageSize
+                )
+                : { filtered: moderatorAssignments, pageItems: moderatorAssignments, totalPages: 1, currentPage: 1 };
+            const filtered = pagination.filtered;
+            const pageItems = pagination.pageItems;
+            assignmentsPage = pagination.currentPage;
+            const totalPages = pagination.totalPages;
+
+            if(!filtered.length) {
+                count.textContent = '0 tareas';
+                if(pageInfo) pageInfo.textContent = 'Página 1 de 1';
+                list.innerHTML = '<p class="text-gray-500">No hay resultados.</p>';
+                return;
+            }
+
+            count.textContent = `${filtered.length} tareas`;
+            if(pageInfo) pageInfo.textContent = `Página ${assignmentsPage} de ${totalPages}`;
+            list.innerHTML = pageItems.map((task) => `
+                <div class="border border-gray-200 rounded-xl p-3 flex items-center justify-between gap-2">
+                    <div>
+                        <p class="font-semibold text-gray-800">${escapeHtml(task.title)}</p>
+                        <p class="text-xs text-gray-500">Profesor: ${escapeHtml(task.teacher_name || getTeacherNameById(task.teacher_id))} · ${escapeHtml(task.day)} ${escapeHtml(task.time)} · ${escapeHtml(getCategoryName(task.class_category || task.classroom || 'otros'))}</p>
+                        ${task.notes ? `<p class="text-xs text-gray-500 mt-1">${escapeHtml(task.notes)}</p>` : ''}
+                    </div>
+                    <button data-tid="${escapeHtml(String(task.id))}" class="remove-assignment-btn text-red-500 hover:text-red-700 text-xs">Eliminar</button>
+                </div>
+            `).join('');
+            list.querySelectorAll('.remove-assignment-btn').forEach((btn) => {
+                btn.addEventListener('click', () => removeAssignment(btn.dataset.tid));
+            });
+        }
+
+        function getBaseNotifications() {
+            const items = [];
+            const todayName = new Date().toLocaleDateString('es-ES', { weekday: 'long' }).toLowerCase();
+
+            aulas.forEach((aula) => {
+                if(String(aula.day || '').toLowerCase() !== todayName) return;
+                items.push({
+                    id: `class_today_${aula.id}`,
+                    type: 'info',
+                    title: 'Clase programada hoy',
+                    message: `${aula.name} (${aula.classroom}) con ${aula.teacher}${aula.assistantTeacher ? ` y auxiliar ${aula.assistantTeacher}` : ''}.`,
+                    timeLabel: 'Hoy'
+                });
+            });
+
+            const profile = getTeacherProfileFromMetadata();
+            const teacherName = String(profile.full_name || '').trim().toLowerCase();
+            const userEmail = String(currentUser?.email || '').trim().toLowerCase();
+
+            moderatorAssignments.forEach((task) => {
+                const taskTeacherId = String(task.teacher_id || '').trim();
+                const taskTeacherName = String(task.teacher_name || '').trim().toLowerCase();
+                const visibleForTeacher = currentRole === 'moderador'
+                    || taskTeacherId === String(currentUser?.id || '')
+                    || taskTeacherName === teacherName
+                    || taskTeacherName === userEmail;
+                if(!visibleForTeacher) return;
+
+                items.push({
+                    id: `task_${task.id}`,
+                    type: 'warning',
+                    title: 'Tarea asignada',
+                    message: `${task.title} · ${getCategoryName(task.class_category || task.classroom || 'otros')} · ${task.day} ${task.time}.`,
+                    timeLabel: 'Asignada'
+                });
+            });
+
+            return items;
+        }
+
+        function getVisibleAssignments() {
+            const profile = getTeacherProfileFromMetadata();
+            const teacherName = String(profile.full_name || '').trim().toLowerCase();
+            const userEmail = String(currentUser?.email || '').trim().toLowerCase();
+            const userId = String(currentUser?.id || '');
+
+            return moderatorAssignments.filter((task) => {
+                if(currentRole === 'moderador') return true;
+                const taskTeacherId = String(task.teacher_id || '').trim();
+                const taskTeacherName = String(task.teacher_name || '').trim().toLowerCase();
+                return taskTeacherId === userId
+                    || taskTeacherName === teacherName
+                    || taskTeacherName === userEmail;
+            });
+        }
+
+        async function updateDashboardStats() {
+            const todayName = new Date().toLocaleDateString('es-ES', { weekday: 'long' }).toLowerCase();
+            const classesToday = aulas.filter((a) => String(a.day || '').toLowerCase() === todayName).length;
+            const pending = getVisibleAssignments().length;
+
+            const statuses = [];
+
+            if(supabaseClient && currentUser?.id) {
+                let query = supabaseClient
+                    .from('attendance_records')
+                    .select('status');
+
+                if(currentRole !== 'moderador') {
+                    query = query.eq('teacher_id', currentUser.id);
+                }
+
+                const { data, error } = await query;
+                if(!error && Array.isArray(data)) {
+                    data.forEach((row) => {
+                        statuses.push(row.status);
+                    });
+                }
+            } else {
+                Object.values(attendance).forEach((entry) => {
+                    if(typeof entry !== 'object' || !entry) return;
+                    Object.entries(entry).forEach(([k, v]) => {
+                        if(String(k).endsWith('_note')) return;
+                        statuses.push(v);
+                    });
+                });
+            }
+
+            const attendancePct = window.EducriAttendance?.calculateAttendanceRate
+                ? window.EducriAttendance.calculateAttendanceRate(statuses)
+                : 0;
+
+            const totalAulasEl = document.getElementById('totalAulas');
+            const classesTodayEl = document.getElementById('classesTodayCount');
+            const attendanceRateEl = document.getElementById('attendanceRate');
+            const pendingEl = document.getElementById('pendingCount');
+
+            if(totalAulasEl) totalAulasEl.textContent = String(aulas.length);
+            if(classesTodayEl) classesTodayEl.textContent = String(classesToday);
+            if(attendanceRateEl) attendanceRateEl.textContent = `${attendancePct}%`;
+            if(pendingEl) pendingEl.textContent = String(pending);
+        }
+
+        function renderNotifications() {
+            const container = document.getElementById('notificationsList');
+            if(!container) return;
+
+            const allNotifications = getBaseNotifications();
+            const activeIds = new Set(allNotifications.map((n) => n.id));
+            const pruned = dismissedNotifications.filter((id) => activeIds.has(id));
+            if(pruned.length !== dismissedNotifications.length) {
+                dismissedNotifications = pruned;
+                localStorage.setItem('educri_dismissed_notifications', JSON.stringify(dismissedNotifications));
+            }
+            const dismissed = new Set(dismissedNotifications);
+            const items = allNotifications.filter((n) => !dismissed.has(n.id));
+
+            if(items.length === 0) {
+                container.innerHTML = '<div class="bg-white rounded-2xl shadow-lg p-6 text-gray-500">No hay notificaciones por ahora.</div>';
+                updateNotificationBadges(0);
+                return;
+            }
+
+            container.innerHTML = items.map((item) => {
+                const style = item.type === 'warning'
+                    ? 'border-yellow-500 bg-yellow-100 text-yellow-600 fa-exclamation'
+                    : 'border-blue-500 bg-blue-100 text-blue-600 fa-calendar';
+                const [borderClass, iconBgClass, iconColorClass, iconClass] = style.split(' ');
+
+                return `
+                    <div class="bg-white rounded-2xl shadow-lg p-6 border-l-4 ${borderClass} flex items-start gap-4">
+                        <div class="w-10 h-10 rounded-full ${iconBgClass} flex items-center justify-center ${iconColorClass} flex-shrink-0">
+                            <i class="fas ${iconClass}"></i>
+                        </div>
+                        <div class="flex-1">
+                            <h4 class="font-semibold text-gray-800">${escapeHtml(item.title)}</h4>
+                            <p class="text-gray-600 text-sm mt-1">${escapeHtml(item.message)}</p>
+                            <p class="text-gray-400 text-xs mt-2">${escapeHtml(item.timeLabel)}</p>
+                        </div>
+                        <button onclick="dismissNotification('${escapeHtml(item.id)}')" class="text-gray-400 hover:text-gray-600">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                `;
+            }).join('');
+
+            updateNotificationBadges(items.length);
+            updateDashboardStats();
+        }
+
+        function updateNotificationBadges(count) {
+            const sidebarCount = document.getElementById('notificationsSidebarCount');
+            const mobileDot = document.getElementById('mobileNotificationBadge');
+            const desktopDot = document.getElementById('desktopNotificationBadge');
+
+            if(sidebarCount) {
+                sidebarCount.textContent = String(count);
+                sidebarCount.classList.toggle('hidden', count === 0);
+            }
+            if(mobileDot) {
+                mobileDot.classList.toggle('hidden', count === 0);
+            }
+            if(desktopDot) {
+                desktopDot.classList.toggle('hidden', count === 0);
+            }
+        }
+
+        function dismissNotification(id) {
+            if(!dismissedNotifications.includes(id)) {
+                dismissedNotifications.push(id);
+                localStorage.setItem('educri_dismissed_notifications', JSON.stringify(dismissedNotifications));
+            }
+            renderNotifications();
+        }
+
+        async function renderAttendanceByTeacher() {
+            const container = document.getElementById('attendanceByTeacher');
+            if(!container) return;
+
+            if(supabaseClient && currentUser?.id) {
+                const { data, error } = await supabaseClient
+                    .from('attendance_summary_by_teacher')
+                    .select('teacher_id,teacher_name,present_count,absent_count,late_count')
+                    .order('teacher_name', { ascending: true });
+
+                if(!error && Array.isArray(data) && data.length) {
+                    container.innerHTML = data.map((row) => `
+                        <div class="border border-gray-200 rounded-xl p-3">
+                            <p class="font-semibold text-gray-800">${escapeHtml(row.teacher_name || 'Profesor')}</p>
+                            <p class="text-xs text-gray-500 mt-1">Presentes: ${Number(row.present_count || 0)} · Ausentes: ${Number(row.absent_count || 0)} · Tarde: ${Number(row.late_count || 0)}</p>
+                        </div>
+                    `).join('');
+                    return;
+                }
+            }
+
+            const classroomMap = new Map(aulas.map((a) => [String(a.id), a.teacher || 'Sin profesor']));
+            const summary = {};
+
+            Object.entries(attendance).forEach(([key, values]) => {
+                if(typeof values !== 'object' || values === null) return;
+                const classId = String(key).split('_')[0];
+                const teacher = classroomMap.get(classId) || 'Sin profesor';
+
+                if(!summary[teacher]) {
+                    summary[teacher] = { present: 0, absent: 0, late: 0 };
+                }
+
+                Object.entries(values).forEach(([studentKey, status]) => {
+                    if(String(studentKey).endsWith('_note')) return;
+                    if(status === 'present') summary[teacher].present += 1;
+                    if(status === 'absent') summary[teacher].absent += 1;
+                    if(status === 'late') summary[teacher].late += 1;
+                });
+            });
+
+            const entries = Object.entries(summary);
+            if(!entries.length) {
+                container.innerHTML = '<p class="text-gray-500">Aún no hay registros de asistencia por profesor.</p>';
+                return;
+            }
+
+            container.innerHTML = entries.map(([teacher, stats]) => `
+                <div class="border border-gray-200 rounded-xl p-3">
+                    <p class="font-semibold text-gray-800">${escapeHtml(teacher)}</p>
+                    <p class="text-xs text-gray-500 mt-1">Presentes: ${stats.present} · Ausentes: ${stats.absent} · Tarde: ${stats.late}</p>
+                </div>
+            `).join('');
+        }
+
+        async function persistStudent(newStudent) {
+            if(!supabaseClient || !currentUser?.id) {
+                const localStudent = {
+                    ...newStudent,
+                    id: crypto.randomUUID(),
+                    teacher: 'Rotativo',
+                    teacher_id: null
+                };
+                students.unshift(localStudent);
+                localStorage.setItem('educri_students', JSON.stringify(students));
+                return;
+            }
+
+            const payload = {
+                full_name: newStudent.name,
+                class_category: newStudent.classroom,
+                teacher_id: newStudent.teacher_id || null,
+                created_by: currentUser.id
+            };
+
+            const { data, error } = await supabaseClient
+                .from('students')
+                .insert(payload)
+                .select('id,full_name,class_category,teacher_id')
+                .single();
+
+            if(error) throw error;
+
+            students.unshift({
+                id: data.id,
+                name: data.full_name,
+                classroom: data.class_category,
+                teacher_id: data.teacher_id,
+                teacher: 'Rotativo'
+            });
+            localStorage.setItem('educri_students', JSON.stringify(students));
+        }
+
+        async function persistDeleteStudent(studentId) {
+            if(!supabaseClient || !currentUser?.id) {
+                students = students.filter((s) => String(s.id) !== String(studentId));
+                localStorage.setItem('educri_students', JSON.stringify(students));
+                return;
+            }
+
+            const { error } = await supabaseClient
+                .from('students')
+                .update({ deleted_at: new Date().toISOString(), deleted_by: currentUser.id })
+                .eq('id', studentId);
+
+            if(error) throw error;
+
+            students = students.filter((s) => String(s.id) !== String(studentId));
+            localStorage.setItem('educri_students', JSON.stringify(students));
+        }
+
+        function addStudent(e) {
+            e.preventDefault();
+            const form = e.target;
+            const newStudent = {
+                name: String(form.studentName.value || '').trim(),
+                classroom: String(form.studentClass.value || '').trim(),
+                teacher_id: null,
+                teacher_name: 'Rotativo'
+            };
+
+            if(!newStudent.name || !newStudent.classroom) {
+                showToast('Completa nombre y clase del alumno.', 'warning');
+                return;
+            }
+
+            const btn = form.querySelector('[type=submit]');
+            if(btn) btn.disabled = true;
+            persistStudent(newStudent)
+                .then(() => {
+                    form.reset();
+                    renderStudentsList();
+                    showToast('Alumno añadido correctamente.', 'success');
+                })
+                .catch((error) => {
+                    console.error('No se pudo guardar el alumno', error);
+                    showToast(getDataErrorMessage(error, 'No se pudo guardar el alumno.'), 'error');
+                })
+                .finally(() => { if(btn) btn.disabled = false; });
+        }
+
+        function removeStudent(studentId) {
+            persistDeleteStudent(studentId)
+                .then(() => {
+                    renderStudentsList();
+                })
+                .catch((error) => {
+                    console.error('No se pudo eliminar el alumno', error);
+                    showToast(getDataErrorMessage(error, 'No se pudo eliminar el alumno.'), 'error');
+                });
+        }
+
+        function setStudentsSearch(value) {
+            studentsSearch = String(value || '');
+            studentsPage = 1;
+            renderStudentsList();
+        }
+
+        function changeStudentsPage(delta) {
+            studentsPage = Math.max(1, studentsPage + Number(delta || 0));
+            renderStudentsList();
+        }
+
+        async function persistAssignment(task) {
+            if(!supabaseClient || !currentUser?.id) {
+                const localTask = {
+                    ...task,
+                    id: crypto.randomUUID(),
+                    teacher_name: task.teacher_name || getTeacherNameById(task.teacher_id)
+                };
+                moderatorAssignments.unshift(localTask);
+                localStorage.setItem('educri_assignments', JSON.stringify(moderatorAssignments));
+                return;
+            }
+
+            const payload = {
+                teacher_id: task.teacher_id,
+                class_category: task.class_category,
+                title: task.title,
+                notes: task.notes || null,
+                day: task.day,
+                time: task.time,
+                assigned_by: currentUser.id
+            };
+
+            const { data, error } = await supabaseClient
+                .from('teacher_tasks')
+                .insert(payload)
+                .select('id,teacher_id,class_category,title,notes,day,time,created_at')
+                .single();
+
+            if(error) throw error;
+
+            moderatorAssignments.unshift({
+                id: data.id,
+                teacher_id: data.teacher_id,
+                teacher_name: getTeacherNameById(data.teacher_id),
+                class_category: data.class_category,
+                title: data.title,
+                notes: data.notes || '',
+                day: data.day,
+                time: data.time
+            });
+            localStorage.setItem('educri_assignments', JSON.stringify(moderatorAssignments));
+        }
+
+        async function persistDeleteAssignment(taskId) {
+            if(!supabaseClient || !currentUser?.id) {
+                moderatorAssignments = moderatorAssignments.filter((t) => String(t.id) !== String(taskId));
+                localStorage.setItem('educri_assignments', JSON.stringify(moderatorAssignments));
+                return;
+            }
+
+            const { error } = await supabaseClient
+                .from('teacher_tasks')
+                .update({ deleted_at: new Date().toISOString(), deleted_by: currentUser.id })
+                .eq('id', taskId);
+
+            if(error) throw error;
+
+            moderatorAssignments = moderatorAssignments.filter((t) => String(t.id) !== String(taskId));
+            localStorage.setItem('educri_assignments', JSON.stringify(moderatorAssignments));
+        }
+
+        function addAssignment(e) {
+            e.preventDefault();
+            const form = e.target;
+            const task = {
+                title: String(form.assignmentTitle.value || '').trim(),
+                teacher_id: String(form.assignmentTeacherId.value || '').trim(),
+                teacher_name: getTeacherNameById(form.assignmentTeacherId.value),
+                class_category: String(form.assignmentClass.value || '').trim(),
+                day: String(form.assignmentDay.value || '').trim(),
+                time: String(form.assignmentTime.value || '').trim(),
+                notes: String(form.assignmentNotes.value || '').trim()
+            };
+
+            if(!task.title || !task.teacher_id || !task.class_category || !task.day || !task.time) {
+                showToast('Completa los datos de la tarea.', 'warning');
+                return;
+            }
+
+            const btn = form.querySelector('[type=submit]');
+            if(btn) btn.disabled = true;
+            persistAssignment(task)
+                .then(() => {
+                    form.reset();
+                    renderAssignmentsList();
+                    renderNotifications();
+                    showToast('Tarea asignada al profesor.', 'success');
+                })
+                .catch((error) => {
+                    console.error('No se pudo asignar la tarea', error);
+                    showToast(getDataErrorMessage(error, 'No se pudo asignar la tarea.'), 'error');
+                })
+                .finally(() => { if(btn) btn.disabled = false; });
+        }
+
+        function removeAssignment(taskId) {
+            persistDeleteAssignment(taskId)
+                .then(() => {
+                    renderAssignmentsList();
+                    renderNotifications();
+                })
+                .catch((error) => {
+                    console.error('No se pudo eliminar la tarea', error);
+                    showToast(getDataErrorMessage(error, 'No se pudo eliminar la tarea.'), 'error');
+                });
+        }
+
+        function setAssignmentsSearch(value) {
+            assignmentsSearch = String(value || '');
+            assignmentsPage = 1;
+            renderAssignmentsList();
+        }
+
+        function changeAssignmentsPage(delta) {
+            assignmentsPage = Math.max(1, assignmentsPage + Number(delta || 0));
+            renderAssignmentsList();
+        }
+
+        function isValidEmail(email) {
+            return window.EducriAuth?.isValidEmail
+                ? window.EducriAuth.isValidEmail(email)
+                : /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+        }
+
+        function isValidE164Phone(phone) {
+            return window.EducriAuth?.isValidE164Phone
+                ? window.EducriAuth.isValidE164Phone(phone)
+                : /^\+[1-9]\d{7,14}$/.test(String(phone || '').trim());
+        }
+
+        function hasMinimumAge(birthDate, minAge = 18) {
+            return window.EducriAuth?.hasMinimumAge
+                ? window.EducriAuth.hasMinimumAge(birthDate, minAge)
+                : false;
+        }
+
+        function getEmailTypoSuggestion(email) {
+            if(window.EducriAuth?.getEmailTypoSuggestion) {
+                return window.EducriAuth.getEmailTypoSuggestion(email);
+            }
+            return null;
+        }
+
+        function getDataErrorMessage(error, fallback = 'No se pudo completar la operación.') {
+            const raw = String(error?.message || '').toLowerCase();
+            if(!raw) return fallback;
+            if(raw.includes('violates row-level security')) return 'No tienes permisos para realizar esta acción.';
+            if(raw.includes('duplicate key')) return 'Ya existe un registro con esos datos.';
+            if(raw.includes('foreign key')) return 'Referencia inválida: revisa profesor, clase o alumno.';
+            if(raw.includes('invalid input syntax')) return 'Uno de los campos tiene un formato inválido.';
+            if(raw.includes('failed to fetch') || raw.includes('network')) return 'No hay conexión con Supabase en este momento.';
+            return `${fallback} (${error.message})`;
+        }
+
+        function getAuthErrorMessage(error, mode = 'login') {
+            const raw = String(error?.message || '').toLowerCase();
+            if(!raw) return mode === 'register' ? 'No se pudo crear la cuenta.' : 'No se pudo iniciar sesión.';
+            if(raw.includes('failed to fetch') || raw.includes('network')) {
+                return 'No hay conexión con Supabase. Verifica internet, SUPABASE_URL/SUPABASE_ANON_KEY y abre la app con http://localhost (no file://).';
+            }
+            if(raw.includes('user already registered')) return 'Ese correo ya está registrado. Inicia sesión.';
+            if(raw.includes('invalid login credentials')) return 'Correo o contraseña incorrectos.';
+            if(raw.includes('email not confirmed')) return 'Debes confirmar tu correo antes de iniciar sesión.';
+            if(raw.includes('signup is disabled')) return 'El registro está desactivado en Supabase.';
+            if(raw.includes('password')) return 'La contraseña no cumple la política de seguridad de Supabase.';
+            if(raw.includes('email')) return 'El correo no es válido.';
+            return mode === 'register' ? `No se pudo crear la cuenta: ${error.message}` : `No se pudo iniciar sesión: ${error.message}`;
+        }
+
+        async function loadAulasFromStorage() {
+            if(!supabaseClient || !currentUser?.id) {
+                aulas = safeParseJSON('educri_aulas', DEFAULT_AULAS);
+                return;
+            }
+
+            const { data, error } = await supabaseClient
+                .from('classes')
+                .select('id,name,category,teacher,assistant_teacher,classroom,day,time,description,pdf_name,color')
+                .eq('user_id', currentUser.id)
+                .order('id', { ascending: true });
+
+            if(error) {
+                console.error('Error cargando aulas desde Supabase', error);
+                aulas = safeParseJSON('educri_aulas', DEFAULT_AULAS);
+                showToast('No se pudieron cargar aulas desde Supabase. Se usa respaldo local.', 'warning');
+                return;
+            }
+
+            aulas = Array.isArray(data) ? data.map(mapDbClassToUi) : [];
+            if(aulas.length === 0) {
+                const seedPayload = DEFAULT_AULAS.map((aula) => mapUiClassToDb(aula));
+                const { data: seededRows, error: seedError } = await supabaseClient
+                    .from('classes')
+                    .insert(seedPayload)
+                    .select('id,name,category,teacher,assistant_teacher,classroom,day,time,description,pdf_name,color');
+
+                if(seedError) {
+                    console.error('Error sembrando aulas base', seedError);
+                    aulas = [...DEFAULT_AULAS];
+                    return;
+                }
+
+                aulas = Array.isArray(seededRows) ? seededRows.map(mapDbClassToUi) : [...DEFAULT_AULAS];
+            }
+        }
+
+        async function persistNewClass(newClass) {
+            if(!supabaseClient || !currentUser?.id) {
+                aulas.push(newClass);
+                localStorage.setItem('educri_aulas', JSON.stringify(aulas));
+                return;
+            }
+
+            const { data, error } = await supabaseClient
+                .from('classes')
+                .insert(mapUiClassToDb(newClass))
+                .select('id,name,category,teacher,assistant_teacher,classroom,day,time,description,pdf_name,color')
+                .single();
+
+            if(error) throw error;
+            aulas.push(mapDbClassToUi(data));
+        }
+
+        async function persistDeleteClass(id) {
+            if(!supabaseClient || !currentUser?.id) {
+                aulas = aulas.filter((a) => a.id !== id);
+                localStorage.setItem('educri_aulas', JSON.stringify(aulas));
+                return;
+            }
+
+            const { error } = await supabaseClient
+                .from('classes')
+                .delete()
+                .eq('id', id)
+                .eq('user_id', currentUser.id);
+
+            if(error) throw error;
+            aulas = aulas.filter((a) => a.id !== id);
+        }
+
+        // Inicializacion
+        document.addEventListener('DOMContentLoaded', async function() {
+            setAuthMode('login');
+            renderStudentsList();
+            renderTeacherOptions();
+            renderTeacherApprovals();
+            renderClassTeachersCatalog();
+            populateModeratorClassSelect();
+            renderAssignmentsList();
+            renderAttendanceByTeacher();
+            if(window.location.protocol === 'file:') {
+                showToast('Abre la app con http://localhost para evitar errores de conexión con Supabase.', 'warning');
+            }
+
+            if(!hasSupabaseConfig) {
+                currentUser = { email: 'modo-local@educri' };
+                setLoginLoading(true);
+                try {
+                    aulas = safeParseJSON('educri_aulas', DEFAULT_AULAS);
+                    await Promise.all([loadTeacherProfilesFromStorage(), loadStudentsFromStorage(), loadModeratorAssignmentsFromStorage()]);
+                    completeLogin(false);
+                    refreshUIData();
+                } catch(err) {
+                    console.error('Error cargando datos locales', err);
+                    setLoginLoading(false);
+                }
+                showToast('Configura Supabase (window.__EDUCRI_CONFIG__ o localStorage: educri_supabase_url / educri_supabase_anon_key).', 'warning');
+                return;
+            }
+
+            const { data, error } = await supabaseClient.auth.getSession();
+            if(error || !data.session?.user) {
+                showLoginScreen();
+                return;
+            }
+
+            currentUser = data.session.user;
+            setLoginLoading(true);
+            try {
+                await Promise.all([loadAulasFromStorage(), loadTeacherProfilesFromStorage(), loadStudentsFromStorage(), loadModeratorAssignmentsFromStorage()]);
+                completeLogin(false);
+                refreshUIData();
+            } catch(err) {
+                console.error('Error cargando datos de sesión', err);
+                setLoginLoading(false);
+            }
+        });
+
+        // Autenticacion
+        async function handleEmailLogin(e) {
+            e.preventDefault();
+            if(!supabaseClient) {
+                showToast('Falta configurar SUPABASE_URL y SUPABASE_ANON_KEY.', 'error');
+                return;
+            }
+
+            const form = e.target;
+            const email = form.querySelector('#emailInput').value.trim().toLowerCase();
+            const password = form.querySelector('#passwordInput').value;
+            const confirmPassword = form.querySelector('#confirmPasswordInput')?.value || '';
+
+            if(!isValidEmail(email)) {
+                showToast('Ingresa un correo válido.', 'warning');
+                return;
+            }
+
+            const suggestedEmail = getEmailTypoSuggestion(email);
+            if(suggestedEmail) {
+                showToast(`Revisa tu correo. ¿Quisiste escribir ${suggestedEmail}?`, 'warning');
+                return;
+            }
+
+            if(authMode === 'register') {
+                const fullName = form.querySelector('#registerFullName')?.value.trim() || '';
+                const birthDate = form.querySelector('#registerBirthDate')?.value || '';
+                const phone = form.querySelector('#registerPhone')?.value.trim() || '';
+                const hasCds = Boolean(form.querySelector('#registerHasCds')?.checked);
+                const receivedHolySpirit = Boolean(form.querySelector('#registerHolySpirit')?.checked);
+                const teachingExperience = form.querySelector('#registerExperience')?.value.trim() || '';
+
+                if(fullName.length < 6) {
+                    showToast('Escribe nombre completo con apellidos.', 'warning');
+                    return;
+                }
+                if(!birthDate) {
+                    showToast('Selecciona tu fecha de nacimiento.', 'warning');
+                    return;
+                }
+                if(!hasMinimumAge(birthDate, 18)) {
+                    showToast('Debes ser mayor de 18 años para registrarte.', 'warning');
+                    return;
+                }
+                if(!isValidE164Phone(phone)) {
+                    showToast('El teléfono debe estar en formato internacional E.164 (ej: +34600111222).', 'warning');
+                    return;
+                }
+                if(teachingExperience.length < 10) {
+                    showToast('Describe tu experiencia previa para la enseñanza.', 'warning');
+                    return;
+                }
+
+                if(password.length < 8) {
+                    showToast('La contraseña debe tener al menos 8 caracteres.', 'warning');
+                    return;
+                }
+                if(!/[A-Z]/.test(password) || !/[a-z]/.test(password) || !/[0-9]/.test(password)) {
+                    showToast('La contraseña debe incluir mayúscula, minúscula y número.', 'warning');
+                    return;
+                }
+                if(password !== confirmPassword) {
+                    showToast('Las contraseñas no coinciden.', 'warning');
+                    return;
+                }
+
+                const { data, error } = await supabaseClient.auth.signUp({
+                    email,
+                    password,
+                    options: {
+                        data: {
+                            role: 'profesor',
+                            full_name: fullName,
+                            birth_date: birthDate,
+                            phone,
+                            has_cds: hasCds,
+                            received_holy_spirit: receivedHolySpirit,
+                            teaching_experience: teachingExperience
+                        }
+                    }
+                });
+                if(error) {
+                    console.error('Error en registro por email', error);
+                    showToast(getAuthErrorMessage(error, 'register'), 'error');
+                    return;
+                }
+
+                if(data.session?.user) {
+                    currentUser = data.session.user;
+                    setLoginLoading(true);
+                    try {
+                        await Promise.all([loadAulasFromStorage(), loadTeacherProfilesFromStorage(), loadStudentsFromStorage(), loadModeratorAssignmentsFromStorage()]);
+                        completeLogin();
+                        refreshUIData();
+                    } catch(err) {
+                        console.error('Error cargando datos tras registro', err);
+                        setLoginLoading(false);
+                    }
+                    return;
+                }
+
+                showToast('Cuenta creada. Revisa tu correo para confirmar.', 'success');
+                e.target.reset();
+                setAuthMode('login');
+                return;
+            }
+
+            const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
+
+            if(error) {
+                console.error('Error en login por email', error);
+                showToast(getAuthErrorMessage(error, 'login'), 'error');
+                return;
+            }
+
+            currentUser = data.user;
+            setLoginLoading(true);
+            try {
+                await Promise.all([loadAulasFromStorage(), loadTeacherProfilesFromStorage(), loadStudentsFromStorage(), loadModeratorAssignmentsFromStorage()]);
+                completeLogin();
+                refreshUIData();
+            } catch(err) {
+                console.error('Error cargando datos tras login', err);
+                setLoginLoading(false);
+            }
+        }
+
+        function completeLogin(showWelcome = true) {
+            document.getElementById('loginScreen').classList.add('hidden');
+            document.getElementById('mainApp').classList.remove('hidden');
+            const userInfo = document.getElementById('userInfo');
+            userInfo.textContent = '';
+            refreshRoleAccessUI();
+
+            const nameEl = document.createElement('p');
+            nameEl.className = 'font-semibold text-white';
+            nameEl.textContent = currentUser?.user_metadata?.full_name || currentUser?.email || 'Usuario';
+
+            const emailEl = document.createElement('p');
+            emailEl.className = 'text-xs text-gray-400';
+            emailEl.textContent = currentUser?.email || '';
+
+            userInfo.appendChild(nameEl);
+            userInfo.appendChild(emailEl);
+            updateHeaderProfileDisplay();
+            renderTeacherProfileForm();
+            renderStudentsList();
+            renderTeacherApprovals();
+            renderAssignmentsList();
+            renderAttendanceByTeacher();
+            renderClassTeachersCatalog();
+            populateModeratorClassSelect();
+            if(showWelcome) showToast('Bienvenido a EduCri.', 'success');
+        }
+
+        async function logout() {
+            if(confirm('Deseas cerrar sesion?')) {
+                if(supabaseClient) {
+                    await supabaseClient.auth.signOut();
+                }
+                localStorage.removeItem('educri_supabase_url');
+                localStorage.removeItem('educri_supabase_anon_key');
+                location.reload();
+            }
+        }
+
+        async function saveTeacherProfile(e) {
+            e.preventDefault();
+            if(!currentUser) {
+                showToast('Debes iniciar sesión para editar tu perfil.', 'warning');
+                return;
+            }
+
+            const fullName = document.getElementById('profileFullName')?.value.trim() || '';
+            const birthDate = document.getElementById('profileBirthDate')?.value || '';
+            const phone = document.getElementById('profilePhone')?.value.trim() || '';
+            const hasCds = Boolean(document.getElementById('profileHasCds')?.checked);
+            const receivedHolySpirit = Boolean(document.getElementById('profileHolySpirit')?.checked);
+            const teachingExperience = document.getElementById('profileExperience')?.value.trim() || '';
+
+            if(fullName.length < 6) {
+                showToast('Completa tu nombre y apellidos.', 'warning');
+                return;
+            }
+            if(!birthDate) {
+                showToast('Completa tu fecha de nacimiento.', 'warning');
+                return;
+            }
+            if(!hasMinimumAge(birthDate, 18)) {
+                showToast('El perfil requiere mayoría de edad (18+).', 'warning');
+                return;
+            }
+            if(!isValidE164Phone(phone)) {
+                showToast('Usa teléfono en formato E.164 (ej: +34600111222).', 'warning');
+                return;
+            }
+            if(teachingExperience.length < 10) {
+                showToast('Describe tu experiencia previa para la enseñanza.', 'warning');
+                return;
+            }
+
+            const profileData = {
+                ...currentUser.user_metadata,
+                role: currentRole,
+                full_name: fullName,
+                birth_date: birthDate,
+                phone,
+                has_cds: hasCds,
+                received_holy_spirit: receivedHolySpirit,
+                teaching_experience: teachingExperience
+            };
+
+            const profileRowData = {
+                user_id: currentUser.id,
+                full_name: fullName,
+                birth_date: birthDate,
+                phone: phone || null,
+                has_cds: hasCds,
+                received_holy_spirit: receivedHolySpirit,
+                teaching_experience: teachingExperience
+            };
+
+            if(!supabaseClient) {
+                currentUser = { ...currentUser, user_metadata: profileData };
+                const existingIndex = teacherProfiles.findIndex((p) => String(p.user_id) === String(currentUser.id));
+                const mergedProfile = {
+                    ...teacherProfiles[existingIndex],
+                    ...profileRowData,
+                    approval_status: teacherProfiles[existingIndex]?.approval_status || 'pending'
+                };
+                if(existingIndex >= 0) {
+                    teacherProfiles[existingIndex] = mergedProfile;
+                } else {
+                    teacherProfiles.unshift(mergedProfile);
+                }
+                localStorage.setItem('educri_teacher_profiles', JSON.stringify(teacherProfiles));
+                updateHeaderProfileDisplay();
+                renderTeacherProfileForm();
+                renderTeacherApprovals();
+                renderTeacherOptions();
+                showToast('Perfil guardado en modo local.', 'success');
+                return;
+            }
+
+            const { data, error } = await supabaseClient.auth.updateUser({ data: profileData });
+            if(error) {
+                console.error('Error actualizando perfil', error);
+                showToast(getDataErrorMessage(error, 'No se pudo actualizar el perfil.'), 'error');
+                return;
+            }
+
+            const { error: profileSyncError } = await supabaseClient
+                .from('teacher_profiles')
+                .upsert(profileRowData, { onConflict: 'user_id' });
+
+            if(profileSyncError) {
+                console.error('Error sincronizando teacher_profiles', profileSyncError);
+                showToast(getDataErrorMessage(profileSyncError, 'Perfil guardado, pero no se pudo sincronizar para moderador.'), 'warning');
+            }
+
+            currentUser = data.user || { ...currentUser, user_metadata: profileData };
+            await loadTeacherProfilesFromStorage();
+            updateHeaderProfileDisplay();
+            renderTeacherProfileForm();
+            showToast('Perfil actualizado correctamente.', 'success');
+        }
+
+        // Navegacion
+        function showSection(section, triggerEl = null) {
+            const allowed = getAllowedSectionsByRole(currentRole);
+            if(!allowed.includes(section)) {
+                showToast('No tienes permisos para acceder a esta sección.', 'warning');
+                section = 'dashboard';
+            }
+
+            // Ocultar todas las secciones
+            document.querySelectorAll('main section').forEach(s => s.classList.add('hidden'));
+            
+            // Mostrar sección seleccionada
+            document.getElementById(section + 'Section').classList.remove('hidden');
+            
+            // Actualizar título
+            const titles = {
+                'dashboard': 'Dashboard',
+                'aulas': 'Gestión de Aulas',
+                'calendario': 'Calendario Académico',
+                'asistencia': 'Control de Asistencia',
+                'notificaciones': 'Notificaciones',
+                'perfil': 'Perfil del Profesor',
+                'moderador': 'Panel de Moderador'
+            };
+            document.getElementById('pageTitle').textContent = titles[section];
+            
+            // Actualizar sidebar
+            document.querySelectorAll('.sidebar-item').forEach(item => item.classList.remove('active'));
+            const activeButton = triggerEl || document.querySelector(`.sidebar-item[data-section="${section}"]`);
+            if(activeButton) activeButton.classList.add('active');
+
+            if(section === 'moderador') {
+                populateModeratorClassSelect();
+            }
+            
+            // Cerrar sidebar en móvil
+            if(window.innerWidth < 1024) {
+                const sidebar = document.getElementById('sidebar');
+                if(!sidebar.classList.contains('-translate-x-full')) {
+                    toggleSidebar();
+                }
+            }
+        }
+
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebarOverlay');
+            
+            if(sidebar.classList.contains('-translate-x-full')) {
+                sidebar.classList.remove('-translate-x-full');
+                overlay.classList.remove('hidden');
+            } else {
+                sidebar.classList.add('-translate-x-full');
+                overlay.classList.add('hidden');
+            }
+        }
+
+        // Gestión de Aulas
+        function renderAulas() {
+            const grid = document.getElementById('aulasGrid');
+            const filtered = currentFilter === 'todas' 
+                ? aulas 
+                : aulas.filter(a => a.category === currentFilter);
+            
+            grid.innerHTML = filtered.map(aula => {
+                const safeId = Number(aula.id);
+                if(!Number.isFinite(safeId)) return '';
+
+                const safeName = escapeHtml(aula.name);
+                const safeTeacher = escapeHtml(aula.teacher);
+                const safeAssistantTeacher = escapeHtml(aula.assistantTeacher || '');
+                const safeClassroom = escapeHtml(aula.classroom);
+                const safeDay = escapeHtml(aula.day);
+                const safeTime = escapeHtml(aula.time);
+                const safeCategory = escapeHtml(getCategoryName(aula.category));
+                const safeColor = typeof aula.color === 'string' && /^from-[a-z0-9-]+\s+to-[a-z0-9-]+$/i.test(aula.color)
+                    ? aula.color
+                    : 'from-blue-500 to-cyan-400';
+
+                return `
+                <div class="bg-white rounded-2xl shadow-lg overflow-hidden card-hover border border-gray-100">
+                    <div class="h-32 bg-gradient-to-r ${safeColor} p-6 relative overflow-hidden">
+                        <div class="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-10 -mt-10"></div>
+                        <div class="absolute bottom-0 left-0 w-24 h-24 bg-white/10 rounded-full -ml-10 -mb-10"></div>
+                        <div class="relative z-10">
+                            <span class="inline-block px-3 py-1 bg-white/20 backdrop-blur-sm rounded-full text-white text-xs font-medium mb-2">
+                                ${safeCategory}
+                            </span>
+                            <h3 class="font-display text-xl font-bold text-white leading-tight">${safeName}</h3>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <div class="space-y-3 mb-4">
+                            <div class="flex items-center gap-3 text-gray-600">
+                                <i class="fas fa-user-tie w-5 text-blue-500"></i>
+                                <span class="text-sm">${safeTeacher}</span>
+                            </div>
+                            ${safeAssistantTeacher ? `
+                            <div class="flex items-center gap-3 text-gray-600">
+                                <i class="fas fa-user-friends w-5 text-indigo-500"></i>
+                                <span class="text-sm">Auxiliar: ${safeAssistantTeacher}</span>
+                            </div>` : ''}
+                            <div class="flex items-center gap-3 text-gray-600">
+                                <i class="fas fa-door-open w-5 text-purple-500"></i>
+                                <span class="text-sm">${safeClassroom}</span>
+                            </div>
+                            <div class="flex items-center gap-3 text-gray-600">
+                                <i class="fas fa-clock w-5 text-pink-500"></i>
+                                <span class="text-sm">${safeDay}, ${safeTime}</span>
+                            </div>
+                        </div>
+                        
+                        <div class="flex gap-2 mt-4">
+                            <button onclick="viewSyllabus(${safeId})" class="flex-1 px-4 py-2 bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100 transition-colors text-sm font-medium flex items-center justify-center gap-2">
+                                <i class="fas fa-file-pdf"></i> Ver Temario
+                            </button>
+                            <button onclick="deleteClass(${safeId})" class="px-4 py-2 bg-red-50 text-red-600 rounded-lg hover:bg-red-100 transition-colors">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            }).join('');
+            
+            document.getElementById('totalAulas').textContent = aulas.length;
+            const aulasBadge = document.getElementById('sidebarAulasCount');
+            if(aulasBadge) aulasBadge.textContent = String(aulas.length);
+        }
+
+        function getCategoryName(cat) {
+            const names = {
+                'corderitos': 'Corderitos',
+                'soldaditos': 'Soldaditos',
+                'vencedores': 'Vencedores',
+                'otros': 'Otros'
+            };
+            return names[cat] || cat;
+        }
+
+        function filterAulas(category, triggerEl = null) {
+            currentFilter = category;
+            
+            // Actualizar botones
+            document.querySelectorAll('.category-btn').forEach(btn => {
+                btn.classList.remove('active', 'bg-blue-600', 'text-white');
+                btn.classList.add('bg-gray-200', 'text-gray-700');
+            });
+            if(triggerEl) {
+                triggerEl.classList.remove('bg-gray-200', 'text-gray-700');
+                triggerEl.classList.add('active', 'bg-blue-600', 'text-white');
+            } else {
+                const fallbackButton = document.querySelector(`.category-btn[onclick*="'${category}'"]`);
+                if(fallbackButton) {
+                    fallbackButton.classList.remove('bg-gray-200', 'text-gray-700');
+                    fallbackButton.classList.add('active', 'bg-blue-600', 'text-white');
+                }
+            }
+            
+            renderAulas();
+        }
+
+        function openAddClassModal() {
+            document.getElementById('addClassModal').classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeAddClassModal() {
+            document.getElementById('addClassModal').classList.remove('active');
+            document.body.style.overflow = '';
+            document.getElementById('pdfFileName').textContent = 'Ningún archivo seleccionado';
+        }
+
+        // Manejo de PDFs
+        function handleDragOver(e) {
+            e.preventDefault();
+            e.currentTarget.classList.add('dragover');
+        }
+
+        function handleDragLeave(e) {
+            e.currentTarget.classList.remove('dragover');
+        }
+
+        function handleDrop(e) {
+            e.preventDefault();
+            e.currentTarget.classList.remove('dragover');
+            const files = e.dataTransfer.files;
+            if(files.length > 0 && files[0].type === 'application/pdf') {
+                processPDF(files[0]);
+            }
+        }
+
+        function handleFileSelect(e) {
+            const file = e.target.files[0];
+            if(file) processPDF(file);
+        }
+
+        function processPDF(file) {
+            document.getElementById('pdfFileName').textContent = file.name;
+            // En una implementación real, aquí subirías el archivo a un servidor
+            // Por ahora solo guardamos el nombre
+            window.currentPDF = file;
+        }
+
+        async function saveNewClass(e) {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            const btn = e.target.querySelector('[type=submit]');
+
+            const colors = [
+                "from-blue-500 to-cyan-400",
+                "from-purple-500 to-pink-500",
+                "from-pink-500 to-orange-400",
+                "from-green-500 to-teal-400",
+                "from-yellow-500 to-red-500"
+            ];
+
+            const newClass = {
+                id: crypto.randomUUID(),
+                name: String(formData.get('className') || '').trim(),
+                category: String(formData.get('category') || '').trim(),
+                teacher: String(formData.get('teacher') || '').trim(),
+                assistantTeacher: String(formData.get('assistantTeacher') || '').trim(),
+                classroom: String(formData.get('classroom') || '').trim(),
+                day: String(formData.get('day') || '').trim(),
+                time: String(formData.get('time') || '').trim(),
+                description: String(formData.get('description') || '').trim(),
+                pdfName: window.currentPDF ? window.currentPDF.name : 'temario.pdf',
+                color: colors[Math.floor(Math.random() * colors.length)]
+            };
+
+            if(btn) btn.disabled = true;
+            try {
+                await persistNewClass(newClass);
+            } catch (error) {
+                console.error('No se pudo guardar la clase', error);
+                showToast(getDataErrorMessage(error, 'No se pudo guardar la clase.'), 'error');
+                return;
+            } finally {
+                if(btn) btn.disabled = false;
+            }
+
+            renderAulas();
+            renderUpcomingClasses();
+            populateClassSelect();
+            renderClassTeacherSuggestions();
+            populateModeratorClassSelect();
+            closeAddClassModal();
+            e.target.reset();
+            window.currentPDF = null;
+
+            showToast('Clase anadida correctamente.', 'success');
+        }
+        async function deleteClass(id) {
+            if(confirm('Eliminar esta clase?')) {
+                try {
+                    await persistDeleteClass(id);
+                } catch (error) {
+                    console.error('No se pudo eliminar la clase', error);
+                    showToast(getDataErrorMessage(error, 'No se pudo eliminar la clase.'), 'error');
+                    return;
+                }
+                renderAulas();
+                renderUpcomingClasses();
+                populateClassSelect();
+                populateModeratorClassSelect();
+                showToast('Clase eliminada.', 'info');
+            }
+        }
+        function viewSyllabus(id) {
+            const aula = aulas.find(a => a.id === id);
+            if(!aula) return;
+            
+            document.getElementById('syllabusTitle').textContent = aula.name;
+            const assistantSuffix = aula.assistantTeacher ? ` · Auxiliar: ${aula.assistantTeacher}` : '';
+            document.getElementById('syllabusSubtitle').textContent = `Titular: ${aula.teacher}${assistantSuffix} - ${aula.classroom}`;
+            document.getElementById('pdfNameDisplay').textContent = aula.pdfName;
+            
+            document.getElementById('viewSyllabusModal').classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeViewSyllabusModal() {
+            document.getElementById('viewSyllabusModal').classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        // Calendario
+        function renderMainCalendar() {
+            const year = currentMonth.getFullYear();
+            const month = currentMonth.getMonth();
+            
+            document.getElementById('calendarMonthYear').textContent = 
+                new Date(year, month).toLocaleDateString('es-ES', { month: 'long', year: 'numeric' });
+            
+            const firstDay = (new Date(year, month, 1).getDay() + 6) % 7;
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+            const calendar = document.getElementById('mainCalendar');
+            calendar.innerHTML = '';
+            
+            // Días vacíos
+            for(let i = 0; i < firstDay; i++) {
+                const empty = document.createElement('div');
+                empty.className = 'bg-white h-24 p-2';
+                calendar.appendChild(empty);
+            }
+            
+            // Días del mes
+            for(let day = 1; day <= daysInMonth; day++) {
+                const date = new Date(year, month, day);
+                const dayElement = document.createElement('div');
+                dayElement.className = 'bg-white h-24 p-2 border-t border-l border-gray-100 cursor-pointer hover:bg-blue-50 transition-colors relative calendar-day';
+                
+                const isToday = date.toDateString() === new Date().toDateString();
+                const hasEvent = checkEventsForDate(date);
+                
+                if(isToday) {
+                    dayElement.classList.add('bg-blue-50', 'font-bold');
+                }
+                
+                if(hasEvent) {
+                    dayElement.classList.add('has-event');
+                }
+                
+                dayElement.innerHTML = `
+                    <span class="${isToday ? 'w-8 h-8 rounded-full bg-blue-500 text-white flex items-center justify-center' : ''}">${day}</span>
+                `;
+                
+                dayElement.onclick = () => selectDate(date);
+                calendar.appendChild(dayElement);
+            }
+        }
+
+        function renderMiniCalendar() {
+            const now = new Date();
+            const firstDay = (new Date(now.getFullYear(), now.getMonth(), 1).getDay() + 6) % 7;
+            const daysInMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
+
+            const calendar = document.getElementById('miniCalendar');
+            const days = ['L', 'M', 'M', 'J', 'V', 'S', 'D'];
+            
+            calendar.innerHTML = days.map(d => 
+                `<div class="text-gray-400 font-semibold py-2">${d}</div>`
+            ).join('');
+            
+            for(let i = 0; i < firstDay; i++) {
+                calendar.innerHTML += '<div></div>';
+            }
+            
+            for(let day = 1; day <= daysInMonth; day++) {
+                const isToday = day === now.getDate();
+                calendar.innerHTML += `
+                    <div class="${isToday ? 'bg-gradient-to-br from-blue-500 to-pink-500 text-white rounded-full w-8 h-8 flex items-center justify-center mx-auto shadow-md' : 'text-gray-700 py-1'}">
+                        ${day}
+                    </div>
+                `;
+            }
+        }
+
+        function changeMonth(delta) {
+            currentMonth = new Date(currentMonth.getFullYear(), currentMonth.getMonth() + delta, 1);
+            renderMainCalendar();
+        }
+
+        function selectDate(date) {
+            selectedDate = date;
+            document.getElementById('selectedDate').textContent = date.toLocaleDateString('es-ES', { 
+                weekday: 'long', 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric' 
+            });
+            
+            // Mostrar eventos del día
+            const events = getEventsForDate(date);
+            const container = document.getElementById('dayEvents');
+            
+            if(events.length === 0) {
+                container.innerHTML = '<p class="text-gray-500 text-center py-8">No hay eventos para este día</p>';
+            } else {
+                container.innerHTML = events.map(event => `
+                    <div class="flex items-center gap-4 p-4 bg-gray-50 rounded-xl border-l-4 border-blue-500">
+                        <div class="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center text-blue-600">
+                            <i class="fas fa-book"></i>
+                        </div>
+                        <div class="flex-1">
+                            <h4 class="font-semibold text-gray-800">${escapeHtml(event.name)}</h4>
+                            <p class="text-sm text-gray-500">${escapeHtml(event.time)} - ${escapeHtml(event.classroom)}</p>
+                        </div>
+                    </div>
+                `).join('');
+            }
+        }
+
+        function checkEventsForDate(date) {
+            const dayName = date.toLocaleDateString('es-ES', { weekday: 'long' });
+            return aulas.some(a => a.day.toLowerCase() === dayName.toLowerCase());
+        }
+
+        function getEventsForDate(date) {
+            const dayName = date.toLocaleDateString('es-ES', { weekday: 'long' });
+            return aulas.filter(a => a.day.toLowerCase() === dayName.toLowerCase());
+        }
+
+        // Asistencia
+        function populateClassSelect() {
+            const select = document.getElementById('classSelect');
+            select.innerHTML = '';
+
+            const defaultOption = document.createElement('option');
+            defaultOption.value = '';
+            defaultOption.textContent = 'Seleccionar clase...';
+            select.appendChild(defaultOption);
+
+            aulas.forEach((aula) => {
+                const safeId = Number(aula.id);
+                if(!Number.isFinite(safeId)) return;
+
+                const option = document.createElement('option');
+                option.value = String(safeId);
+                option.textContent = aula.name || 'Clase sin nombre';
+                select.appendChild(option);
+            });
+        }
+
+        async function loadAttendance() {
+            const classId = document.getElementById('classSelect').value;
+            const date = document.getElementById('attendanceDate').value;
+            
+            if(!classId || !date) {
+                document.getElementById('attendanceList').innerHTML = 
+                    '<tr><td colspan="5" class="text-center py-8 text-gray-500">Selecciona una clase y fecha</td></tr>';
+                return;
+            }
+
+            const selectedClass = aulas.find((a) => String(a.id) === String(classId));
+            const classCategory = selectedClass?.category || '';
+            let studentsForAttendance = students.filter((student) => {
+                if(!classCategory) return true;
+                return String(student.classroom || '').toLowerCase() === classCategory.toLowerCase();
+            });
+
+            let saved = {};
+
+            if(supabaseClient && currentUser?.id) {
+                const { data: studentsData, error: studentsError } = await supabaseClient
+                    .from('students')
+                    .select('id,full_name,class_category,teacher_id')
+                    .eq('class_category', classCategory)
+                    .order('full_name', { ascending: true });
+
+                if(studentsError) {
+                    console.error('No se pudieron cargar alumnos para asistencia', studentsError);
+                    showToast(getDataErrorMessage(studentsError, 'No se pudieron cargar alumnos desde Supabase.'), 'warning');
+                } else {
+                    studentsForAttendance = (Array.isArray(studentsData) ? studentsData : []).map((row) => ({
+                        id: row.id,
+                        name: row.full_name,
+                        classroom: row.class_category,
+                        teacher_id: row.teacher_id,
+                        teacher: row.teacher_id ? getTeacherNameById(row.teacher_id) : 'Sin asignar'
+                    }));
+                }
+
+                const { data: attendanceData, error: attendanceError } = await supabaseClient
+                    .from('attendance_records')
+                    .select('student_id,status,note')
+                    .eq('class_id', Number(classId))
+                    .eq('attendance_date', date);
+
+                if(attendanceError) {
+                    console.error('No se pudo cargar asistencia desde Supabase', attendanceError);
+                    showToast(getDataErrorMessage(attendanceError, 'No se pudo cargar la asistencia desde Supabase.'), 'warning');
+                } else {
+                    currentAttendanceEntries = {};
+                    (Array.isArray(attendanceData) ? attendanceData : []).forEach((row) => {
+                        saved[row.student_id] = row.status;
+                        saved[row.student_id + '_note'] = row.note || '';
+                        currentAttendanceEntries[row.student_id] = {
+                            status: row.status,
+                            note: row.note || ''
+                        };
+                    });
+                }
+            } else {
+                const key = `${classId}_${date}`;
+                saved = attendance[key] || {};
+                currentAttendanceEntries = {};
+                Object.keys(saved).forEach((k) => {
+                    if(String(k).endsWith('_note')) return;
+                    currentAttendanceEntries[k] = {
+                        status: saved[k],
+                        note: saved[k + '_note'] || ''
+                    };
+                });
+            }
+
+            if(studentsForAttendance.length === 0) {
+                document.getElementById('attendanceList').innerHTML =
+                    '<tr><td colspan="5" class="text-center py-8 text-gray-500">No hay alumnos registrados para esta clase.</td></tr>';
+                document.getElementById('attendanceStats').innerHTML =
+                    '<span class="text-gray-500">0 Presentes - 0 Ausentes - 0 Retardos</span>';
+                return;
+            }
+            
+            let html = '';
+            let presentCount = 0, absentCount = 0, lateCount = 0;
+            
+            studentsForAttendance.forEach((student, index) => {
+                const studentId = Number.isFinite(Number(student.id)) ? Number(student.id) : index + 1;
+                const studentName = String(student.name || '').trim() || 'Alumno';
+                const status = saved[studentId] || '';
+                if(status === 'present') presentCount++;
+                if(status === 'absent') absentCount++;
+                if(status === 'late') lateCount++;
+                
+                html += `
+                    <tr class="hover:bg-gray-50">
+                        <td class="px-6 py-4">
+                            <div class="flex items-center gap-3">
+                                <div class="w-8 h-8 rounded-full bg-gradient-to-br from-blue-400 to-pink-400 flex items-center justify-center text-white text-sm font-bold">
+                                    ${escapeHtml(studentName.charAt(0))}
+                                </div>
+                                <span class="font-medium text-gray-800">${escapeHtml(studentName)}</span>
+                            </div>
+                        </td>
+                        <td class="px-6 py-4 text-center">
+                            <button id="attn-${studentId}-present" onclick="setAttendance(${studentId}, 'present')"
+                                class="attendance-btn w-10 h-10 rounded-full ${status === 'present' ? 'present' : 'bg-gray-200 text-gray-600 hover:bg-green-100'}">
+                                <i class="fas fa-check"></i>
+                            </button>
+                        </td>
+                        <td class="px-6 py-4 text-center">
+                            <button id="attn-${studentId}-absent" onclick="setAttendance(${studentId}, 'absent')"
+                                class="attendance-btn w-10 h-10 rounded-full ${status === 'absent' ? 'absent' : 'bg-gray-200 text-gray-600 hover:bg-red-100'}">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </td>
+                        <td class="px-6 py-4 text-center">
+                            <button id="attn-${studentId}-late" onclick="setAttendance(${studentId}, 'late')"
+                                class="attendance-btn w-10 h-10 rounded-full ${status === 'late' ? 'late' : 'bg-gray-200 text-gray-600 hover:bg-yellow-100'}">
+                                <i class="fas fa-clock"></i>
+                            </button>
+                        </td>
+                        <td class="px-6 py-4">
+                            <input type="text" placeholder="Notas..." class="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" 
+                                value="${escapeHtml(saved[studentId + '_note'] || '')}" onchange="saveNote(${studentId}, this.value)">
+                        </td>
+                    </tr>
+                `;
+            });
+            
+            document.getElementById('attendanceList').innerHTML = html;
+            document.getElementById('attendanceStats').innerHTML = 
+                `<span class="text-green-600 font-semibold">${presentCount} Presentes</span> - ` +
+                `<span class="text-red-600 font-semibold">${absentCount} Ausentes</span> - ` +
+                `<span class="text-yellow-600 font-semibold">${lateCount} Retardos</span>`;
+            updateDashboardStats();
+        }
+
+        function updateAttendanceRow(studentId, status) {
+            currentAttendanceEntries[studentId] = {
+                ...(currentAttendanceEntries[studentId] || {}),
+                status
+            };
+            const hovers = { present: 'green', absent: 'red', late: 'yellow' };
+            ['present', 'absent', 'late'].forEach((s) => {
+                const btn = document.getElementById(`attn-${studentId}-${s}`);
+                if(!btn) return;
+                btn.className = `attendance-btn w-10 h-10 rounded-full ${s === status ? s : `bg-gray-200 text-gray-600 hover:bg-${hovers[s]}-100`}`;
+            });
+            let presentCount = 0, absentCount = 0, lateCount = 0;
+            Object.values(currentAttendanceEntries).forEach((e) => {
+                if(e.status === 'present') presentCount++;
+                else if(e.status === 'absent') absentCount++;
+                else if(e.status === 'late') lateCount++;
+            });
+            document.getElementById('attendanceStats').innerHTML =
+                `<span class="text-green-600 font-semibold">${presentCount} Presentes</span> - ` +
+                `<span class="text-red-600 font-semibold">${absentCount} Ausentes</span> - ` +
+                `<span class="text-yellow-600 font-semibold">${lateCount} Retardos</span>`;
+        }
+
+        function setAttendance(studentId, status) {
+            const classId = document.getElementById('classSelect').value;
+            const date = document.getElementById('attendanceDate').value;
+            const key = `${classId}_${date}`;
+
+            if(supabaseClient && currentUser?.id) {
+                const existingNote = currentAttendanceEntries[studentId]?.note || '';
+                supabaseClient
+                    .from('attendance_records')
+                    .upsert({
+                        teacher_id: currentUser.id,
+                        student_id: Number(studentId),
+                        class_id: Number(classId),
+                        attendance_date: date,
+                        status,
+                        note: existingNote || null
+                    }, { onConflict: 'teacher_id,student_id,attendance_date' })
+                    .then(({ error }) => {
+                        if(error) {
+                            console.error('No se pudo guardar asistencia en Supabase', error);
+                            showToast(getDataErrorMessage(error, 'No se pudo guardar la asistencia.'), 'error');
+                            return;
+                        }
+                        updateAttendanceRow(studentId, status);
+                    });
+                return;
+            }
+
+            if(!attendance[key]) attendance[key] = {};
+            attendance[key][studentId] = status;
+
+            localStorage.setItem('educri_attendance', JSON.stringify(attendance));
+            updateAttendanceRow(studentId, status);
+        }
+
+        function saveNote(studentId, note) {
+            const classId = document.getElementById('classSelect').value;
+            const date = document.getElementById('attendanceDate').value;
+            const key = `${classId}_${date}`;
+
+            if(supabaseClient && currentUser?.id) {
+                const existingStatus = currentAttendanceEntries[studentId]?.status;
+                if(!existingStatus) {
+                    showToast('Marca primero la asistencia antes de guardar nota.', 'warning');
+                    return;
+                }
+
+                supabaseClient
+                    .from('attendance_records')
+                    .upsert({
+                        teacher_id: currentUser.id,
+                        student_id: Number(studentId),
+                        class_id: Number(classId),
+                        attendance_date: date,
+                        status: existingStatus,
+                        note: String(note || '')
+                    }, { onConflict: 'teacher_id,student_id,attendance_date' })
+                    .then(({ error }) => {
+                        if(error) {
+                            console.error('No se pudo guardar nota en Supabase', error);
+                            showToast(getDataErrorMessage(error, 'No se pudo guardar la nota.'), 'error');
+                            return;
+                        }
+                        currentAttendanceEntries[studentId] = { status: existingStatus, note: String(note || '') };
+                    });
+                return;
+            }
+
+            if(!attendance[key]) attendance[key] = {};
+            attendance[key][studentId + '_note'] = note;
+
+            localStorage.setItem('educri_attendance', JSON.stringify(attendance));
+        }
+
+
+        // Utilidades
+        function renderUpcomingClasses() {
+            const container = document.getElementById('upcomingClasses');
+            const today = new Date();
+            const dayName = today.toLocaleDateString('es-ES', { weekday: 'long' });
+            
+            const todayClasses = aulas.filter(a => 
+                a.day.toLowerCase() === dayName.toLowerCase()
+            ).sort((a, b) => a.time.localeCompare(b.time));
+            
+            if(todayClasses.length === 0) {
+                container.innerHTML = '<p class="text-gray-500 text-center py-4">No hay clases programadas para hoy</p>';
+                return;
+            }
+            
+            container.innerHTML = todayClasses.map((aula, index) => `
+                <div class="flex items-center gap-4 p-4 bg-gradient-to-r from-gray-50 to-white rounded-xl border border-gray-100 hover:shadow-md transition-all cursor-pointer" style="animation-delay: ${index * 100}ms">
+                    <div class="w-16 h-16 rounded-2xl bg-gradient-to-br ${typeof aula.color === 'string' && /^from-[a-z0-9-]+\s+to-[a-z0-9-]+$/i.test(aula.color) ? aula.color : 'from-blue-500 to-cyan-400'} flex flex-col items-center justify-center text-white shadow-lg flex-shrink-0">
+                        <span class="text-xs font-bold opacity-80">HOY</span>
+                        <span class="text-lg font-bold">${escapeHtml(aula.time)}</span>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <h4 class="font-bold text-gray-800 truncate">${escapeHtml(aula.name)}</h4>
+                        <p class="text-sm text-gray-500 flex items-center gap-2">
+                            <i class="fas fa-map-marker-alt text-pink-500"></i> ${escapeHtml(aula.classroom)}
+                        </p>
+                        <p class="text-xs text-gray-400 mt-1">${escapeHtml(aula.teacher)}${aula.assistantTeacher ? ` · Aux: ${escapeHtml(aula.assistantTeacher)}` : ''}</p>
+                    </div>
+                    <button class="w-10 h-10 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center hover:bg-blue-200 transition-colors">
+                        <i class="fas fa-chevron-right"></i>
+                    </button>
+                </div>
+            `).join('');
+        }
+
+        function updateDateDisplay() {
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            document.getElementById('currentDate').textContent = new Date().toLocaleDateString('es-ES', options);
+        }
+
+        function showNotifications() {
+            showSection('notificaciones');
+            renderNotifications();
+        }
+
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            
+            const colors = {
+                success: 'bg-green-500',
+                error: 'bg-red-500',
+                info: 'bg-blue-500',
+                warning: 'bg-yellow-500'
+            };
+            
+            const icons = {
+                success: 'check-circle',
+                error: 'times-circle',
+                info: 'info-circle',
+                warning: 'exclamation-triangle'
+            };
+            
+            toast.className = `${colors[type]} text-white px-6 py-3 rounded-xl shadow-lg flex items-center gap-3 transform translate-y-10 opacity-0 transition-all duration-300 pointer-events-auto`;
+            toast.innerHTML = `
+                <i class="fas fa-${icons[type]}"></i>
+                <span class="font-medium">${message}</span>
+            `;
+            
+            container.appendChild(toast);
+            
+            // Animación de entrada
+            setTimeout(() => {
+                toast.classList.remove('translate-y-10', 'opacity-0');
+            }, 100);
+            
+            // Eliminar después de 3 segundos
+            setTimeout(() => {
+                toast.classList.add('translate-y-10', 'opacity-0');
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        // Cerrar modales con Escape
+        document.addEventListener('keydown', (e) => {
+            if(e.key === 'Escape') {
+                closeAddClassModal();
+                closeViewSyllabusModal();
+            }
+        });
+    </script>
 </body>
 </html>
