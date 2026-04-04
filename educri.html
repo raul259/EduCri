@@ -605,7 +605,8 @@
                                             <th class="px-6 py-4 text-center text-sm font-semibold text-gray-600">Presente</th>
                                             <th class="px-6 py-4 text-center text-sm font-semibold text-gray-600">Ausente</th>
                                             <th class="px-6 py-4 text-center text-sm font-semibold text-gray-600">Tarde</th>
-                                            <th class="px-6 py-4 text-left text-sm font-semibold text-gray-600">Notas</th>
+                                            <th class="px-6 py-4 text-left text-sm font-semibold text-gray-600">Nota sesión</th>
+                                            <th class="px-6 py-4 text-center text-sm font-semibold text-gray-600">Obs.</th>
                                         </tr>
                                     </thead>
                                     <tbody id="attendanceList" class="divide-y divide-gray-200">
@@ -1032,6 +1033,8 @@
         let dismissedNotifications = safeParseJSON('educri_dismissed_notifications', []);
         let currentAttendanceEntries = {};
         let _cachedAvatarName = null;
+        let studentNotesCache = safeParseJSON('educri_student_notes', {});
+        let activeStudentModalId = null;
         let studentsPage = 1;
         let studentsPageSize = 6;
         let studentsSearch = '';
@@ -1773,17 +1776,30 @@
 
             count.textContent = `${filtered.length} alumnos`;
             if(pageInfo) pageInfo.textContent = `Página ${studentsPage} de ${totalPages}`;
-            list.innerHTML = pageItems.map((student) => `
+            list.innerHTML = pageItems.map((student) => {
+                const hasNotes = Array.isArray(studentNotesCache[student.id]) && studentNotesCache[student.id].length > 0;
+                return `
                 <div class="border border-gray-200 rounded-xl p-3 flex items-center justify-between gap-2">
-                    <div>
-                        <p class="font-semibold text-gray-800">${escapeHtml(student.name)}</p>
-                        <p class="text-xs text-gray-500">Clase: ${escapeHtml(getCategoryName(student.classroom || 'otros'))} · Profesor: Rotativo</p>
+                    <div class="flex items-center gap-2 min-w-0">
+                        ${hasNotes ? '<span title="Tiene observaciones" class="text-yellow-500 flex-shrink-0"><i class="fas fa-sticky-note text-xs"></i></span>' : ''}
+                        <div class="min-w-0">
+                            <p class="font-semibold text-gray-800">${escapeHtml(student.name)}</p>
+                            <p class="text-xs text-gray-500">Clase: ${escapeHtml(getCategoryName(student.classroom || 'otros'))} · Profesor: Rotativo</p>
+                        </div>
                     </div>
-                    <button data-sid="${escapeHtml(String(student.id))}" class="remove-student-btn text-red-500 hover:text-red-700 text-xs">Eliminar</button>
+                    <div class="flex items-center gap-2 flex-shrink-0">
+                        <button data-sid="${escapeHtml(String(student.id))}" data-sname="${escapeHtml(student.name)}" class="open-student-btn text-blue-500 hover:text-blue-700 text-xs px-2 py-1 rounded-lg border border-blue-200 hover:bg-blue-50" title="Ver observaciones e historial">
+                            <i class="fas fa-user-circle mr-1"></i>Detalle
+                        </button>
+                        <button data-sid="${escapeHtml(String(student.id))}" class="remove-student-btn text-red-500 hover:text-red-700 text-xs">Eliminar</button>
+                    </div>
                 </div>
-            `).join('');
+            `}).join('');
             list.querySelectorAll('.remove-student-btn').forEach((btn) => {
                 btn.addEventListener('click', () => removeStudent(btn.dataset.sid));
+            });
+            list.querySelectorAll('.open-student-btn').forEach((btn) => {
+                btn.addEventListener('click', () => openStudentModal(btn.dataset.sid, btn.dataset.sname));
             });
         }
 
@@ -3303,15 +3319,23 @@
                             </button>
                         </td>
                         <td class="px-6 py-4">
-                            <input type="text" placeholder="Notas..." class="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" 
+                            <input type="text" placeholder="Nota de sesión..." class="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                                 value="${escapeHtml(saved[studentId + '_note'] || '')}" onchange="saveNote(${studentId}, this.value)">
+                        </td>
+                        <td class="px-6 py-4 text-center">
+                            <button data-sid="${escapeHtml(String(studentId))}" data-sname="${escapeHtml(student.name)}" class="open-student-attn-btn w-9 h-9 rounded-full bg-blue-50 hover:bg-blue-100 text-blue-500 flex items-center justify-center" title="Observaciones permanentes e historial">
+                                <i class="fas fa-user-edit text-xs"></i>
+                            </button>
                         </td>
                     </tr>
                 `;
             });
             
             document.getElementById('attendanceList').innerHTML = html;
-            document.getElementById('attendanceStats').innerHTML = 
+            document.getElementById('attendanceList').querySelectorAll('.open-student-attn-btn').forEach((btn) => {
+                btn.addEventListener('click', () => openStudentModal(btn.dataset.sid, btn.dataset.sname));
+            });
+            document.getElementById('attendanceStats').innerHTML =
                 `<span class="text-green-600 font-semibold">${presentCount} Presentes</span> - ` +
                 `<span class="text-red-600 font-semibold">${absentCount} Ausentes</span> - ` +
                 `<span class="text-yellow-600 font-semibold">${lateCount} Retardos</span>`;
@@ -3499,13 +3523,248 @@
             }, 3000);
         }
 
+        // ── F1: Observaciones por alumno ──────────────────────────────────────
+
+        function openStudentModal(studentId, studentName) {
+            activeStudentModalId = studentId;
+            document.getElementById('modalStudentName').textContent = studentName;
+            document.getElementById('noteTextarea').value = '';
+            showStudentTab('obs');
+            document.getElementById('studentModal').classList.add('active');
+            loadStudentNotes(studentId);
+        }
+
+        function closeStudentModal() {
+            document.getElementById('studentModal').classList.remove('active');
+            activeStudentModalId = null;
+        }
+
+        function showStudentTab(tab) {
+            document.getElementById('tabObs').classList.toggle('hidden', tab !== 'obs');
+            document.getElementById('tabHist').classList.toggle('hidden', tab !== 'hist');
+            document.getElementById('tabObsBtn').className = `px-4 py-3 text-sm font-medium border-b-2 -mb-px ${tab === 'obs' ? 'border-blue-500 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-700'}`;
+            document.getElementById('tabHistBtn').className = `px-4 py-3 text-sm font-medium border-b-2 -mb-px ${tab === 'hist' ? 'border-blue-500 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-700'}`;
+            if(tab === 'hist') loadStudentHistory(activeStudentModalId);
+        }
+
+        async function loadStudentNotes(studentId) {
+            const container = document.getElementById('notesHistory');
+            container.innerHTML = '<p class="text-gray-400 text-sm">Cargando...</p>';
+
+            let notes = [];
+            if(supabaseClient && currentUser?.id) {
+                const { data, error } = await supabaseClient
+                    .from('student_notes')
+                    .select('id,note,created_at,teacher_id')
+                    .eq('student_id', studentId)
+                    .order('created_at', { ascending: false });
+                if(!error && Array.isArray(data)) {
+                    notes = data;
+                    studentNotesCache[studentId] = notes;
+                    localStorage.setItem('educri_student_notes', JSON.stringify(studentNotesCache));
+                }
+            } else {
+                notes = Array.isArray(studentNotesCache[studentId]) ? studentNotesCache[studentId] : [];
+            }
+
+            renderNotesHistory(notes);
+            renderStudentsList(); // refresh note indicator
+        }
+
+        function renderNotesHistory(notes) {
+            const container = document.getElementById('notesHistory');
+            if(!notes.length) {
+                container.innerHTML = '<p class="text-gray-400 text-sm italic">Sin observaciones registradas.</p>';
+                return;
+            }
+            container.innerHTML = notes.map((n) => {
+                const date = n.created_at ? new Date(n.created_at).toLocaleDateString('es-ES', { day:'2-digit', month:'short', year:'numeric' }) : '—';
+                const teacherName = getTeacherNameById(n.teacher_id);
+                return `
+                    <div class="bg-gray-50 rounded-xl p-3 text-sm border border-gray-200">
+                        <p class="text-gray-800">${escapeHtml(n.note)}</p>
+                        <p class="text-xs text-gray-400 mt-1">${escapeHtml(date)} · ${escapeHtml(teacherName)}</p>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        async function saveStudentNote() {
+            const note = document.getElementById('noteTextarea').value.trim();
+            if(!note) { showToast('Escribe una observación antes de guardar.', 'warning'); return; }
+            const studentId = activeStudentModalId;
+
+            const entry = {
+                id: crypto.randomUUID(),
+                student_id: studentId,
+                teacher_id: currentUser?.id || 'local',
+                note,
+                created_at: new Date().toISOString()
+            };
+
+            if(supabaseClient && currentUser?.id) {
+                const { error } = await supabaseClient
+                    .from('student_notes')
+                    .insert({ student_id: Number(studentId), teacher_id: currentUser.id, note });
+                if(error) {
+                    showToast(getDataErrorMessage(error, 'No se pudo guardar la observación.'), 'error');
+                    return;
+                }
+            } else {
+                if(!Array.isArray(studentNotesCache[studentId])) studentNotesCache[studentId] = [];
+                studentNotesCache[studentId].unshift(entry);
+                localStorage.setItem('educri_student_notes', JSON.stringify(studentNotesCache));
+            }
+
+            document.getElementById('noteTextarea').value = '';
+            showToast('Observación guardada.', 'success');
+            loadStudentNotes(studentId);
+        }
+
+        // ── F3: Historial de asistencia por alumno ────────────────────────────
+
+        async function loadStudentHistory(studentId) {
+            const listEl = document.getElementById('historyList');
+            const statsEl = document.getElementById('historyStats');
+            listEl.innerHTML = '<p class="text-gray-400 text-sm">Cargando historial...</p>';
+            statsEl.innerHTML = '';
+
+            let records = [];
+
+            if(supabaseClient && currentUser?.id) {
+                const query = supabaseClient
+                    .from('attendance_records')
+                    .select('attendance_date,status,note,class_id')
+                    .eq('student_id', studentId)
+                    .order('attendance_date', { ascending: false });
+                const { data, error } = await query;
+                if(!error && Array.isArray(data)) records = data;
+            } else {
+                // Build from in-memory attendance object: keys are classId_date
+                Object.entries(attendance).forEach(([key, entries]) => {
+                    if(!entries[studentId]) return;
+                    const parts = key.split('_');
+                    const date = parts.slice(1).join('_'); // date part after first _
+                    const classId = parts[0];
+                    const status = entries[studentId];
+                    if(typeof status !== 'string' || status.endsWith('_note')) return;
+                    records.push({ attendance_date: date, status, note: entries[studentId + '_note'] || '', class_id: classId });
+                });
+                records.sort((a, b) => b.attendance_date.localeCompare(a.attendance_date));
+            }
+
+            renderStudentHistory(records);
+        }
+
+        function renderStudentHistory(records) {
+            const listEl = document.getElementById('historyList');
+            const statsEl = document.getElementById('historyStats');
+
+            if(!records.length) {
+                statsEl.innerHTML = '';
+                listEl.innerHTML = '<p class="text-gray-400 text-sm italic">Sin registros de asistencia.</p>';
+                return;
+            }
+
+            const total = records.length;
+            const present = records.filter((r) => r.status === 'present').length;
+            const absent = records.filter((r) => r.status === 'absent').length;
+            const late = records.filter((r) => r.status === 'late').length;
+            const pct = Math.round((present / total) * 100);
+
+            // Consecutive absences from the most recent record
+            let consecutive = 0;
+            for(const r of records) {
+                if(r.status === 'absent') consecutive++;
+                else break;
+            }
+
+            statsEl.innerHTML = `
+                <div class="bg-green-50 rounded-xl p-3">
+                    <p class="text-2xl font-bold text-green-600">${pct}%</p>
+                    <p class="text-xs text-gray-500">Asistencia</p>
+                </div>
+                <div class="bg-blue-50 rounded-xl p-3">
+                    <p class="text-2xl font-bold text-blue-600">${total}</p>
+                    <p class="text-xs text-gray-500">Sesiones totales</p>
+                </div>
+                <div class="bg-${consecutive >= 2 ? 'red' : 'gray'}-50 rounded-xl p-3">
+                    <p class="text-2xl font-bold text-${consecutive >= 2 ? 'red' : 'gray'}-600">${consecutive}</p>
+                    <p class="text-xs text-gray-500">Ausencias consec.</p>
+                </div>
+            `;
+
+            if(consecutive >= 2) {
+                statsEl.insertAdjacentHTML('afterend', `
+                    <div class="bg-red-50 border border-red-200 rounded-xl px-4 py-2 text-red-700 text-sm font-medium">
+                        ⚠ ${consecutive} ausencias consecutivas — revisar situación del alumno.
+                    </div>
+                `);
+            }
+
+            const statusLabel = { present: ['✔', 'text-green-600', 'Presente'], absent: ['✖', 'text-red-600', 'Ausente'], late: ['⏰', 'text-yellow-600', 'Retardo'] };
+            listEl.innerHTML = records.map((r) => {
+                const [icon, color, label] = statusLabel[r.status] || ['?', 'text-gray-400', r.status];
+                const date = r.attendance_date ? new Date(r.attendance_date + 'T00:00:00').toLocaleDateString('es-ES', { weekday:'short', day:'2-digit', month:'short', year:'numeric' }) : '—';
+                return `
+                    <div class="flex items-start gap-3 border border-gray-100 rounded-xl px-3 py-2 text-sm">
+                        <span class="text-lg leading-none mt-0.5 ${color}">${icon}</span>
+                        <div class="flex-1">
+                            <p class="font-medium text-gray-800">${escapeHtml(date)} <span class="${color}">${label}</span></p>
+                            ${r.note ? `<p class="text-xs text-gray-500 mt-0.5">${escapeHtml(r.note)}</p>` : ''}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
         // Cerrar modales con Escape
         document.addEventListener('keydown', (e) => {
             if(e.key === 'Escape') {
                 closeAddClassModal();
                 closeViewSyllabusModal();
+                closeStudentModal();
             }
         });
     </script>
+
+    <!-- Modal: Detalle de alumno (Observaciones + Historial) -->
+    <div id="studentModal" class="modal fixed inset-0 z-50 items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+        <div class="bg-white rounded-3xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto animate-slide-up">
+            <div class="p-6 border-b border-gray-200 flex items-center justify-between sticky top-0 bg-white z-10 rounded-t-3xl">
+                <h3 class="font-display text-xl font-bold text-gray-800">Alumno: <span id="modalStudentName"></span></h3>
+                <button onclick="closeStudentModal()" class="w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition-colors">
+                    <i class="fas fa-times text-gray-600"></i>
+                </button>
+            </div>
+            <!-- Tabs -->
+            <div class="flex border-b border-gray-200 px-6">
+                <button id="tabObsBtn" onclick="showStudentTab('obs')" class="px-4 py-3 text-sm font-medium border-b-2 border-blue-500 text-blue-600 -mb-px">
+                    <i class="fas fa-sticky-note mr-1"></i> Observaciones
+                </button>
+                <button id="tabHistBtn" onclick="showStudentTab('hist')" class="px-4 py-3 text-sm font-medium border-b-2 border-transparent text-gray-500 hover:text-gray-700 -mb-px">
+                    <i class="fas fa-history mr-1"></i> Historial de asistencia
+                </button>
+            </div>
+            <!-- Tab: Observaciones (F1) -->
+            <div id="tabObs" class="p-6 space-y-4">
+                <div id="notesHistory" class="space-y-3 max-h-60 overflow-y-auto"></div>
+                <div class="border-t border-gray-200 pt-4 space-y-2">
+                    <label class="block text-sm font-medium text-gray-700">Nueva observación permanente</label>
+                    <textarea id="noteTextarea" rows="3" placeholder="Escribe una observación sobre este alumno..." class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"></textarea>
+                    <div class="flex justify-end">
+                        <button onclick="saveStudentNote()" class="bg-gradient-to-r from-blue-500 to-pink-500 text-white px-5 py-2 rounded-xl text-sm font-medium hover:shadow-lg transition-all">
+                            Guardar observación
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <!-- Tab: Historial (F3) -->
+            <div id="tabHist" class="p-6 hidden space-y-4">
+                <div id="historyStats" class="grid grid-cols-3 gap-3 text-center"></div>
+                <div id="historyList" class="space-y-2 max-h-80 overflow-y-auto"></div>
+            </div>
+        </div>
+    </div>
 </body>
 </html>
