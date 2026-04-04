@@ -97,7 +97,9 @@ create table if not exists public.teacher_profiles (
 );
 alter table public.teacher_profiles
     add column if not exists updated_at timestamptz not null default now(),
-    add column if not exists updated_by uuid null references auth.users(id) on delete set null;
+    add column if not exists updated_by uuid null references auth.users(id) on delete set null,
+    add column if not exists cds_expiry_date date null,
+    add column if not exists cds_warnings_sent int not null default 0;
 
 create index if not exists teacher_profiles_status_idx on public.teacher_profiles(approval_status);
 create index if not exists teacher_profiles_approved_by_idx on public.teacher_profiles(approved_by);

@@ -279,9 +279,13 @@
                         <input id="registerBirthDate" type="date" class="w-full px-4 py-3 rounded-xl bg-white/20 border border-white/30 text-white focus:outline-none focus:ring-2 focus:ring-white/50">
                         <input id="registerPhone" type="tel" placeholder="Número de teléfono (+34600111222)" class="w-full px-4 py-3 rounded-xl bg-white/20 border border-white/30 text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-white/50">
                         <label class="flex items-center gap-2 text-white/90 text-sm">
-                            <input id="registerHasCds" type="checkbox" class="rounded border-white/40 bg-white/20">
+                            <input id="registerHasCds" type="checkbox" class="rounded border-white/40 bg-white/20" onchange="document.getElementById('registerCdsExpiryWrap').classList.toggle('hidden', !this.checked)">
                             <span>Tengo certificado de delitos sexuales (CDS)</span>
                         </label>
+                        <div id="registerCdsExpiryWrap" class="hidden">
+                            <label class="block text-white/80 text-xs mb-1">Fecha de vencimiento del CDS</label>
+                            <input id="registerCdsExpiry" type="date" class="w-full px-4 py-3 rounded-xl bg-white/20 border border-white/30 text-white focus:outline-none focus:ring-2 focus:ring-white/50">
+                        </div>
                         <label class="flex items-center gap-2 text-white/90 text-sm">
                             <input id="registerHolySpirit" type="checkbox" class="rounded border-white/40 bg-white/20">
                             <span>He recibido el Espíritu Santo</span>
@@ -645,9 +649,14 @@
                             </div>
                             <div class="space-y-3">
                                 <label class="flex items-center gap-2 text-gray-700">
-                                    <input id="profileHasCds" type="checkbox" class="rounded border-gray-300">
+                                    <input id="profileHasCds" type="checkbox" class="rounded border-gray-300" onchange="document.getElementById('profileCdsExpiryWrap').classList.toggle('hidden', !this.checked)">
                                     <span>Tengo certificado de delitos sexuales (CDS)</span>
                                 </label>
+                                <div id="profileCdsExpiryWrap" class="hidden pl-6">
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Fecha de vencimiento del CDS</label>
+                                    <input id="profileCdsExpiry" type="date" class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                                    <p id="profileCdsStatus" class="text-xs mt-1"></p>
+                                </div>
                                 <label class="flex items-center gap-2 text-gray-700">
                                     <input id="profileHolySpirit" type="checkbox" class="rounded border-gray-300">
                                     <span>He recibido el Espíritu Santo</span>
@@ -761,6 +770,15 @@
                                 <span id="teacherApprovalsCount" class="text-sm text-gray-500">0 pendientes</span>
                             </div>
                             <div id="teacherApprovalsList" class="space-y-2 text-sm text-gray-700"></div>
+                        </div>
+
+                        <div class="bg-white rounded-2xl shadow-lg p-6">
+                            <div class="flex items-center justify-between mb-4">
+                                <h3 class="font-display text-lg font-bold text-gray-800">Estado CDS de Profesores</h3>
+                                <span id="cdsStatusCount" class="text-sm text-gray-500"></span>
+                            </div>
+                            <p class="text-xs text-gray-400 mb-3">El CDS debe renovarse anualmente. Los profesores con CDS vencido no pueden dar clases.</p>
+                            <div id="cdsStatusList" class="space-y-2 text-sm text-gray-700"></div>
                         </div>
 
                         <div class="bg-white rounded-2xl shadow-lg p-6">
@@ -1148,9 +1166,21 @@
                 birth_date: String(metadata.birth_date || '').trim(),
                 phone: String(metadata.phone || '').trim(),
                 has_cds: Boolean(metadata.has_cds),
+                cds_expiry_date: String(metadata.cds_expiry_date || '').trim(),
                 received_holy_spirit: Boolean(metadata.received_holy_spirit),
                 teaching_experience: String(metadata.teaching_experience || '').trim()
             };
+        }
+
+        function getCdsStatus(profile) {
+            if(!profile.has_cds || !profile.cds_expiry_date) return { daysLeft: null, blocked: false, warningLevel: 0 };
+            const today = new Date(); today.setHours(0, 0, 0, 0);
+            const expiry = new Date(profile.cds_expiry_date);
+            const daysLeft = Math.ceil((expiry - today) / 86400000);
+            const blocked = daysLeft < 0;
+            // 3 warning levels: ≤30 days, ≤15 days, ≤7 days — blocked after expiry
+            const warningLevel = blocked ? 3 : daysLeft <= 7 ? 3 : daysLeft <= 15 ? 2 : daysLeft <= 30 ? 1 : 0;
+            return { daysLeft, blocked, warningLevel };
         }
 
         function renderTeacherProfileForm() {
@@ -1161,6 +1191,9 @@
             const hasCdsInput = document.getElementById('profileHasCds');
             const holySpiritInput = document.getElementById('profileHolySpirit');
             const experienceInput = document.getElementById('profileExperience');
+            const cdsExpiryWrap = document.getElementById('profileCdsExpiryWrap');
+            const cdsExpiryInput = document.getElementById('profileCdsExpiry');
+            const cdsStatusEl = document.getElementById('profileCdsStatus');
 
             if(fullNameInput) fullNameInput.value = profile.full_name;
             if(birthDateInput) birthDateInput.value = profile.birth_date;
@@ -1168,6 +1201,25 @@
             if(hasCdsInput) hasCdsInput.checked = profile.has_cds;
             if(holySpiritInput) holySpiritInput.checked = profile.received_holy_spirit;
             if(experienceInput) experienceInput.value = profile.teaching_experience;
+
+            if(cdsExpiryWrap) cdsExpiryWrap.classList.toggle('hidden', !profile.has_cds);
+            if(cdsExpiryInput) cdsExpiryInput.value = profile.cds_expiry_date || '';
+
+            if(cdsStatusEl && profile.has_cds && profile.cds_expiry_date) {
+                const { daysLeft, blocked, warningLevel } = getCdsStatus(profile);
+                if(blocked) {
+                    cdsStatusEl.textContent = 'CDS vencido — no puedes dar clases hasta renovarlo.';
+                    cdsStatusEl.className = 'text-xs mt-1 font-semibold text-red-600';
+                } else if(warningLevel >= 1) {
+                    cdsStatusEl.textContent = `Vence en ${daysLeft} día${daysLeft === 1 ? '' : 's'}. Renuévalo pronto.`;
+                    cdsStatusEl.className = `text-xs mt-1 font-semibold ${warningLevel >= 2 ? 'text-orange-600' : 'text-yellow-600'}`;
+                } else {
+                    cdsStatusEl.textContent = `Válido — vence el ${profile.cds_expiry_date}.`;
+                    cdsStatusEl.className = 'text-xs mt-1 text-green-600';
+                }
+            } else if(cdsStatusEl) {
+                cdsStatusEl.textContent = '';
+            }
         }
 
         function updateHeaderProfileDisplay() {
@@ -1473,12 +1525,13 @@
                 teacherProfiles = safeParseJSON('educri_teacher_profiles', []);
                 renderTeacherOptions();
                 renderTeacherApprovals();
+                renderCdsStatusList();
                 return;
             }
 
             const { data, error } = await supabaseClient
                 .from('teacher_profiles')
-                .select('user_id,full_name,approval_status,phone,teaching_experience,created_at')
+                .select('user_id,full_name,approval_status,phone,teaching_experience,has_cds,cds_expiry_date,cds_warnings_sent,created_at')
                 .order('full_name', { ascending: true });
 
             if(error) {
@@ -1486,6 +1539,7 @@
                 teacherProfiles = safeParseJSON('educri_teacher_profiles', []);
                 renderTeacherOptions();
                 renderTeacherApprovals();
+                renderCdsStatusList();
                 renderClassTeacherSuggestions();
                 return;
             }
@@ -1494,7 +1548,18 @@
             localStorage.setItem('educri_teacher_profiles', JSON.stringify(teacherProfiles));
             renderTeacherOptions();
             renderTeacherApprovals();
+            renderCdsStatusList();
             renderClassTeacherSuggestions();
+        }
+
+        function getCdsBadge(profile) {
+            if(!profile.has_cds) return '<span class="text-xs text-gray-400">Sin CDS</span>';
+            if(!profile.cds_expiry_date) return '<span class="text-xs text-yellow-600">CDS sin fecha</span>';
+            const cds = getCdsStatus(profile);
+            if(cds.blocked) return `<span class="text-xs font-semibold text-red-600">🚫 CDS vencido (${escapeHtml(profile.cds_expiry_date)})</span>`;
+            if(cds.warningLevel >= 2) return `<span class="text-xs font-semibold text-orange-500">⚠ CDS vence en ${cds.daysLeft}d</span>`;
+            if(cds.warningLevel === 1) return `<span class="text-xs text-yellow-600">CDS vence en ${cds.daysLeft}d</span>`;
+            return `<span class="text-xs text-green-600">CDS válido hasta ${escapeHtml(profile.cds_expiry_date)}</span>`;
         }
 
         function renderTeacherApprovals() {
@@ -1517,6 +1582,7 @@
                             <p class="font-semibold text-gray-800">${escapeHtml(profile.full_name || 'Profesor sin nombre')}</p>
                             <p class="text-xs text-gray-500 mt-1">${escapeHtml(profile.phone || 'Sin teléfono')}</p>
                             <p class="text-xs text-gray-500 mt-1">${escapeHtml(profile.teaching_experience || 'Sin experiencia registrada')}</p>
+                            <div class="mt-1">${getCdsBadge(profile)}</div>
                         </div>
                         <div class="flex gap-2">
                             <button data-uid="${escapeHtml(String(profile.user_id))}" data-action="approved" class="approval-action-btn px-3 py-1 rounded-lg bg-green-100 text-green-700 hover:bg-green-200 text-xs">Aprobar</button>
@@ -1568,6 +1634,45 @@
 
             await loadTeacherProfilesFromStorage();
             showToast(status === 'approved' ? 'Profesor aprobado.' : 'Profesor rechazado.', 'success');
+        }
+
+        function renderCdsStatusList() {
+            const list = document.getElementById('cdsStatusList');
+            const countEl = document.getElementById('cdsStatusCount');
+            if(!list) return;
+
+            const withCds = teacherProfiles.filter((p) => p.has_cds);
+            if(!withCds.length) {
+                if(countEl) countEl.textContent = 'Ningún profesor con CDS registrado';
+                list.innerHTML = '<p class="text-gray-400">No hay profesores con CDS registrado.</p>';
+                return;
+            }
+
+            // Sort: blocked first, then by daysLeft ascending
+            const sorted = [...withCds].sort((a, b) => {
+                const ca = getCdsStatus(a);
+                const cb = getCdsStatus(b);
+                if(ca.blocked !== cb.blocked) return ca.blocked ? -1 : 1;
+                if(ca.daysLeft === null) return 1;
+                if(cb.daysLeft === null) return -1;
+                return ca.daysLeft - cb.daysLeft;
+            });
+
+            const blocked = sorted.filter((p) => getCdsStatus(p).blocked).length;
+            const expiring = sorted.filter((p) => { const c = getCdsStatus(p); return !c.blocked && c.warningLevel >= 1; }).length;
+            if(countEl) countEl.textContent = `${blocked} vencido${blocked !== 1 ? 's' : ''}, ${expiring} por vencer`;
+
+            list.innerHTML = sorted.map((p) => {
+                const badge = getCdsBadge(p);
+                return `
+                    <div class="flex items-center justify-between border border-gray-100 rounded-xl px-3 py-2">
+                        <div>
+                            <span class="font-medium text-gray-800">${escapeHtml(p.full_name || 'Sin nombre')}</span>
+                            <div class="mt-0.5">${badge}</div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
         }
 
         async function loadModeratorAssignmentsFromStorage() {
@@ -1765,6 +1870,21 @@
                     timeLabel: 'Asignada'
                 });
             });
+
+            // CDS expiry warnings (profesores only)
+            if(currentRole === 'profesor') {
+                const ownProfile = getTeacherProfileFromMetadata();
+                const cds = getCdsStatus(ownProfile);
+                if(cds.warningLevel === 1) {
+                    items.push({ id: 'cds_warning_1', type: 'warning', title: 'CDS próximo a vencer', message: `Tu certificado CDS vence en ${cds.daysLeft} días. Renuévalo antes de que expire.`, timeLabel: 'Aviso 1 de 3' });
+                } else if(cds.warningLevel === 2) {
+                    items.push({ id: 'cds_warning_2', type: 'warning', title: 'CDS vence pronto — Aviso urgente', message: `Tu certificado CDS vence en ${cds.daysLeft} días. Sin renovarlo perderás el acceso a clases.`, timeLabel: 'Aviso 2 de 3' });
+                } else if(cds.warningLevel === 3 && !cds.blocked) {
+                    items.push({ id: 'cds_warning_3', type: 'warning', title: '⚠ CDS vence en menos de 7 días', message: `Tu certificado CDS vence en ${cds.daysLeft} día${cds.daysLeft === 1 ? '' : 's'}. Último aviso — renuévalo o no podrás dar clases.`, timeLabel: 'Aviso 3 de 3' });
+                } else if(cds.blocked) {
+                    items.push({ id: 'cds_blocked', type: 'warning', title: '🚫 CDS vencido — acceso bloqueado', message: 'Tu certificado CDS ha vencido. No puedes dar clases hasta actualizar la fecha de vencimiento en tu perfil.', timeLabel: 'Bloqueado' });
+                }
+            }
 
             return items;
         }
@@ -2384,6 +2504,7 @@
                 const birthDate = form.querySelector('#registerBirthDate')?.value || '';
                 const phone = form.querySelector('#registerPhone')?.value.trim() || '';
                 const hasCds = Boolean(form.querySelector('#registerHasCds')?.checked);
+                const cdsExpiryDate = hasCds ? (form.querySelector('#registerCdsExpiry')?.value || '') : '';
                 const receivedHolySpirit = Boolean(form.querySelector('#registerHolySpirit')?.checked);
                 const teachingExperience = form.querySelector('#registerExperience')?.value.trim() || '';
 
@@ -2431,6 +2552,7 @@
                             birth_date: birthDate,
                             phone,
                             has_cds: hasCds,
+                            cds_expiry_date: cdsExpiryDate,
                             received_holy_spirit: receivedHolySpirit,
                             teaching_experience: teachingExperience
                         }
@@ -2532,6 +2654,7 @@
             const birthDate = document.getElementById('profileBirthDate')?.value || '';
             const phone = document.getElementById('profilePhone')?.value.trim() || '';
             const hasCds = Boolean(document.getElementById('profileHasCds')?.checked);
+            const cdsExpiryDate = hasCds ? (document.getElementById('profileCdsExpiry')?.value || '') : '';
             const receivedHolySpirit = Boolean(document.getElementById('profileHolySpirit')?.checked);
             const teachingExperience = document.getElementById('profileExperience')?.value.trim() || '';
 
@@ -2563,6 +2686,7 @@
                 birth_date: birthDate,
                 phone,
                 has_cds: hasCds,
+                cds_expiry_date: cdsExpiryDate,
                 received_holy_spirit: receivedHolySpirit,
                 teaching_experience: teachingExperience
             };
@@ -2573,6 +2697,7 @@
                 birth_date: birthDate,
                 phone: phone || null,
                 has_cds: hasCds,
+                cds_expiry_date: cdsExpiryDate || null,
                 received_holy_spirit: receivedHolySpirit,
                 teaching_experience: teachingExperience
             };
@@ -2628,6 +2753,16 @@
             if(!allowed.includes(section)) {
                 showToast('No tienes permisos para acceder a esta sección.', 'warning');
                 section = 'dashboard';
+            }
+
+            // Block asistencia/aulas for teachers with expired CDS
+            if(currentRole === 'profesor' && (section === 'asistencia' || section === 'aulas')) {
+                const ownProfile = getTeacherProfileFromMetadata();
+                const cds = getCdsStatus(ownProfile);
+                if(cds.blocked) {
+                    showToast('Tu certificado CDS ha vencido. Actualiza la fecha en tu Perfil para poder dar clases.', 'error');
+                    section = 'perfil';
+                }
             }
 
             // Ocultar todas las secciones
