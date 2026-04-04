@@ -274,6 +274,10 @@
                     <div id="confirmPasswordWrap" class="hidden">
                         <input id="confirmPasswordInput" type="password" placeholder="Confirmar contraseña" class="w-full px-4 py-3 rounded-xl bg-white/20 border border-white/30 text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-white/50">
                     </div>
+                    <div id="newPasswordWrap" class="hidden space-y-3">
+                        <input id="newPasswordInput" type="password" placeholder="Nueva contraseña" class="w-full px-4 py-3 rounded-xl bg-white/20 border border-white/30 text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-white/50">
+                        <input id="newPasswordConfirmInput" type="password" placeholder="Confirmar nueva contraseña" class="w-full px-4 py-3 rounded-xl bg-white/20 border border-white/30 text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-white/50">
+                    </div>
                     <div id="teacherRegisterFields" class="hidden space-y-3">
                         <input id="registerFullName" type="text" placeholder="Nombre completo y apellidos" class="w-full px-4 py-3 rounded-xl bg-white/20 border border-white/30 text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-white/50">
                         <input id="registerBirthDate" type="date" class="w-full px-4 py-3 rounded-xl bg-white/20 border border-white/30 text-white focus:outline-none focus:ring-2 focus:ring-white/50">
@@ -300,6 +304,9 @@
             
             <p class="mt-6 text-white/60 text-sm">
                 <span id="authSwitchText">¿No tienes cuenta?</span> <a id="authSwitchLink" href="#" onclick="toggleAuthMode(event)" class="text-white font-semibold hover:underline">Regístrate</a>
+            </p>
+            <p id="forgotPasswordWrap" class="mt-2 text-white/60 text-sm">
+                <a href="#" onclick="setAuthMode('reset'); event.preventDefault();" class="text-white/80 hover:underline text-xs">¿Olvidaste tu contraseña?</a>
             </p>
 
             <div id="loginLoadingState" class="hidden mt-6 flex flex-col items-center gap-3">
@@ -1103,63 +1110,65 @@
         }
 
         function setAuthMode(mode) {
-            authMode = mode === 'register' ? 'register' : 'login';
+            authMode = ['register', 'reset', 'update_password'].includes(mode) ? mode : 'login';
             const submitBtn = document.getElementById('authSubmitBtn');
             const switchText = document.getElementById('authSwitchText');
             const switchLink = document.getElementById('authSwitchLink');
+            const forgotWrap = document.getElementById('forgotPasswordWrap');
+            const emailWrap = document.getElementById('emailInput');
+            const passwordWrap = document.getElementById('passwordInput');
             const confirmWrap = document.getElementById('confirmPasswordWrap');
             const confirmInput = document.getElementById('confirmPasswordInput');
             const teacherFieldsWrap = document.getElementById('teacherRegisterFields');
+            const newPasswordWrap = document.getElementById('newPasswordWrap');
+            const newPasswordInput = document.getElementById('newPasswordInput');
+            const newPasswordConfirmInput = document.getElementById('newPasswordConfirmInput');
             const registerFullName = document.getElementById('registerFullName');
             const registerBirthDate = document.getElementById('registerBirthDate');
             const registerPhone = document.getElementById('registerPhone');
             const registerExperience = document.getElementById('registerExperience');
 
-            if(submitBtn) {
-                submitBtn.textContent = authMode === 'register' ? 'Crear Cuenta' : 'Iniciar Sesión';
-            }
+            // Reset all fields visibility first
+            if(emailWrap) { emailWrap.required = true; emailWrap.classList.remove('hidden'); }
+            if(passwordWrap) { passwordWrap.classList.remove('hidden'); passwordWrap.required = true; }
+            if(confirmWrap) { confirmWrap.classList.add('hidden'); if(confirmInput) { confirmInput.required = false; confirmInput.value = ''; } }
+            if(teacherFieldsWrap) { teacherFieldsWrap.classList.add('hidden'); [registerFullName, registerBirthDate, registerPhone, registerExperience].forEach(el => { if(el) el.required = false; }); }
+            if(newPasswordWrap) { newPasswordWrap.classList.add('hidden'); if(newPasswordInput) newPasswordInput.required = false; if(newPasswordConfirmInput) newPasswordConfirmInput.required = false; }
 
-            if(confirmWrap && confirmInput) {
-                if(authMode === 'register') {
-                    confirmWrap.classList.remove('hidden');
-                    confirmInput.required = true;
-                } else {
-                    confirmWrap.classList.add('hidden');
-                    confirmInput.required = false;
-                    confirmInput.value = '';
-                }
-            }
-
-            if(teacherFieldsWrap) {
-                if(authMode === 'register') {
-                    teacherFieldsWrap.classList.remove('hidden');
-                    if(registerFullName) registerFullName.required = true;
-                    if(registerBirthDate) registerBirthDate.required = true;
-                    if(registerPhone) registerPhone.required = true;
-                    if(registerExperience) registerExperience.required = true;
-                } else {
-                    teacherFieldsWrap.classList.add('hidden');
-                    if(registerFullName) registerFullName.required = false;
-                    if(registerBirthDate) registerBirthDate.required = false;
-                    if(registerPhone) registerPhone.required = false;
-                    if(registerExperience) registerExperience.required = false;
-                }
-            }
-
-            if(switchText && switchLink) {
-                if(authMode === 'register') {
-                    switchText.textContent = '¿Ya tienes cuenta?';
-                    switchLink.textContent = 'Inicia sesión';
-                } else {
-                    switchText.textContent = '¿No tienes cuenta?';
-                    switchLink.textContent = 'Regístrate';
-                }
+            if(authMode === 'register') {
+                if(submitBtn) submitBtn.textContent = 'Crear Cuenta';
+                if(confirmWrap && confirmInput) { confirmWrap.classList.remove('hidden'); confirmInput.required = true; }
+                if(teacherFieldsWrap) { teacherFieldsWrap.classList.remove('hidden'); [registerFullName, registerBirthDate, registerPhone, registerExperience].forEach(el => { if(el) el.required = true; }); }
+                if(switchText) switchText.textContent = '¿Ya tienes cuenta?';
+                if(switchLink) { switchLink.textContent = 'Inicia sesión'; switchLink.onclick = (e) => { e.preventDefault(); setAuthMode('login'); }; }
+                if(forgotWrap) forgotWrap.classList.add('hidden');
+            } else if(authMode === 'reset') {
+                if(submitBtn) submitBtn.textContent = 'Enviar enlace de recuperación';
+                // Solo mostrar el email, ocultar contraseña
+                if(passwordWrap) { passwordWrap.classList.add('hidden'); passwordWrap.required = false; }
+                if(switchText) switchText.textContent = '¿Recuerdas tu contraseña?';
+                if(switchLink) { switchLink.textContent = 'Inicia sesión'; switchLink.onclick = (e) => { e.preventDefault(); setAuthMode('login'); }; }
+                if(forgotWrap) forgotWrap.classList.add('hidden');
+            } else if(authMode === 'update_password') {
+                if(submitBtn) submitBtn.textContent = 'Guardar nueva contraseña';
+                if(emailWrap) { emailWrap.classList.add('hidden'); emailWrap.required = false; }
+                if(passwordWrap) { passwordWrap.classList.add('hidden'); passwordWrap.required = false; }
+                if(newPasswordWrap) { newPasswordWrap.classList.remove('hidden'); if(newPasswordInput) newPasswordInput.required = true; if(newPasswordConfirmInput) newPasswordConfirmInput.required = true; }
+                if(switchText) switchText.textContent = '';
+                if(switchLink) switchLink.classList.add('hidden');
+                if(forgotWrap) forgotWrap.classList.add('hidden');
+            } else {
+                // login
+                if(submitBtn) submitBtn.textContent = 'Iniciar Sesión';
+                if(switchText) switchText.textContent = '¿No tienes cuenta?';
+                if(switchLink) { switchLink.textContent = 'Regístrate'; switchLink.classList.remove('hidden'); switchLink.onclick = (e) => { e.preventDefault(); setAuthMode('register'); }; }
+                if(forgotWrap) forgotWrap.classList.remove('hidden');
             }
         }
 
         function toggleAuthMode(e) {
             if(e) e.preventDefault();
-            setAuthMode(authMode === 'login' ? 'register' : 'login');
+            setAuthMode(authMode === 'register' ? 'login' : 'register');
         }
 
         function getTeacherProfileFromMetadata(user = currentUser) {
@@ -2473,6 +2482,16 @@
                 return;
             }
 
+            // Detectar token de recuperación de contraseña en la URL
+            const hashParams = new URLSearchParams(window.location.hash.replace('#', ''));
+            if(hashParams.get('type') === 'recovery') {
+                // Supabase ya procesó el token al llamar getSession(); solo activar el modo
+                window.history.replaceState(null, '', window.location.pathname);
+                showLoginScreen();
+                setAuthMode('update_password');
+                return;
+            }
+
             const { data, error } = await supabaseClient.auth.getSession();
             if(error || !data.session?.user) {
                 showLoginScreen();
@@ -2504,6 +2523,20 @@
             const password = form.querySelector('#passwordInput').value;
             const confirmPassword = form.querySelector('#confirmPasswordInput')?.value || '';
 
+            // Modo: actualizar contraseña con token de recovery
+            if(authMode === 'update_password') {
+                const newPwd = form.querySelector('#newPasswordInput')?.value || '';
+                const newPwdConfirm = form.querySelector('#newPasswordConfirmInput')?.value || '';
+                if(newPwd.length < 8) { showToast('La contraseña debe tener al menos 8 caracteres.', 'warning'); return; }
+                if(!/[A-Z]/.test(newPwd) || !/[a-z]/.test(newPwd) || !/[0-9]/.test(newPwd)) { showToast('La contraseña debe incluir mayúscula, minúscula y número.', 'warning'); return; }
+                if(newPwd !== newPwdConfirm) { showToast('Las contraseñas no coinciden.', 'warning'); return; }
+                const { error } = await supabaseClient.auth.updateUser({ password: newPwd });
+                if(error) { showToast(getDataErrorMessage(error, 'No se pudo actualizar la contraseña.'), 'error'); return; }
+                showToast('Contraseña actualizada correctamente. Ya puedes iniciar sesión.', 'success');
+                setAuthMode('login');
+                return;
+            }
+
             if(!isValidEmail(email)) {
                 showToast('Ingresa un correo válido.', 'warning');
                 return;
@@ -2512,6 +2545,20 @@
             const suggestedEmail = getEmailTypoSuggestion(email);
             if(suggestedEmail) {
                 showToast(`Revisa tu correo. ¿Quisiste escribir ${suggestedEmail}?`, 'warning');
+                return;
+            }
+
+            // Modo: enviar correo de recuperación
+            if(authMode === 'reset') {
+                const btn = form.querySelector('#authSubmitBtn');
+                if(btn) btn.disabled = true;
+                const { error } = await supabaseClient.auth.resetPasswordForEmail(email, {
+                    redirectTo: window.location.href
+                });
+                if(btn) btn.disabled = false;
+                if(error) { showToast(getDataErrorMessage(error, 'No se pudo enviar el correo de recuperación.'), 'error'); return; }
+                showToast('Correo de recuperación enviado. Revisa tu bandeja de entrada.', 'success');
+                setAuthMode('login');
                 return;
             }
 
