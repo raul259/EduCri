@@ -950,9 +950,12 @@
             ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
             : null;
 
+        let _passwordRecoveryMode = false;
+
         if(supabaseClient) {
             supabaseClient.auth.onAuthStateChange((event) => {
                 if(event === 'PASSWORD_RECOVERY') {
+                    _passwordRecoveryMode = true;
                     showLoginScreen();
                     setAuthMode('update_password');
                 }
@@ -2497,6 +2500,9 @@
                 return;
             }
 
+            // Si el token era de recuperación, onAuthStateChange ya mostró el formulario
+            if(_passwordRecoveryMode) return;
+
             currentUser = data.session.user;
             setLoginLoading(true);
             try {
@@ -2531,7 +2537,9 @@
                 if(newPwd !== newPwdConfirm) { showToast('Las contraseñas no coinciden.', 'warning'); return; }
                 const { error } = await supabaseClient.auth.updateUser({ password: newPwd });
                 if(error) { showToast(getDataErrorMessage(error, 'No se pudo actualizar la contraseña.'), 'error'); return; }
-                showToast('Contraseña actualizada correctamente. Ya puedes iniciar sesión.', 'success');
+                _passwordRecoveryMode = false;
+                await supabaseClient.auth.signOut();
+                showToast('Contraseña actualizada. Inicia sesión con tu nueva contraseña.', 'success');
                 setAuthMode('login');
                 return;
             }
