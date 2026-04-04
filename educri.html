@@ -950,6 +950,15 @@
             ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
             : null;
 
+        if(supabaseClient) {
+            supabaseClient.auth.onAuthStateChange((event) => {
+                if(event === 'PASSWORD_RECOVERY') {
+                    showLoginScreen();
+                    setAuthMode('update_password');
+                }
+            });
+        }
+
         const DEFAULT_AULAS = [
             {
                 id: 1,
@@ -2479,16 +2488,6 @@
                     setLoginLoading(false);
                 }
                 showToast('Configura Supabase (window.__EDUCRI_CONFIG__ o localStorage: educri_supabase_url / educri_supabase_anon_key).', 'warning');
-                return;
-            }
-
-            // Detectar token de recuperación de contraseña en la URL
-            const hashParams = new URLSearchParams(window.location.hash.replace('#', ''));
-            if(hashParams.get('type') === 'recovery') {
-                // Supabase ya procesó el token al llamar getSession(); solo activar el modo
-                window.history.replaceState(null, '', window.location.pathname);
-                showLoginScreen();
-                setAuthMode('update_password');
                 return;
             }
 
