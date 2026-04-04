@@ -747,15 +747,12 @@
                         </div>
 
                         <div class="bg-white rounded-2xl shadow-lg p-6">
-                            <h3 class="font-display text-lg font-bold text-gray-800 mb-4">Asignar Titular y Auxiliar por Clase</h3>
-                            <form id="classTeacherAssignmentForm" onsubmit="updateClassTeacherAssignment(event)" class="space-y-3">
-                                <select id="moderatorClassSelect" name="classId" required class="form-input" onchange="syncClassTeacherInputsFromSelectedClass()">
-                                    <option value="">Selecciona una clase...</option>
-                                </select>
-                                <input id="classMainTeacherInput" name="mainTeacher" list="classTeacherSuggestions" required placeholder="Profesor titular" class="form-input">
-                                <input id="classAssistantTeacherInput" name="assistantTeacher" list="classTeacherSuggestions" placeholder="Profesor auxiliar (opcional)" class="form-input">
-                                <button type="submit" class="form-button-primary bg-violet-600 hover:bg-violet-700">Guardar asignación</button>
-                            </form>
+                            <div class="flex items-center justify-between mb-4">
+                                <h3 class="font-display text-lg font-bold text-gray-800">Asignación de Profesores por Clase</h3>
+                                <button onclick="renderClassAccessPanel()" class="text-blue-600 hover:text-blue-700 text-sm font-medium">Actualizar</button>
+                            </div>
+                            <p class="text-xs text-gray-400 mb-4">Asigna 1 titular y hasta 3 auxiliares por clase. Los auxiliares ven la clase en modo lectura.</p>
+                            <div id="classAccessPanel" class="space-y-4"></div>
                         </div>
 
                         <div class="bg-white rounded-2xl shadow-lg p-6">
@@ -1054,6 +1051,8 @@
         let _cachedAvatarName = null;
         let studentNotesCache = safeParseJSON('educri_student_notes', {});
         let activeStudentModalId = null;
+        let teacherClassAccess = []; // [{class_id, role}] para el profesor actual
+        let allClassAccess = [];     // [{teacher_id, class_id, role}] para el moderador
         let studentsPage = 1;
         let studentsPageSize = 6;
         let studentsSearch = '';
@@ -1697,6 +1696,108 @@
                     </div>
                 `;
             }).join('');
+        }
+
+        function renderClassAccessPanel() {
+            const panel = document.getElementById('classAccessPanel');
+            if(!panel) return;
+
+            const approvedTeachers = teacherProfiles.filter(p => p.approval_status === 'approved');
+
+            if(!aulas.length) {
+                panel.innerHTML = '<p class="text-gray-400 text-sm">No hay clases creadas.</p>';
+                return;
+            }
+
+            panel.innerHTML = aulas.map(aula => {
+                const classAccess = allClassAccess.filter(a => String(a.class_id) === String(aula.id));
+                const titular = classAccess.find(a => a.role === 'titular');
+                const auxiliares = classAccess.filter(a => a.role === 'auxiliar');
+
+                const teacherOptions = `<option value="">Sin asignar</option>` +
+                    approvedTeachers.map(t => `<option value="${escapeHtml(t.user_id)}">${escapeHtml(t.full_name)}</option>`).join('');
+
+                const auxSelects = [0,1,2].map(i => {
+                    const aux = auxiliares[i];
+                    return `<select class="form-input aux-select text-sm" data-aux="${i}">
+                        ${approvedTeachers.map(t => `<option value="${escapeHtml(t.user_id)}" ${aux?.teacher_id === t.user_id ? 'selected' : ''}>${escapeHtml(t.full_name)}</option>`).join('')}
+                        <option value="" ${!aux ? 'selected' : ''}>Sin auxiliar</option>
+                    </select>`;
+                }).join('');
+
+                return `
+                    <div class="border border-gray-200 rounded-xl p-4 space-y-3" data-class-id="${aula.id}">
+                        <p class="font-semibold text-gray-800">${escapeHtml(aula.name)} <span class="text-xs text-gray-400 font-normal">${escapeHtml(getCategoryName(aula.category))}</span></p>
+                        <div class="grid grid-cols-1 gap-2">
+                            <div>
+                                <label class="text-xs text-gray-500 mb-1 block">Titular</label>
+                                <select class="form-input titular-select text-sm">
+                                    ${teacherOptions.replace(`value="${titular?.teacher_id || ''}"`, `value="${titular?.teacher_id || ''}" selected`)}
+                                </select>
+                            </div>
+                            <div>
+                                <label class="text-xs text-gray-500 mb-1 block">Auxiliares (máx. 3)</label>
+                                <div class="space-y-2">${auxSelects}</div>
+                            </div>
+                        </div>
+                        <button class="save-class-access-btn text-xs bg-violet-600 hover:bg-violet-700 text-white px-4 py-2 rounded-lg" data-class-id="${aula.id}">
+                            Guardar asignación
+                        </button>
+                    </div>
+                `;
+            }).join('');
+
+            // Fix titular selected state properly
+            panel.querySelectorAll('[data-class-id]').forEach(card => {
+                const classId = card.dataset.classId;
+                const access = allClassAccess.filter(a => String(a.class_id) === String(classId));
+                const titular = access.find(a => a.role === 'titular');
+                const titularSel = card.querySelector('.titular-select');
+                if(titularSel && titular) titularSel.value = titular.teacher_id;
+
+                const auxSels = card.querySelectorAll('.aux-select');
+                const auxList = access.filter(a => a.role === 'auxiliar');
+                auxSels.forEach((sel, i) => { if(auxList[i]) sel.value = auxList[i].teacher_id; });
+            });
+
+            panel.querySelectorAll('.save-class-access-btn').forEach(btn => {
+                btn.addEventListener('click', () => saveClassAccessAssignment(btn.dataset.classId));
+            });
+        }
+
+        async function saveClassAccessAssignment(classId) {
+            if(!supabaseClient || !currentUser?.id) {
+                showToast('Se necesita Supabase para guardar asignaciones.', 'warning');
+                return;
+            }
+
+            const card = document.querySelector(`#classAccessPanel [data-class-id="${classId}"]`);
+            if(!card) return;
+
+            const titularId = card.querySelector('.titular-select')?.value || '';
+            const auxIds = [...card.querySelectorAll('.aux-select')]
+                .map(s => s.value).filter(v => v && v !== titularId);
+            const uniqueAuxIds = [...new Set(auxIds)].slice(0, 3);
+
+            // Borrar asignaciones anteriores de esta clase
+            const { error: delError } = await supabaseClient
+                .from('teacher_class_access')
+                .delete()
+                .eq('class_id', Number(classId));
+
+            if(delError) { showToast('Error al actualizar asignaciones.', 'error'); return; }
+
+            const rows = [];
+            if(titularId) rows.push({ teacher_id: titularId, class_id: Number(classId), role: 'titular', granted_by: currentUser.id });
+            uniqueAuxIds.forEach(id => rows.push({ teacher_id: id, class_id: Number(classId), role: 'auxiliar', granted_by: currentUser.id }));
+
+            if(rows.length) {
+                const { error: insError } = await supabaseClient.from('teacher_class_access').insert(rows);
+                if(insError) { showToast('Error guardando asignaciones.', 'error'); return; }
+            }
+
+            await loadTeacherClassAccess();
+            showToast('Asignación guardada.', 'success');
         }
 
         async function loadModeratorAssignmentsFromStorage() {
@@ -2393,17 +2494,59 @@
             return mode === 'register' ? `No se pudo crear la cuenta: ${error.message}` : `No se pudo iniciar sesión: ${error.message}`;
         }
 
+        async function loadTeacherClassAccess() {
+            teacherClassAccess = [];
+            allClassAccess = [];
+            if(!supabaseClient || !currentUser?.id) return;
+
+            if(currentRole === 'moderador') {
+                const { data } = await supabaseClient
+                    .from('teacher_class_access')
+                    .select('teacher_id,class_id,role,expires_at');
+                const now = new Date();
+                allClassAccess = (data || []).filter(r => !r.expires_at || new Date(r.expires_at) > now);
+            } else {
+                const { data } = await supabaseClient
+                    .from('teacher_class_access')
+                    .select('class_id,role,expires_at')
+                    .eq('teacher_id', currentUser.id);
+                const now = new Date();
+                teacherClassAccess = (data || []).filter(r => !r.expires_at || new Date(r.expires_at) > now);
+            }
+        }
+
+        function isAuxiliar(classId) {
+            if(currentRole === 'moderador') return false;
+            const entry = teacherClassAccess.find(a => String(a.class_id) === String(classId));
+            return entry?.role === 'auxiliar';
+        }
+
         async function loadAulasFromStorage() {
             if(!supabaseClient || !currentUser?.id) {
                 aulas = safeParseJSON('educri_aulas', DEFAULT_AULAS);
                 return;
             }
 
-            const { data, error } = await supabaseClient
+            await loadTeacherClassAccess();
+
+            let query = supabaseClient
                 .from('classes')
                 .select('id,name,category,teacher,assistant_teacher,classroom,day,time,description,pdf_name,color')
-                .eq('user_id', currentUser.id)
                 .order('id', { ascending: true });
+
+            if(currentRole !== 'moderador') {
+                // Profesor: clases asignadas via teacher_class_access
+                const accessIds = teacherClassAccess.map(a => a.class_id);
+                if(accessIds.length > 0) {
+                    query = query.in('id', accessIds);
+                } else {
+                    // Sin asignaciones aún: fallback a clases propias (retrocompatibilidad)
+                    query = query.eq('user_id', currentUser.id);
+                }
+            }
+            // Moderador: sin filtro adicional, RLS devuelve todo
+
+            const { data, error } = await query;
 
             if(error) {
                 console.error('Error cargando aulas desde Supabase', error);
@@ -2695,10 +2838,12 @@
             renderTeacherProfileForm();
             renderStudentsList();
             renderTeacherApprovals();
+            renderCdsStatusList();
             renderAssignmentsList();
             renderAttendanceByTeacher();
             renderClassTeachersCatalog();
             populateModeratorClassSelect();
+            renderClassAccessPanel();
             if(showWelcome) showToast('Bienvenido a EduCri.', 'success');
         }
 
@@ -3333,9 +3478,12 @@
                 return;
             }
             
+            const readOnly = isAuxiliar(classId);
+            if(readOnly) showToast('Modo auxiliar — vista de solo lectura.', 'info');
+
             let html = '';
             let presentCount = 0, absentCount = 0, lateCount = 0;
-            
+
             studentsForAttendance.forEach((student, index) => {
                 const studentId = Number.isFinite(Number(student.id)) ? Number(student.id) : index + 1;
                 const studentName = String(student.name || '').trim() || 'Alumno';
@@ -3355,31 +3503,30 @@
                             </div>
                         </td>
                         <td class="px-6 py-4 text-center">
-                            <button id="attn-${studentId}-present" onclick="setAttendance(${studentId}, 'present')"
-                                class="attendance-btn w-10 h-10 rounded-full ${status === 'present' ? 'present' : 'bg-gray-200 text-gray-600 hover:bg-green-100'}">
+                            <button id="attn-${studentId}-present" ${readOnly ? 'disabled' : `onclick="setAttendance(${studentId}, 'present')"`}
+                                class="attendance-btn w-10 h-10 rounded-full ${status === 'present' ? 'present' : 'bg-gray-200 text-gray-600 hover:bg-green-100'} ${readOnly ? 'opacity-40 cursor-not-allowed' : ''}">
                                 <i class="fas fa-check"></i>
                             </button>
                         </td>
                         <td class="px-6 py-4 text-center">
-                            <button id="attn-${studentId}-absent" onclick="setAttendance(${studentId}, 'absent')"
-                                class="attendance-btn w-10 h-10 rounded-full ${status === 'absent' ? 'absent' : 'bg-gray-200 text-gray-600 hover:bg-red-100'}">
+                            <button id="attn-${studentId}-absent" ${readOnly ? 'disabled' : `onclick="setAttendance(${studentId}, 'absent')"`}
+                                class="attendance-btn w-10 h-10 rounded-full ${status === 'absent' ? 'absent' : 'bg-gray-200 text-gray-600 hover:bg-red-100'} ${readOnly ? 'opacity-40 cursor-not-allowed' : ''}">
                                 <i class="fas fa-times"></i>
                             </button>
                         </td>
                         <td class="px-6 py-4 text-center">
-                            <button id="attn-${studentId}-late" onclick="setAttendance(${studentId}, 'late')"
-                                class="attendance-btn w-10 h-10 rounded-full ${status === 'late' ? 'late' : 'bg-gray-200 text-gray-600 hover:bg-yellow-100'}">
+                            <button id="attn-${studentId}-late" ${readOnly ? 'disabled' : `onclick="setAttendance(${studentId}, 'late')"`}
+                                class="attendance-btn w-10 h-10 rounded-full ${status === 'late' ? 'late' : 'bg-gray-200 text-gray-600 hover:bg-yellow-100'} ${readOnly ? 'opacity-40 cursor-not-allowed' : ''}">
                                 <i class="fas fa-clock"></i>
                             </button>
                         </td>
                         <td class="px-6 py-4">
-                            <input type="text" placeholder="Nota de sesión..." class="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                value="${escapeHtml(saved[studentId + '_note'] || '')}" onchange="saveNote(${studentId}, this.value)">
+                            <input type="text" placeholder="Nota de sesión..." ${readOnly ? 'disabled' : `onchange="saveNote(${studentId}, this.value)"`}
+                                class="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${readOnly ? 'opacity-40 cursor-not-allowed bg-gray-50' : ''}"
+                                value="${escapeHtml(saved[studentId + '_note'] || '')}">
                         </td>
                         <td class="px-6 py-4 text-center">
-                            <button data-sid="${escapeHtml(String(studentId))}" data-sname="${escapeHtml(student.name)}" class="open-student-attn-btn w-9 h-9 rounded-full bg-blue-50 hover:bg-blue-100 text-blue-500 flex items-center justify-center" title="Observaciones permanentes e historial">
-                                <i class="fas fa-user-edit text-xs"></i>
-                            </button>
+                            ${readOnly ? '' : `<button data-sid="${escapeHtml(String(studentId))}" data-sname="${escapeHtml(student.name)}" class="open-student-attn-btn w-9 h-9 rounded-full bg-blue-50 hover:bg-blue-100 text-blue-500 flex items-center justify-center" title="Observaciones permanentes e historial"><i class="fas fa-user-edit text-xs"></i></button>`}
                         </td>
                     </tr>
                 `;
