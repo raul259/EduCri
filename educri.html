@@ -1594,7 +1594,7 @@
         function updateCdsBanner() {
             const banner = document.getElementById('cdsBanner');
             const inner = document.getElementById('cdsBannerInner');
-            if(!banner || !inner || currentRole !== 'profesor') { if(banner) banner.classList.add('hidden'); return; }
+            if(!banner || !inner) { if(banner) banner.classList.add('hidden'); return; }
             const profile = getTeacherProfileFromMetadata();
             if(!profile.has_cds || !profile.cds_expiry_date) { banner.classList.add('hidden'); return; }
             const cds = getCdsStatus(profile);
@@ -3005,6 +3005,7 @@
             await loadTeacherProfilesFromStorage();
             updateHeaderProfileDisplay();
             renderTeacherProfileForm();
+            updateCdsBanner();
             showToast('Perfil actualizado correctamente.', 'success');
         }
 
