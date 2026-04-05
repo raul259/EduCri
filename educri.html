@@ -340,7 +340,7 @@
     <div id="mainApp" class="hidden min-h-screen bg-gray-50">
         
         <!-- Header Móvil -->
-        <header class="md:hidden bg-gradient-to-r from-blue-600 to-pink-500 text-white p-4 sticky top-0 z-40 shadow-lg">
+        <header class="lg:hidden bg-gradient-to-r from-blue-600 to-pink-500 text-white p-4 sticky top-0 z-40 shadow-lg">
             <div class="flex items-center justify-between">
                 <button onclick="toggleSidebar()" class="p-2 hover:bg-white/20 rounded-lg transition-colors">
                     <i class="fas fa-bars text-xl"></i>
@@ -359,7 +359,7 @@
         <div class="flex h-screen overflow-hidden">
             
             <!-- Sidebar -->
-            <aside id="sidebar" class="fixed md:static inset-y-0 left-0 z-50 w-64 md:w-16 lg:w-64 bg-gradient-to-b from-gray-900 to-gray-800 text-white transform -translate-x-full md:translate-x-0 transition-transform duration-300 shadow-2xl flex-shrink-0">
+            <aside id="sidebar" class="fixed lg:static inset-y-0 left-0 z-50 w-64 lg:w-64 bg-gradient-to-b from-gray-900 to-gray-800 text-white transform -translate-x-full lg:translate-x-0 transition-transform duration-300 shadow-2xl flex-shrink-0">
                 <div class="p-4 lg:p-6 border-b border-white/10">
                     <div class="flex items-center gap-3 mb-4 justify-center lg:justify-start">
                         <div class="w-10 h-10 lg:w-12 lg:h-12 rounded-full bg-gradient-to-br from-blue-400 to-pink-400 flex items-center justify-center text-xl lg:text-2xl shadow-lg flex-shrink-0">
@@ -418,7 +418,7 @@
             </aside>
 
             <!-- Overlay solo móvil -->
-            <div id="sidebarOverlay" onclick="toggleSidebar()" class="fixed inset-0 bg-black/50 z-40 hidden md:hidden backdrop-blur-sm"></div>
+            <div id="sidebarOverlay" onclick="toggleSidebar()" class="fixed inset-0 bg-black/50 z-40 hidden lg:hidden backdrop-blur-sm"></div>
 
             <!-- Main Content -->
             <main class="flex-1 overflow-y-auto bg-gray-50">
@@ -437,7 +437,7 @@
                 </div>
 
                 <!-- Header Desktop -->
-                <header class="hidden md:flex items-center justify-between p-6 bg-white shadow-sm border-b border-gray-200">
+                <header class="hidden lg:flex items-center justify-between p-6 bg-white shadow-sm border-b border-gray-200">
                     <div>
                         <h1 id="pageTitle" class="font-display text-2xl font-bold text-gray-800">Dashboard</h1>
                         <p class="text-gray-500 text-sm mt-1" id="currentDate"></p>
@@ -457,7 +457,7 @@
                     </div>
                 </header>
 
-                <div class="p-4 lg:p-8 max-w-7xl mx-auto">
+                <div class="p-4 lg:p-8 pb-24 lg:pb-8 max-w-7xl mx-auto">
                     
                     <!-- DASHBOARD SECTION -->
                     <section id="dashboardSection" class="space-y-6 animate-fade-in">
@@ -994,6 +994,33 @@
         </div>
     </div>
 
+    <!-- Barra navegación inferior móvil -->
+    <nav id="mobileBottomNav" class="hidden fixed bottom-0 left-0 right-0 z-40 bg-gray-900 border-t border-white/10 lg:hidden">
+        <div id="mobileBottomNavInner" class="flex items-center justify-around py-2 px-2">
+            <button onclick="showSection('dashboard',this)" data-section="dashboard" class="mob-nav-btn flex flex-col items-center gap-1 px-3 py-2 rounded-xl text-gray-400 hover:text-white transition-colors">
+                <i class="fas fa-home text-lg"></i>
+                <span class="text-xs">Inicio</span>
+            </button>
+            <button onclick="showSection('aulas',this)" data-section="aulas" class="mob-nav-btn flex flex-col items-center gap-1 px-3 py-2 rounded-xl text-gray-400 hover:text-white transition-colors">
+                <i class="fas fa-chalkboard text-lg"></i>
+                <span class="text-xs">Aulas</span>
+            </button>
+            <button onclick="showSection('asistencia',this)" data-section="asistencia" class="mob-nav-btn flex flex-col items-center gap-1 px-3 py-2 rounded-xl text-gray-400 hover:text-white transition-colors">
+                <i class="fas fa-clipboard-check text-lg"></i>
+                <span class="text-xs">Asistencia</span>
+            </button>
+            <button onclick="showSection('notificaciones',this)" data-section="notificaciones" class="mob-nav-btn relative flex flex-col items-center gap-1 px-3 py-2 rounded-xl text-gray-400 hover:text-white transition-colors">
+                <i class="fas fa-bell text-lg"></i>
+                <span id="mobileNotificationBadge" class="absolute top-1 right-2 w-2 h-2 bg-red-500 rounded-full hidden"></span>
+                <span class="text-xs">Avisos</span>
+            </button>
+            <button onclick="showSection('perfil',this)" data-section="perfil" class="mob-nav-btn flex flex-col items-center gap-1 px-3 py-2 rounded-xl text-gray-400 hover:text-white transition-colors">
+                <i class="fas fa-user-gear text-lg"></i>
+                <span class="text-xs">Perfil</span>
+            </button>
+        </div>
+    </nav>
+
     <!-- Toast Notifications -->
     <div id="toastContainer" class="fixed bottom-4 right-4 z-50 space-y-2 pointer-events-none"></div>
 
@@ -1174,6 +1201,23 @@
                 const name = currentUser?.user_metadata?.full_name || currentUser?.email || 'Usuario';
                 nameEl.textContent = name;
                 banner.classList.remove('hidden');
+            }
+
+            // Mostrar barra navegación móvil
+            const mobileNav = document.getElementById('mobileBottomNav');
+            if(mobileNav) {
+                mobileNav.classList.remove('hidden');
+                if(currentRole === 'moderador') {
+                    const inner = document.getElementById('mobileBottomNavInner');
+                    if(inner && !inner.querySelector('[data-section="moderador"]')) {
+                        const modBtn = document.createElement('button');
+                        modBtn.setAttribute('data-section', 'moderador');
+                        modBtn.className = 'mob-nav-btn flex flex-col items-center gap-1 px-3 py-2 rounded-xl text-gray-400 hover:text-white transition-colors';
+                        modBtn.innerHTML = '<i class="fas fa-user-shield text-lg"></i><span class="text-xs">Mod</span>';
+                        modBtn.onclick = () => showSection('moderador');
+                        inner.appendChild(modBtn);
+                    }
+                }
             }
         }
 
@@ -3180,6 +3224,13 @@
             document.querySelectorAll('.sidebar-item').forEach(item => item.classList.remove('active'));
             const activeButton = triggerEl || document.querySelector(`.sidebar-item[data-section="${section}"]`);
             if(activeButton) activeButton.classList.add('active');
+
+            // Actualizar barra móvil
+            document.querySelectorAll('.mob-nav-btn').forEach(btn => {
+                const active = btn.dataset.section === section;
+                btn.classList.toggle('text-white', active);
+                btn.classList.toggle('text-gray-400', !active);
+            });
 
             if(section === 'moderador') {
                 populateModeratorClassSelect();
