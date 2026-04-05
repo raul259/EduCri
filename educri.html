@@ -982,13 +982,14 @@
                     </button>
                 </div>
             </div>
-            <div class="flex-1 bg-gray-100 p-6 overflow-auto">
-                <div id="pdfViewer" class="bg-white rounded-lg shadow-lg min-h-[600px] flex items-center justify-center">
-                    <div class="text-center p-8">
+            <div class="flex-1 bg-gray-100 overflow-hidden flex flex-col">
+                <div id="pdfViewer" class="flex-1 flex items-center justify-center">
+                    <div id="pdfPlaceholder" class="text-center p-8">
                         <i class="fas fa-file-pdf text-6xl text-red-500 mb-4"></i>
-                        <p class="text-gray-600">Vista previa del PDF</p>
+                        <p class="text-gray-600">Sin temario subido</p>
                         <p class="text-sm text-gray-400 mt-2" id="pdfNameDisplay"></p>
                     </div>
+                    <iframe id="pdfIframe" src="" class="hidden w-full h-full min-h-[70vh] border-0 rounded-b-3xl"></iframe>
                 </div>
             </div>
         </div>
@@ -1161,6 +1162,7 @@
                 time: String(row.time || '').trim(),
                 description: String(row.description || '').trim(),
                 pdfName: String(row.pdf_name || 'temario.pdf').trim(),
+                syllabus_url: row.syllabus_url || null,
                 color: String(row.color || 'from-blue-500 to-cyan-400').trim()
             };
         }
@@ -1947,9 +1949,17 @@
                                 <div class="space-y-2">${auxSelects}</div>
                             </div>
                         </div>
-                        <button class="save-class-access-btn text-xs bg-violet-600 hover:bg-violet-700 text-white px-4 py-2 rounded-lg" data-class-id="${aula.id}">
-                            Guardar asignación
-                        </button>
+                        <div class="flex items-center gap-2 flex-wrap">
+                            <button class="save-class-access-btn text-xs bg-violet-600 hover:bg-violet-700 text-white px-4 py-2 rounded-lg" data-class-id="${aula.id}">
+                                Guardar asignación
+                            </button>
+                            <label class="cursor-pointer text-xs bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-200 px-4 py-2 rounded-lg flex items-center gap-1">
+                                <i class="fas fa-file-pdf"></i>
+                                ${aula.syllabus_url ? 'Cambiar temario' : 'Subir temario'}
+                                <input type="file" accept=".pdf" class="hidden syllabus-input" onchange="handleSyllabusUpload('${aula.id}', this)">
+                            </label>
+                            ${aula.syllabus_url ? `<button onclick="viewSyllabus(${typeof aula.id === 'number' ? aula.id : `'${aula.id}'`})" class="text-xs bg-green-50 hover:bg-green-100 text-green-700 border border-green-200 px-4 py-2 rounded-lg"><i class="fas fa-eye mr-1"></i>Ver</button>` : ''}
+                        </div>
                     </div>
                 `;
             }).join('');
@@ -2749,7 +2759,7 @@
 
             let query = supabaseClient
                 .from('classes')
-                .select('id,name,category,teacher,assistant_teacher,classroom,day,time,description,pdf_name,color')
+                .select('id,name,category,teacher,assistant_teacher,classroom,day,time,description,pdf_name,syllabus_url,color')
                 .order('id', { ascending: true });
 
             if(currentRole !== 'moderador') {
@@ -2779,7 +2789,7 @@
                 const { data: seededRows, error: seedError } = await supabaseClient
                     .from('classes')
                     .insert(seedPayload)
-                    .select('id,name,category,teacher,assistant_teacher,classroom,day,time,description,pdf_name,color');
+                    .select('id,name,category,teacher,assistant_teacher,classroom,day,time,description,pdf_name,syllabus_url,color');
 
                 if(seedError) {
                     console.error('Error sembrando aulas base', seedError);
@@ -2801,7 +2811,7 @@
             const { data, error } = await supabaseClient
                 .from('classes')
                 .insert(mapUiClassToDb(newClass))
-                .select('id,name,category,teacher,assistant_teacher,classroom,day,time,description,pdf_name,color')
+                .select('id,name,category,teacher,assistant_teacher,classroom,day,time,description,pdf_name,syllabus_url,color')
                 .single();
 
             if(error) throw error;
@@ -3398,6 +3408,36 @@
             if(file) processPDF(file);
         }
 
+        async function uploadSyllabus(classId, file) {
+            if(!supabaseClient || !file) return null;
+            if(file.size > 10 * 1024 * 1024) { showToast('El PDF no puede superar 10 MB.', 'warning'); return null; }
+
+            const path = `syllabi/${classId}.pdf`;
+            const { error } = await supabaseClient.storage.from('syllabi').upload(path, file, { upsert: true, contentType: 'application/pdf' });
+            if(error) { showToast('Error al subir el temario.', 'error'); return null; }
+
+            const { data } = supabaseClient.storage.from('syllabi').getPublicUrl(path);
+            return data.publicUrl || null;
+        }
+
+        async function handleSyllabusUpload(classId, inputEl) {
+            const file = inputEl.files[0];
+            if(!file) return;
+            showToast('Subiendo temario...', 'info');
+            const url = await uploadSyllabus(classId, file);
+            if(!url) return;
+
+            // Actualizar en Supabase
+            if(supabaseClient) {
+                await supabaseClient.from('classes').update({ syllabus_url: url, pdf_name: file.name }).eq('id', classId);
+            }
+            // Actualizar en memoria
+            const aula = aulas.find(a => String(a.id) === String(classId));
+            if(aula) { aula.syllabus_url = url; aula.pdfName = file.name; }
+            showToast('Temario subido correctamente.', 'success');
+            renderClassAccessPanel();
+        }
+
         function processPDF(file) {
             document.getElementById('pdfFileName').textContent = file.name;
             // En una implementación real, aquí subirías el archivo a un servidor
@@ -3473,12 +3513,29 @@
         function viewSyllabus(id) {
             const aula = aulas.find(a => a.id === id);
             if(!aula) return;
-            
+
             document.getElementById('syllabusTitle').textContent = aula.name;
             const assistantSuffix = aula.assistantTeacher ? ` · Auxiliar: ${aula.assistantTeacher}` : '';
             document.getElementById('syllabusSubtitle').textContent = `Titular: ${aula.teacher}${assistantSuffix} - ${aula.classroom}`;
-            document.getElementById('pdfNameDisplay').textContent = aula.pdfName;
-            
+
+            const iframe = document.getElementById('pdfIframe');
+            const placeholder = document.getElementById('pdfPlaceholder');
+            const downloadBtn = document.getElementById('downloadPdfBtn');
+
+            if(aula.syllabus_url) {
+                iframe.src = aula.syllabus_url;
+                iframe.classList.remove('hidden');
+                placeholder.classList.add('hidden');
+                downloadBtn.href = aula.syllabus_url;
+                downloadBtn.classList.remove('hidden');
+            } else {
+                iframe.src = '';
+                iframe.classList.add('hidden');
+                placeholder.classList.remove('hidden');
+                document.getElementById('pdfNameDisplay').textContent = aula.pdfName || '';
+                downloadBtn.classList.add('hidden');
+            }
+
             document.getElementById('viewSyllabusModal').classList.add('active');
             document.body.style.overflow = 'hidden';
         }
