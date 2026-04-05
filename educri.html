@@ -654,6 +654,22 @@
                         </div>
 
                         <form onsubmit="saveTeacherProfile(event)" class="bg-white rounded-2xl shadow-lg p-6 space-y-5">
+                            <!-- Avatar -->
+                            <div class="flex items-center gap-5">
+                                <div class="relative group cursor-pointer" onclick="document.getElementById('avatarInput').click()">
+                                    <img id="profileAvatarPreview" src="https://ui-avatars.com/api/?name=Usuario&background=random" class="w-20 h-20 rounded-full object-cover shadow-md border-4 border-white ring-2 ring-gray-200" alt="Avatar">
+                                    <div class="absolute inset-0 rounded-full bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                                        <i class="fas fa-camera text-white text-lg"></i>
+                                    </div>
+                                    <input id="avatarInput" type="file" accept="image/*" class="hidden" onchange="previewAvatar(event)">
+                                </div>
+                                <div>
+                                    <p class="font-medium text-gray-800 text-sm">Foto de perfil</p>
+                                    <p class="text-xs text-gray-500 mt-1">Haz clic en la imagen para cambiarla</p>
+                                    <p id="avatarUploadStatus" class="text-xs mt-1 hidden"></p>
+                                </div>
+                            </div>
+
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div class="md:col-span-2">
                                     <label class="block text-sm font-medium text-gray-700 mb-2">Nombre completo y apellidos</label>
@@ -1271,6 +1287,13 @@
             if(cdsExpiryWrap) cdsExpiryWrap.classList.toggle('hidden', !profile.has_cds);
             if(cdsExpiryInput) cdsExpiryInput.value = profile.cds_expiry_date || '';
 
+            const avatarPreview = document.getElementById('profileAvatarPreview');
+            if(avatarPreview) {
+                const avatarUrl = currentUser?.user_metadata?.avatar_url;
+                const name = profile.full_name || currentUser?.email || 'Usuario';
+                avatarPreview.src = avatarUrl || `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=random`;
+            }
+
             if(cdsStatusEl && profile.has_cds && profile.cds_expiry_date) {
                 const { daysLeft, blocked, warningLevel } = getCdsStatus(profile);
                 if(blocked) {
@@ -1298,8 +1321,9 @@
 
             if(desktopName) desktopName.textContent = name;
             if(desktopRole) desktopRole.textContent = currentRole === 'moderador' ? 'Moderador' : 'Profesor';
-            if(desktopAvatar && name !== _cachedAvatarName) {
-                desktopAvatar.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=random`;
+            if(desktopAvatar) {
+                const avatarUrl = currentUser?.user_metadata?.avatar_url;
+                desktopAvatar.src = avatarUrl || `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=random`;
                 _cachedAvatarName = name;
             }
         }
@@ -1626,6 +1650,43 @@
             if(cds.warningLevel >= 2) return `<span class="text-xs font-semibold text-orange-500">⚠ CDS vence en ${cds.daysLeft}d</span>`;
             if(cds.warningLevel === 1) return `<span class="text-xs text-yellow-600">CDS vence en ${cds.daysLeft}d</span>`;
             return `<span class="text-xs text-green-600">CDS válido hasta ${escapeHtml(profile.cds_expiry_date)}</span>`;
+        }
+
+        function previewAvatar(event) {
+            const file = event.target.files[0];
+            if(!file) return;
+            if(file.size > 2 * 1024 * 1024) { showToast('La imagen no puede superar 2 MB.', 'warning'); return; }
+            const reader = new FileReader();
+            reader.onload = e => {
+                const preview = document.getElementById('profileAvatarPreview');
+                if(preview) preview.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        async function uploadAvatarIfSelected() {
+            const input = document.getElementById('avatarInput');
+            const file = input?.files[0];
+            if(!file || !supabaseClient || !currentUser?.id) return null;
+
+            const statusEl = document.getElementById('avatarUploadStatus');
+            if(statusEl) { statusEl.textContent = 'Subiendo imagen...'; statusEl.className = 'text-xs mt-1 text-blue-600'; statusEl.classList.remove('hidden'); }
+
+            const ext = file.name.split('.').pop();
+            const path = `avatars/${currentUser.id}.${ext}`;
+
+            const { error } = await supabaseClient.storage
+                .from('avatars')
+                .upload(path, file, { upsert: true, contentType: file.type });
+
+            if(error) {
+                if(statusEl) { statusEl.textContent = 'Error al subir imagen.'; statusEl.className = 'text-xs mt-1 text-red-600'; }
+                return null;
+            }
+
+            const { data } = supabaseClient.storage.from('avatars').getPublicUrl(path);
+            if(statusEl) { statusEl.textContent = 'Imagen actualizada.'; statusEl.className = 'text-xs mt-1 text-green-600'; }
+            return data.publicUrl || null;
         }
 
         function updateCdsBanner() {
@@ -2983,6 +3044,8 @@
                 return;
             }
 
+            const newAvatarUrl = await uploadAvatarIfSelected();
+
             const profileData = {
                 ...currentUser.user_metadata,
                 role: currentRole,
@@ -2992,7 +3055,8 @@
                 has_cds: hasCds,
                 cds_expiry_date: cdsExpiryDate,
                 received_holy_spirit: receivedHolySpirit,
-                teaching_experience: teachingExperience
+                teaching_experience: teachingExperience,
+                ...(newAvatarUrl ? { avatar_url: newAvatarUrl } : {})
             };
 
             const profileRowData = {
