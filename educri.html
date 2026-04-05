@@ -694,7 +694,24 @@
                             <p class="text-gray-500">Valida profesores, asigna tareas y revisa asistencia por profesor.</p>
                         </div>
 
-                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        <!-- Sub-tabs -->
+                        <div class="flex gap-2 overflow-x-auto pb-1">
+                            <button onclick="showModTab('alumnos', this)" data-modtab="alumnos" class="mod-tab-btn active px-5 py-2 rounded-full bg-blue-600 text-white font-medium whitespace-nowrap text-sm transition-all">
+                                <i class="fas fa-user-graduate mr-1"></i>Alumnos
+                            </button>
+                            <button onclick="showModTab('profesores', this)" data-modtab="profesores" class="mod-tab-btn px-5 py-2 rounded-full bg-gray-200 text-gray-700 font-medium whitespace-nowrap text-sm hover:bg-gray-300 transition-all">
+                                <i class="fas fa-chalkboard-teacher mr-1"></i>Profesores
+                            </button>
+                            <button onclick="showModTab('tareas', this)" data-modtab="tareas" class="mod-tab-btn px-5 py-2 rounded-full bg-gray-200 text-gray-700 font-medium whitespace-nowrap text-sm hover:bg-gray-300 transition-all">
+                                <i class="fas fa-tasks mr-1"></i>Tareas
+                            </button>
+                            <button onclick="showModTab('asistencia', this)" data-modtab="asistencia" class="mod-tab-btn px-5 py-2 rounded-full bg-gray-200 text-gray-700 font-medium whitespace-nowrap text-sm hover:bg-gray-300 transition-all">
+                                <i class="fas fa-chart-bar mr-1"></i>Asistencia
+                            </button>
+                        </div>
+
+                        <!-- Tab: Alumnos -->
+                        <div id="modTab-alumnos" class="space-y-6">
                             <div class="bg-white rounded-2xl shadow-lg p-6">
                                 <h3 class="font-display text-lg font-bold text-gray-800 mb-4">Añadir Alumno</h3>
                                 <form onsubmit="addStudent(event)" class="space-y-3">
@@ -709,7 +726,63 @@
                                     <button type="submit" class="form-button-primary bg-blue-600 hover:bg-blue-700">Guardar Alumno</button>
                                 </form>
                             </div>
+                            <div class="bg-white rounded-2xl shadow-lg p-6">
+                                <div class="flex items-center justify-between mb-4">
+                                    <h3 class="font-display text-lg font-bold text-gray-800">Alumnos Registrados</h3>
+                                    <span id="studentsCount" class="text-sm text-gray-500">0 alumnos</span>
+                                </div>
+                                <input id="studentsSearchInput" oninput="setStudentsSearch(this.value)" placeholder="Buscar alumno..." class="w-full mb-3 px-4 py-2 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                <div id="studentsList" class="space-y-2 text-sm text-gray-700"></div>
+                                <div class="mt-3 flex items-center justify-between text-sm">
+                                    <button onclick="changeStudentsPage(-1)" class="px-3 py-1 rounded-lg border border-gray-300 hover:bg-gray-50">Anterior</button>
+                                    <span id="studentsPageInfo" class="text-gray-500">Página 1</span>
+                                    <button onclick="changeStudentsPage(1)" class="px-3 py-1 rounded-lg border border-gray-300 hover:bg-gray-50">Siguiente</button>
+                                </div>
+                            </div>
+                        </div>
 
+                        <!-- Tab: Profesores -->
+                        <div id="modTab-profesores" class="space-y-6 hidden">
+                            <div class="bg-white rounded-2xl shadow-lg p-6">
+                                <div class="flex items-center justify-between mb-4">
+                                    <h3 class="font-display text-lg font-bold text-gray-800">Validación de Profesores</h3>
+                                    <span id="teacherApprovalsCount" class="text-sm text-gray-500">0 pendientes</span>
+                                </div>
+                                <div id="teacherApprovalsList" class="space-y-2 text-sm text-gray-700"></div>
+                            </div>
+                            <div class="bg-white rounded-2xl shadow-lg p-6">
+                                <div class="flex items-center justify-between mb-4">
+                                    <h3 class="font-display text-lg font-bold text-gray-800">Estado CDS de Profesores</h3>
+                                    <span id="cdsStatusCount" class="text-sm text-gray-500"></span>
+                                </div>
+                                <p class="text-xs text-gray-400 mb-3">El CDS debe renovarse anualmente. Los profesores con CDS vencido no pueden dar clases.</p>
+                                <div id="cdsStatusList" class="space-y-2 text-sm text-gray-700"></div>
+                            </div>
+                            <div class="bg-white rounded-2xl shadow-lg p-6">
+                                <div class="flex items-center justify-between mb-4">
+                                    <h3 class="font-display text-lg font-bold text-gray-800">Catálogo de Profesores</h3>
+                                    <span id="classTeachersCount" class="text-sm text-gray-500">0 profesores</span>
+                                </div>
+                                <form onsubmit="addClassTeacher(event)" class="grid grid-cols-1 md:grid-cols-3 gap-3 mb-3">
+                                    <input name="classTeacherName" required placeholder="Nombre completo del profesor" class="form-input md:col-span-2">
+                                    <input name="classTeacherPhone" placeholder="Teléfono (opcional)" class="form-input">
+                                    <button type="submit" class="form-button-primary bg-indigo-600 hover:bg-indigo-700 md:col-span-3">Añadir al catálogo</button>
+                                </form>
+                                <p class="text-xs text-gray-500 mb-3">Este catálogo se usa para autocompletar el campo profesor al crear clases.</p>
+                                <div id="classTeachersList" class="space-y-2 text-sm text-gray-700"></div>
+                            </div>
+                            <div class="bg-white rounded-2xl shadow-lg p-6">
+                                <div class="flex items-center justify-between mb-4">
+                                    <h3 class="font-display text-lg font-bold text-gray-800">Asignación por Clase</h3>
+                                    <button onclick="renderClassAccessPanel()" class="text-blue-600 hover:text-blue-700 text-sm font-medium">Actualizar</button>
+                                </div>
+                                <p class="text-xs text-gray-400 mb-4">Asigna 1 titular y hasta 3 auxiliares por clase. Los auxiliares ven la clase en modo lectura.</p>
+                                <div id="classAccessPanel" class="space-y-4"></div>
+                            </div>
+                        </div>
+
+                        <!-- Tab: Tareas -->
+                        <div id="modTab-tareas" class="space-y-6 hidden">
                             <div class="bg-white rounded-2xl shadow-lg p-6">
                                 <h3 class="font-display text-lg font-bold text-gray-800 mb-4">Asignar Tarea a Profesor</h3>
                                 <form onsubmit="addAssignment(event)" class="space-y-3">
@@ -735,82 +808,30 @@
                                     <button type="submit" class="form-button-primary bg-pink-600 hover:bg-pink-700">Asignar Tarea</button>
                                 </form>
                             </div>
-                        </div>
-
-                        <div class="bg-white rounded-2xl shadow-lg p-6">
-                            <div class="flex items-center justify-between mb-4">
-                                <h3 class="font-display text-lg font-bold text-gray-800">Profesores para Clases</h3>
-                                <span id="classTeachersCount" class="text-sm text-gray-500">0 profesores</span>
-                            </div>
-                            <form onsubmit="addClassTeacher(event)" class="grid grid-cols-1 md:grid-cols-3 gap-3 mb-3">
-                                <input name="classTeacherName" required placeholder="Nombre completo del profesor" class="form-input md:col-span-2">
-                                <input name="classTeacherPhone" placeholder="Teléfono (opcional)" class="form-input">
-                                <button type="submit" class="form-button-primary bg-indigo-600 hover:bg-indigo-700 md:col-span-3">Añadir al catálogo</button>
-                            </form>
-                            <p class="text-xs text-gray-500 mb-3">Este catálogo se usa para autocompletar el campo profesor al crear clases.</p>
-                            <div id="classTeachersList" class="space-y-2 text-sm text-gray-700"></div>
-                        </div>
-
-                        <div class="bg-white rounded-2xl shadow-lg p-6">
-                            <div class="flex items-center justify-between mb-4">
-                                <h3 class="font-display text-lg font-bold text-gray-800">Asignación de Profesores por Clase</h3>
-                                <button onclick="renderClassAccessPanel()" class="text-blue-600 hover:text-blue-700 text-sm font-medium">Actualizar</button>
-                            </div>
-                            <p class="text-xs text-gray-400 mb-4">Asigna 1 titular y hasta 3 auxiliares por clase. Los auxiliares ven la clase en modo lectura.</p>
-                            <div id="classAccessPanel" class="space-y-4"></div>
-                        </div>
-
-                        <div class="bg-white rounded-2xl shadow-lg p-6">
-                            <div class="flex items-center justify-between mb-4">
-                                <h3 class="font-display text-lg font-bold text-gray-800">Alumnos Registrados</h3>
-                                <span id="studentsCount" class="text-sm text-gray-500">0 alumnos</span>
-                            </div>
-                            <input id="studentsSearchInput" oninput="setStudentsSearch(this.value)" placeholder="Buscar alumno..." class="w-full mb-3 px-4 py-2 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500">
-                            <div id="studentsList" class="space-y-2 text-sm text-gray-700"></div>
-                            <div class="mt-3 flex items-center justify-between text-sm">
-                                <button onclick="changeStudentsPage(-1)" class="px-3 py-1 rounded-lg border border-gray-300 hover:bg-gray-50">Anterior</button>
-                                <span id="studentsPageInfo" class="text-gray-500">Página 1</span>
-                                <button onclick="changeStudentsPage(1)" class="px-3 py-1 rounded-lg border border-gray-300 hover:bg-gray-50">Siguiente</button>
+                            <div class="bg-white rounded-2xl shadow-lg p-6">
+                                <div class="flex items-center justify-between mb-4">
+                                    <h3 class="font-display text-lg font-bold text-gray-800">Tareas Asignadas</h3>
+                                    <span id="assignmentsCount" class="text-sm text-gray-500">0 tareas</span>
+                                </div>
+                                <input id="assignmentsSearchInput" oninput="setAssignmentsSearch(this.value)" placeholder="Buscar tarea o profesor..." class="w-full mb-3 px-4 py-2 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-pink-500">
+                                <div id="assignmentsList" class="space-y-2 text-sm text-gray-700"></div>
+                                <div class="mt-3 flex items-center justify-between text-sm">
+                                    <button onclick="changeAssignmentsPage(-1)" class="px-3 py-1 rounded-lg border border-gray-300 hover:bg-gray-50">Anterior</button>
+                                    <span id="assignmentsPageInfo" class="text-gray-500">Página 1</span>
+                                    <button onclick="changeAssignmentsPage(1)" class="px-3 py-1 rounded-lg border border-gray-300 hover:bg-gray-50">Siguiente</button>
+                                </div>
                             </div>
                         </div>
 
-                        <div class="bg-white rounded-2xl shadow-lg p-6">
-                            <div class="flex items-center justify-between mb-4">
-                                <h3 class="font-display text-lg font-bold text-gray-800">Validación de Profesores</h3>
-                                <span id="teacherApprovalsCount" class="text-sm text-gray-500">0 pendientes</span>
+                        <!-- Tab: Asistencia -->
+                        <div id="modTab-asistencia" class="space-y-6 hidden">
+                            <div class="bg-white rounded-2xl shadow-lg p-6">
+                                <div class="flex items-center justify-between mb-4">
+                                    <h3 class="font-display text-lg font-bold text-gray-800">Asistencia por Profesor</h3>
+                                    <button onclick="renderAttendanceByTeacher()" class="text-blue-600 hover:text-blue-700 text-sm font-medium">Actualizar</button>
+                                </div>
+                                <div id="attendanceByTeacher" class="space-y-2 text-sm text-gray-700"></div>
                             </div>
-                            <div id="teacherApprovalsList" class="space-y-2 text-sm text-gray-700"></div>
-                        </div>
-
-                        <div class="bg-white rounded-2xl shadow-lg p-6">
-                            <div class="flex items-center justify-between mb-4">
-                                <h3 class="font-display text-lg font-bold text-gray-800">Estado CDS de Profesores</h3>
-                                <span id="cdsStatusCount" class="text-sm text-gray-500"></span>
-                            </div>
-                            <p class="text-xs text-gray-400 mb-3">El CDS debe renovarse anualmente. Los profesores con CDS vencido no pueden dar clases.</p>
-                            <div id="cdsStatusList" class="space-y-2 text-sm text-gray-700"></div>
-                        </div>
-
-                        <div class="bg-white rounded-2xl shadow-lg p-6">
-                            <div class="flex items-center justify-between mb-4">
-                                <h3 class="font-display text-lg font-bold text-gray-800">Tareas Asignadas a Profesores</h3>
-                                <span id="assignmentsCount" class="text-sm text-gray-500">0 tareas</span>
-                            </div>
-                            <input id="assignmentsSearchInput" oninput="setAssignmentsSearch(this.value)" placeholder="Buscar tarea o profesor..." class="w-full mb-3 px-4 py-2 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-pink-500">
-                            <div id="assignmentsList" class="space-y-2 text-sm text-gray-700"></div>
-                            <div class="mt-3 flex items-center justify-between text-sm">
-                                <button onclick="changeAssignmentsPage(-1)" class="px-3 py-1 rounded-lg border border-gray-300 hover:bg-gray-50">Anterior</button>
-                                <span id="assignmentsPageInfo" class="text-gray-500">Página 1</span>
-                                <button onclick="changeAssignmentsPage(1)" class="px-3 py-1 rounded-lg border border-gray-300 hover:bg-gray-50">Siguiente</button>
-                            </div>
-                        </div>
-
-                        <div class="bg-white rounded-2xl shadow-lg p-6">
-                            <div class="flex items-center justify-between mb-4">
-                                <h3 class="font-display text-lg font-bold text-gray-800">Asistencia por Profesor</h3>
-                                <button onclick="renderAttendanceByTeacher()" class="text-blue-600 hover:text-blue-700 text-sm font-medium">Actualizar</button>
-                            </div>
-                            <div id="attendanceByTeacher" class="space-y-2 text-sm text-gray-700"></div>
                         </div>
                     </section>
 
@@ -3791,6 +3812,16 @@
         function closeStudentModal() {
             document.getElementById('studentModal').classList.remove('active');
             activeStudentModalId = null;
+        }
+
+        function showModTab(tab, triggerEl) {
+            ['alumnos','profesores','tareas','asistencia'].forEach(t => {
+                document.getElementById(`modTab-${t}`)?.classList.toggle('hidden', t !== tab);
+            });
+            document.querySelectorAll('.mod-tab-btn').forEach(btn => {
+                const active = btn.dataset.modtab === tab;
+                btn.className = `mod-tab-btn px-5 py-2 rounded-full font-medium whitespace-nowrap text-sm transition-all ${active ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'}`;
+            });
         }
 
         function showStudentTab(tab) {
