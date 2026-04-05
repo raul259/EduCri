@@ -1754,11 +1754,15 @@
                 const teacherOptions = `<option value="">Sin asignar</option>` +
                     approvedTeachers.map(t => `<option value="${escapeHtml(t.user_id)}">${escapeHtml(t.full_name)}</option>`).join('');
 
+                const uniqueAuxiliares = auxiliares.filter((a, idx, arr) =>
+                    arr.findIndex(b => b.teacher_id === a.teacher_id) === idx
+                ).slice(0, 3);
+
                 const auxSelects = [0,1,2].map(i => {
-                    const aux = auxiliares[i];
+                    const aux = uniqueAuxiliares[i];
                     return `<select class="form-input aux-select text-sm" data-aux="${i}">
+                        <option value="">Sin auxiliar</option>
                         ${approvedTeachers.map(t => `<option value="${escapeHtml(t.user_id)}" ${aux?.teacher_id === t.user_id ? 'selected' : ''}>${escapeHtml(t.full_name)}</option>`).join('')}
-                        <option value="" ${!aux ? 'selected' : ''}>Sin auxiliar</option>
                     </select>`;
                 }).join('');
 
@@ -1793,8 +1797,10 @@
                 if(titularSel && titular) titularSel.value = titular.teacher_id;
 
                 const auxSels = card.querySelectorAll('.aux-select');
-                const auxList = access.filter(a => a.role === 'auxiliar');
-                auxSels.forEach((sel, i) => { if(auxList[i]) sel.value = auxList[i].teacher_id; });
+                const auxList = access.filter(a => a.role === 'auxiliar')
+                    .filter((a, idx, arr) => arr.findIndex(b => b.teacher_id === a.teacher_id) === idx)
+                    .slice(0, 3);
+                auxSels.forEach((sel, i) => { sel.value = auxList[i]?.teacher_id || ''; });
             });
 
             panel.querySelectorAll('.save-class-access-btn').forEach(btn => {
