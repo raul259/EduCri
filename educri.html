@@ -411,6 +411,14 @@
             <!-- Main Content -->
             <main class="flex-1 overflow-y-auto bg-gray-50">
 
+                <!-- Banner cambio de sesión -->
+                <div id="switchSessionBanner" class="hidden bg-gray-800 text-white text-sm px-6 py-2 flex items-center justify-between gap-4">
+                    <span><i class="fas fa-user-circle mr-2 text-blue-400"></i>Sesión activa como <strong id="switchSessionName"></strong></span>
+                    <button onclick="logout()" class="bg-white/20 hover:bg-white/30 px-3 py-1 rounded-lg text-xs font-medium transition-colors whitespace-nowrap">
+                        <i class="fas fa-right-from-bracket mr-1"></i>No soy yo — Cambiar cuenta
+                    </button>
+                </div>
+
                 <!-- Banner CDS -->
                 <div id="cdsBanner" class="hidden px-6 pt-4">
                     <div id="cdsBannerInner" class="flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium shadow-sm"></div>
@@ -1131,6 +1139,14 @@
             renderNotifications();
             updateCdsBanner();
             updateDashboardStats();
+
+            const banner = document.getElementById('switchSessionBanner');
+            const nameEl = document.getElementById('switchSessionName');
+            if(banner && nameEl) {
+                const name = currentUser?.user_metadata?.full_name || currentUser?.email || 'Usuario';
+                nameEl.textContent = name;
+                banner.classList.remove('hidden');
+            }
         }
 
         function setLoginLoading(isLoading) {
