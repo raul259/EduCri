@@ -2,6 +2,6 @@
   "name": "educri",
   "version": "1.0.0",
   "scripts": {
-    "build": "mkdir -p public && cp educri.html public/index.html && node build-config.js"
+    "build": "mkdir -p public && cp educri.html public/index.html && cp auth.js public/auth.js && cp moderator.js public/moderator.js && cp attendance.js public/attendance.js && node build-config.js"
   }
 }
