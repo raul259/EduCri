@@ -410,7 +410,12 @@
 
             <!-- Main Content -->
             <main class="flex-1 overflow-y-auto bg-gray-50">
-                
+
+                <!-- Banner CDS -->
+                <div id="cdsBanner" class="hidden px-6 pt-4">
+                    <div id="cdsBannerInner" class="flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium shadow-sm"></div>
+                </div>
+
                 <!-- Header Desktop -->
                 <header class="hidden lg:flex items-center justify-between p-6 bg-white shadow-sm border-b border-gray-200">
                     <div>
@@ -1103,6 +1108,7 @@
             populateModeratorClassSelect();
             document.getElementById('attendanceDate').valueAsDate = new Date();
             renderNotifications();
+            updateCdsBanner();
             updateDashboardStats();
         }
 
@@ -1583,6 +1589,37 @@
             if(cds.warningLevel >= 2) return `<span class="text-xs font-semibold text-orange-500">⚠ CDS vence en ${cds.daysLeft}d</span>`;
             if(cds.warningLevel === 1) return `<span class="text-xs text-yellow-600">CDS vence en ${cds.daysLeft}d</span>`;
             return `<span class="text-xs text-green-600">CDS válido hasta ${escapeHtml(profile.cds_expiry_date)}</span>`;
+        }
+
+        function updateCdsBanner() {
+            const banner = document.getElementById('cdsBanner');
+            const inner = document.getElementById('cdsBannerInner');
+            if(!banner || !inner || currentRole !== 'profesor') { if(banner) banner.classList.add('hidden'); return; }
+            const profile = getTeacherProfileFromMetadata();
+            if(!profile.has_cds || !profile.cds_expiry_date) { banner.classList.add('hidden'); return; }
+            const cds = getCdsStatus(profile);
+            if(!cds.warningLevel && !cds.blocked) { banner.classList.add('hidden'); return; }
+            let bg, icon, msg;
+            if(cds.blocked) {
+                bg = 'bg-red-100 border border-red-300 text-red-800';
+                icon = '🚫';
+                msg = 'Tu CDS ha vencido. No puedes dar clases hasta actualizar la fecha en tu perfil.';
+            } else if(cds.warningLevel === 3) {
+                bg = 'bg-red-50 border border-red-200 text-red-700';
+                icon = '⚠️';
+                msg = `Tu CDS vence en ${cds.daysLeft} día${cds.daysLeft === 1 ? '' : 's'}. Último aviso — renuévalo ya.`;
+            } else if(cds.warningLevel === 2) {
+                bg = 'bg-orange-50 border border-orange-200 text-orange-700';
+                icon = '⚠️';
+                msg = `Tu CDS vence en ${cds.daysLeft} días. Renuévalo pronto para no perder el acceso.`;
+            } else {
+                bg = 'bg-yellow-50 border border-yellow-200 text-yellow-700';
+                icon = '⏰';
+                msg = `Tu CDS vence en ${cds.daysLeft} días. Renuévalo antes de que expire.`;
+            }
+            inner.className = `flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium shadow-sm ${bg}`;
+            inner.innerHTML = `<span class="text-lg">${icon}</span><span class="flex-1">${escapeHtml(msg)}</span><button onclick="showSection('perfil')" class="underline whitespace-nowrap ml-2">Actualizar perfil</button>`;
+            banner.classList.remove('hidden');
         }
 
         function renderTeacherApprovals() {
