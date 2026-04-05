@@ -328,7 +328,7 @@
     <div id="mainApp" class="hidden min-h-screen bg-gray-50">
         
         <!-- Header Móvil -->
-        <header class="lg:hidden bg-gradient-to-r from-blue-600 to-pink-500 text-white p-4 sticky top-0 z-40 shadow-lg">
+        <header class="md:hidden bg-gradient-to-r from-blue-600 to-pink-500 text-white p-4 sticky top-0 z-40 shadow-lg">
             <div class="flex items-center justify-between">
                 <button onclick="toggleSidebar()" class="p-2 hover:bg-white/20 rounded-lg transition-colors">
                     <i class="fas fa-bars text-xl"></i>
@@ -347,66 +347,66 @@
         <div class="flex h-screen overflow-hidden">
             
             <!-- Sidebar -->
-            <aside id="sidebar" class="fixed lg:static inset-y-0 left-0 z-50 w-64 bg-gradient-to-b from-gray-900 to-gray-800 text-white transform -translate-x-full lg:translate-x-0 transition-transform duration-300 shadow-2xl">
-                <div class="p-6 border-b border-white/10">
-                    <div class="flex items-center gap-3 mb-4">
-                        <div class="w-12 h-12 rounded-full bg-gradient-to-br from-blue-400 to-pink-400 flex items-center justify-center text-2xl shadow-lg">
+            <aside id="sidebar" class="fixed md:static inset-y-0 left-0 z-50 w-64 md:w-16 lg:w-64 bg-gradient-to-b from-gray-900 to-gray-800 text-white transform -translate-x-full md:translate-x-0 transition-transform duration-300 shadow-2xl flex-shrink-0">
+                <div class="p-4 lg:p-6 border-b border-white/10">
+                    <div class="flex items-center gap-3 mb-4 justify-center lg:justify-start">
+                        <div class="w-10 h-10 lg:w-12 lg:h-12 rounded-full bg-gradient-to-br from-blue-400 to-pink-400 flex items-center justify-center text-xl lg:text-2xl shadow-lg flex-shrink-0">
                             &#128017;
                         </div>
-                        <div>
+                        <div class="hidden lg:block">
                             <h2 class="font-display font-bold text-xl">EduCri</h2>
                             <p class="text-xs text-gray-400">Panel de Control</p>
                         </div>
                     </div>
-                    <div id="userInfo" class="text-sm text-gray-300">
+                    <div id="userInfo" class="hidden lg:block text-sm text-gray-300">
                         <p class="font-semibold text-white">Usuario</p>
                         <p class="text-xs">usuario@email.com</p>
                     </div>
                 </div>
-                
-                <nav class="p-4 space-y-2">
-                    <button onclick="showSection('dashboard', this)" data-section="dashboard" class="sidebar-item active w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left">
-                        <i class="fas fa-home w-5"></i>
-                        <span>Dashboard</span>
+
+                <nav class="p-2 lg:p-4 space-y-1 lg:space-y-2">
+                    <button onclick="showSection('dashboard', this)" data-section="dashboard" title="Dashboard" class="sidebar-item active w-full flex items-center justify-center lg:justify-start gap-3 px-3 lg:px-4 py-3 rounded-xl text-left">
+                        <i class="fas fa-home w-5 text-center"></i>
+                        <span class="hidden lg:inline">Dashboard</span>
                     </button>
-                    <button onclick="showSection('aulas', this)" data-section="aulas" class="sidebar-item w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left">
-                        <i class="fas fa-chalkboard w-5"></i>
-                        <span>Aulas</span>
-                        <span id="sidebarAulasCount" class="ml-auto bg-pink-500 text-xs px-2 py-1 rounded-full">0</span>
+                    <button onclick="showSection('aulas', this)" data-section="aulas" title="Aulas" class="sidebar-item w-full flex items-center justify-center lg:justify-start gap-3 px-3 lg:px-4 py-3 rounded-xl text-left relative">
+                        <i class="fas fa-chalkboard w-5 text-center"></i>
+                        <span class="hidden lg:inline">Aulas</span>
+                        <span id="sidebarAulasCount" class="hidden lg:inline ml-auto bg-pink-500 text-xs px-2 py-1 rounded-full">0</span>
                     </button>
-                    <button onclick="showSection('calendario', this)" data-section="calendario" class="sidebar-item w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left">
-                        <i class="fas fa-calendar-alt w-5"></i>
-                        <span>Calendario</span>
+                    <button onclick="showSection('calendario', this)" data-section="calendario" title="Calendario" class="sidebar-item w-full flex items-center justify-center lg:justify-start gap-3 px-3 lg:px-4 py-3 rounded-xl text-left">
+                        <i class="fas fa-calendar-alt w-5 text-center"></i>
+                        <span class="hidden lg:inline">Calendario</span>
                     </button>
-                    <button onclick="showSection('asistencia', this)" data-section="asistencia" class="sidebar-item w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left">
-                        <i class="fas fa-clipboard-check w-5"></i>
-                        <span>Asistencia</span>
+                    <button onclick="showSection('asistencia', this)" data-section="asistencia" title="Asistencia" class="sidebar-item w-full flex items-center justify-center lg:justify-start gap-3 px-3 lg:px-4 py-3 rounded-xl text-left">
+                        <i class="fas fa-clipboard-check w-5 text-center"></i>
+                        <span class="hidden lg:inline">Asistencia</span>
                     </button>
-                    <button onclick="showSection('notificaciones', this)" data-section="notificaciones" class="sidebar-item w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left">
-                        <i class="fas fa-bell w-5"></i>
-                        <span>Notificaciones</span>
-                        <span id="notificationsSidebarCount" class="ml-auto bg-red-500 text-xs px-2 py-1 rounded-full hidden">0</span>
+                    <button onclick="showSection('notificaciones', this)" data-section="notificaciones" title="Notificaciones" class="sidebar-item w-full flex items-center justify-center lg:justify-start gap-3 px-3 lg:px-4 py-3 rounded-xl text-left relative">
+                        <i class="fas fa-bell w-5 text-center"></i>
+                        <span class="hidden lg:inline">Notificaciones</span>
+                        <span id="notificationsSidebarCount" class="hidden lg:inline ml-auto bg-red-500 text-xs px-2 py-1 rounded-full hidden">0</span>
                     </button>
-                    <button onclick="showSection('perfil', this)" data-section="perfil" class="sidebar-item w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left">
-                        <i class="fas fa-user-gear w-5"></i>
-                        <span>Perfil</span>
+                    <button onclick="showSection('perfil', this)" data-section="perfil" title="Perfil" class="sidebar-item w-full flex items-center justify-center lg:justify-start gap-3 px-3 lg:px-4 py-3 rounded-xl text-left">
+                        <i class="fas fa-user-gear w-5 text-center"></i>
+                        <span class="hidden lg:inline">Perfil</span>
                     </button>
-                    <button onclick="showSection('moderador', this)" data-section="moderador" class="sidebar-item w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left hidden">
-                        <i class="fas fa-user-shield w-5"></i>
-                        <span>Moderador</span>
+                    <button onclick="showSection('moderador', this)" data-section="moderador" title="Moderador" class="sidebar-item w-full flex items-center justify-center lg:justify-start gap-3 px-3 lg:px-4 py-3 rounded-xl text-left hidden">
+                        <i class="fas fa-user-shield w-5 text-center"></i>
+                        <span class="hidden lg:inline">Moderador</span>
                     </button>
                 </nav>
-                
-                <div class="absolute bottom-0 left-0 right-0 p-4 border-t border-white/10">
-                    <button onclick="logout()" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-red-400 hover:bg-red-500/10 transition-colors">
-                        <i class="fas fa-sign-out-alt w-5"></i>
-                        <span>Cerrar Sesión</span>
+
+                <div class="absolute bottom-0 left-0 right-0 p-2 lg:p-4 border-t border-white/10">
+                    <button onclick="logout()" title="Cerrar Sesión" class="w-full flex items-center justify-center lg:justify-start gap-3 px-3 lg:px-4 py-3 rounded-xl text-red-400 hover:bg-red-500/10 transition-colors">
+                        <i class="fas fa-sign-out-alt w-5 text-center"></i>
+                        <span class="hidden lg:inline">Cerrar Sesión</span>
                     </button>
                 </div>
             </aside>
 
-            <!-- Overlay móvil -->
-            <div id="sidebarOverlay" onclick="toggleSidebar()" class="fixed inset-0 bg-black/50 z-40 hidden lg:hidden backdrop-blur-sm"></div>
+            <!-- Overlay solo móvil -->
+            <div id="sidebarOverlay" onclick="toggleSidebar()" class="fixed inset-0 bg-black/50 z-40 hidden md:hidden backdrop-blur-sm"></div>
 
             <!-- Main Content -->
             <main class="flex-1 overflow-y-auto bg-gray-50">
@@ -417,7 +417,7 @@
                 </div>
 
                 <!-- Header Desktop -->
-                <header class="hidden lg:flex items-center justify-between p-6 bg-white shadow-sm border-b border-gray-200">
+                <header class="hidden md:flex items-center justify-between p-6 bg-white shadow-sm border-b border-gray-200">
                     <div>
                         <h1 id="pageTitle" class="font-display text-2xl font-bold text-gray-800">Dashboard</h1>
                         <p class="text-gray-500 text-sm mt-1" id="currentDate"></p>
