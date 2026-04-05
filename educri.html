@@ -342,9 +342,6 @@
         <!-- Header Móvil -->
         <header class="lg:hidden bg-gradient-to-r from-blue-600 to-pink-500 text-white p-4 sticky top-0 z-40 shadow-lg">
             <div class="flex items-center justify-between">
-                <button onclick="toggleSidebar()" class="p-2 hover:bg-white/20 rounded-lg transition-colors">
-                    <i class="fas fa-bars text-xl"></i>
-                </button>
                 <div class="flex items-center gap-2">
                     <span class="text-2xl">&#128017;</span>
                     <span class="font-display font-bold text-xl">EduCri</span>
@@ -359,7 +356,7 @@
         <div class="flex h-screen overflow-hidden">
             
             <!-- Sidebar -->
-            <aside id="sidebar" class="fixed lg:static inset-y-0 left-0 z-50 w-64 lg:w-64 bg-gradient-to-b from-gray-900 to-gray-800 text-white transform -translate-x-full lg:translate-x-0 transition-transform duration-300 shadow-2xl flex-shrink-0">
+            <aside id="sidebar" class="hidden lg:flex lg:flex-col w-64 bg-gradient-to-b from-gray-900 to-gray-800 text-white shadow-2xl flex-shrink-0">
                 <div class="p-4 lg:p-6 border-b border-white/10">
                     <div class="flex items-center gap-3 mb-4 justify-center lg:justify-start">
                         <div class="w-10 h-10 lg:w-12 lg:h-12 rounded-full bg-gradient-to-br from-blue-400 to-pink-400 flex items-center justify-center text-xl lg:text-2xl shadow-lg flex-shrink-0">
@@ -417,8 +414,6 @@
                 </div>
             </aside>
 
-            <!-- Overlay solo móvil -->
-            <div id="sidebarOverlay" onclick="toggleSidebar()" class="fixed inset-0 bg-black/50 z-40 hidden lg:hidden backdrop-blur-sm"></div>
 
             <!-- Main Content -->
             <main class="flex-1 overflow-y-auto bg-gray-50">
