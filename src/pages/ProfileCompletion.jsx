@@ -86,14 +86,15 @@ export default function ProfileCompletion() {
 
     // Sincronizar con teacher_profiles en Supabase
     await supabase.from('teacher_profiles').upsert({
-      user_id:             user.id,
-      full_name:           profileData.full_name,
-      birth_date:          profileData.birth_date,
-      phone:               profileData.phone,
-      has_cds:             profileData.has_cds,
-      cds_expiry_date:     profileData.cds_expiry_date,
+      user_id:              user.id,
+      full_name:            profileData.full_name,
+      birth_date:           profileData.birth_date,
+      phone:                profileData.phone,
+      has_cds:              profileData.has_cds,
+      cds_expiry_date:      profileData.cds_expiry_date,
       received_holy_spirit: profileData.received_holy_spirit,
-      teaching_experience: profileData.teaching_experience,
+      teaching_experience:  profileData.teaching_experience,
+      teacher_type:         profileData.teacher_type,
     }, { onConflict: 'user_id' })
 
     showToast('Perfil completado. ¡Bienvenido!', 'success')
