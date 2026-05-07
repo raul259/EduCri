@@ -37,21 +37,24 @@ export default function AddAulaModal({ isOpen, onClose, onSave, uploadPdf }) {
     e.preventDefault()
     if (!fields.name.trim() || !fields.teacher.trim() || !fields.classroom.trim()) return
     setSaving(true)
-    let pdfUrl = null
+
+    let pdfPath = null
 
     if (pdfFile && uploadPdf) {
       setUploading(true)
       try {
-        const result = await uploadPdf(pdfFile)
-        pdfUrl = result?.signedUrl ?? null
-      } catch {
-        pdfUrl = null
+        pdfPath = await uploadPdf(pdfFile)   // ruta permanente en Storage
+      } catch (err) {
+        setUploading(false)
+        setSaving(false)
+        // Propagamos el error para que Aulas.jsx muestre un toast claro
+        throw new Error(`No se pudo subir el PDF: ${err?.message ?? 'error desconocido'}`)
       }
       setUploading(false)
     }
 
     try {
-      await onSave({ ...fields, pdfName: pdfFile?.name ?? 'temario.pdf', pdfUrl })
+      await onSave({ ...fields, pdfName: pdfFile?.name ?? 'temario.pdf', pdfPath })
       setFields(EMPTY)
       setPdfFile(null)
       setPdfLabel('Ningún archivo seleccionado')

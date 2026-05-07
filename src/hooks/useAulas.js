@@ -13,11 +13,12 @@ const COLORS = [
 const SAFE_COLOR_RE = /^from-[a-z0-9-]+ to-[a-z0-9-]+$/i
 
 const DEFAULT_AULAS = [
-  { id: 1, name: 'Corderitos',  category: 'corderitos', teacher: 'Prof. Cordero',  classroom: 'Sala C1', day: 'Lunes',      time: '09:00', description: '', pdfName: 'temario_corderitos.pdf', pdfUrl: null, color: 'from-blue-500 to-cyan-400' },
-  { id: 2, name: 'Soldaditos',  category: 'soldaditos', teacher: 'Prof. Valiente', classroom: 'Sala S1', day: 'Miércoles', time: '14:00', description: '', pdfName: 'temario_soldaditos.pdf', pdfUrl: null, color: 'from-purple-500 to-pink-500' },
-  { id: 3, name: 'Vencedores',  category: 'vencedores', teacher: 'Prof. Victoria', classroom: 'Sala V1', day: 'Viernes',   time: '11:00', description: '', pdfName: 'temario_vencedores.pdf', pdfUrl: null, color: 'from-pink-500 to-orange-400' },
+  { id: 1, name: 'Corderitos',  category: 'corderitos', teacher: 'Prof. Cordero',  classroom: 'Sala C1', day: 'Lunes',      time: '09:00', description: '', pdfName: 'temario_corderitos.pdf', pdfPath: null, color: 'from-blue-500 to-cyan-400' },
+  { id: 2, name: 'Soldaditos',  category: 'soldaditos', teacher: 'Prof. Valiente', classroom: 'Sala S1', day: 'Miércoles', time: '14:00', description: '', pdfName: 'temario_soldaditos.pdf', pdfPath: null, color: 'from-purple-500 to-pink-500' },
+  { id: 3, name: 'Vencedores',  category: 'vencedores', teacher: 'Prof. Victoria', classroom: 'Sala V1', day: 'Viernes',   time: '11:00', description: '', pdfName: 'temario_vencedores.pdf', pdfPath: null, color: 'from-pink-500 to-orange-400' },
 ]
 
+// pdf_url en BD almacena la ruta de Storage (permanente), no una URL firmada
 function mapRow(row) {
   return {
     id:          Number(row.id),
@@ -29,7 +30,7 @@ function mapRow(row) {
     time:        String(row.time        || '').trim(),
     description: String(row.description || '').trim(),
     pdfName:     String(row.pdf_name    || 'temario.pdf').trim(),
-    pdfUrl:      row.pdf_url || null,
+    pdfPath:     row.pdf_url || null,   // ruta en Storage, no URL
     color:       SAFE_COLOR_RE.test(String(row.color || ''))
                    ? String(row.color)
                    : 'from-blue-500 to-cyan-400',
@@ -103,7 +104,7 @@ export function useAulas() {
         teacher: fields.teacher, classroom: fields.classroom,
         day: fields.day, time: fields.time,
         description: fields.description, pdf_name: fields.pdfName,
-        pdf_url: fields.pdfUrl || null, color,
+        pdf_url: fields.pdfPath || null, color,  // ruta permanente de Storage
       })
       .select('id,name,category,teacher,classroom,day,time,description,pdf_name,pdf_url,color')
       .single()
@@ -122,6 +123,7 @@ export function useAulas() {
     setAulas(prev => prev.filter(a => a.id !== id))
   }
 
+  // Sube el PDF y devuelve la ruta permanente de Storage
   async function uploadPdf(file) {
     if (!supabase || !user?.id) return null
     const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_')
@@ -129,12 +131,18 @@ export function useAulas() {
 
     const { error } = await supabase.storage
       .from('syllabi').upload(path, file, { upsert: true, contentType: 'application/pdf' })
-    if (error) throw error
+    if (error) throw error   // el caller muestra el error
 
-    // Bucket privado: signed URL válida 1 hora
-    const { data } = await supabase.storage.from('syllabi').createSignedUrl(path, 3600)
-    return { path, signedUrl: data?.signedUrl ?? null }
+    return path  // devolvemos solo la ruta, no la URL firmada
   }
 
-  return { aulas, loading, addAula, deleteAula, uploadPdf, reload: load }
+  // Genera una URL firmada temporal (1h) desde la ruta de Storage
+  async function getSignedUrl(path) {
+    if (!supabase || !path) return null
+    const { data, error } = await supabase.storage.from('syllabi').createSignedUrl(path, 3600)
+    if (error) throw error
+    return data?.signedUrl ?? null
+  }
+
+  return { aulas, loading, addAula, deleteAula, uploadPdf, getSignedUrl, reload: load }
 }
