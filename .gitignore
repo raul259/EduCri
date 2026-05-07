@@ -1,3 +1,25 @@
+# Credenciales y configuración local
 config.js
+.env
+.env.local
+.env.production
+
+# Build output
+dist/
+public/
+
+# Dependencias
+node_modules/
+
+# Archivos de seguimiento local
 progress.md
 supabase_schema.sql
+
+# Editor
+.vscode/
+.idea/
+*.swp
+
+# Sistema
+.DS_Store
+Thumbs.db

@@ -4031,33 +4031,48 @@
             const today = new Date();
             const dayName = today.toLocaleDateString('es-ES', { weekday: 'long' });
             
-            const todayClasses = aulas.filter(a => 
+            const todayClasses = aulas.filter(a =>
                 a.day.toLowerCase() === dayName.toLowerCase()
             ).sort((a, b) => a.time.localeCompare(b.time));
-            
-            if(todayClasses.length === 0) {
-                container.innerHTML = '<p class="text-gray-500 text-center py-4">No hay clases programadas para hoy</p>';
+
+            const visibleTasks = getVisibleAssignments().filter(t =>
+                String(t.day || '').toLowerCase() === dayName.toLowerCase()
+            ).sort((a, b) => (a.time || '').localeCompare(b.time || ''));
+
+            if(todayClasses.length === 0 && visibleTasks.length === 0) {
+                container.innerHTML = '<p class="text-gray-500 text-center py-4">No hay clases ni tareas programadas para hoy</p>';
                 return;
             }
-            
-            container.innerHTML = todayClasses.map((aula, index) => `
-                <div class="flex items-center gap-4 p-4 bg-gradient-to-r from-gray-50 to-white rounded-xl border border-gray-100 hover:shadow-md transition-all cursor-pointer" style="animation-delay: ${index * 100}ms">
+
+            const classItems = todayClasses.map((aula, index) => `
+                <div class="flex items-center gap-4 p-4 bg-gradient-to-r from-gray-50 to-white rounded-xl border border-gray-100 hover:shadow-md transition-all" style="animation-delay: ${index * 100}ms">
                     <div class="w-16 h-16 rounded-2xl bg-gradient-to-br ${typeof aula.color === 'string' && /^from-[a-z0-9-]+\s+to-[a-z0-9-]+$/i.test(aula.color) ? aula.color : 'from-blue-500 to-cyan-400'} flex flex-col items-center justify-center text-white shadow-lg flex-shrink-0">
                         <span class="text-xs font-bold opacity-80">HOY</span>
                         <span class="text-lg font-bold">${escapeHtml(aula.time)}</span>
                     </div>
                     <div class="flex-1 min-w-0">
                         <h4 class="font-bold text-gray-800 truncate">${escapeHtml(aula.name)}</h4>
-                        <p class="text-sm text-gray-500 flex items-center gap-2">
-                            <i class="fas fa-map-marker-alt text-pink-500"></i> ${escapeHtml(aula.classroom)}
-                        </p>
+                        <p class="text-sm text-gray-500 flex items-center gap-2"><i class="fas fa-map-marker-alt text-pink-500"></i> ${escapeHtml(aula.classroom)}</p>
                         <p class="text-xs text-gray-400 mt-1">${escapeHtml(aula.teacher)}${aula.assistantTeacher ? ` · Aux: ${escapeHtml(aula.assistantTeacher)}` : ''}</p>
                     </div>
-                    <button class="w-10 h-10 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center hover:bg-blue-200 transition-colors">
-                        <i class="fas fa-chevron-right"></i>
-                    </button>
                 </div>
-            `).join('');
+            `);
+
+            const taskItems = visibleTasks.map((task, index) => `
+                <div class="flex items-center gap-4 p-4 bg-yellow-50 rounded-xl border border-yellow-200 hover:shadow-md transition-all" style="animation-delay: ${(todayClasses.length + index) * 100}ms">
+                    <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-yellow-400 to-orange-400 flex flex-col items-center justify-center text-white shadow-lg flex-shrink-0">
+                        <span class="text-xs font-bold opacity-80">TAREA</span>
+                        <span class="text-sm font-bold">${escapeHtml(task.time || '--:--')}</span>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <h4 class="font-bold text-gray-800 truncate">${escapeHtml(task.title)}</h4>
+                        <p class="text-sm text-gray-500">${escapeHtml(getCategoryName(task.class_category || 'otros'))}</p>
+                        <p class="text-xs text-gray-400 mt-1">${escapeHtml(task.teacher_name || getTeacherNameById(task.teacher_id))}</p>
+                    </div>
+                </div>
+            `);
+
+            container.innerHTML = [...classItems, ...taskItems].join('');
         }
 
         function updateDateDisplay() {

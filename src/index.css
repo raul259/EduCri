@@ -1,0 +1,69 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    font-family: 'Inter', sans-serif;
+    overflow-x: hidden;
+  }
+}
+
+@layer components {
+  .gradient-bg {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 25%, #f093fb 50%, #f5576c 75%, #667eea 100%);
+    background-size: 400% 400%;
+    animation: gradientShift 15s ease infinite;
+  }
+
+  .glass {
+    background: rgba(255, 255, 255, 0.22);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+  }
+
+  .card-hover {
+    @apply transition-all duration-300;
+  }
+  .card-hover:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 16px 32px rgba(0, 0, 0, 0.1);
+  }
+
+  .sidebar-item {
+    @apply transition-all duration-150 rounded-xl;
+  }
+  .sidebar-item:hover {
+    background: rgba(255, 255, 255, 0.1);
+  }
+  .sidebar-item.active {
+    background: rgba(255, 255, 255, 0.18);
+    border-left: 3px solid #f093fb;
+  }
+
+  .attendance-btn {
+    @apply w-10 h-10 rounded-full transition-all duration-150 flex items-center justify-center;
+  }
+  .attendance-btn.present  { @apply bg-emerald-500 text-white; }
+  .attendance-btn.absent   { @apply bg-red-500 text-white; }
+  .attendance-btn.late     { @apply bg-amber-500 text-white; }
+  .attendance-btn.inactive { @apply bg-gray-200 text-gray-500 hover:bg-gray-300; }
+
+  .pdf-upload {
+    border: 2px dashed rgba(102, 126, 234, 0.35);
+    @apply transition-all duration-200 rounded-xl;
+  }
+  .pdf-upload:hover   { border-color: #667eea; background: rgba(102, 126, 234, 0.04); }
+  .pdf-upload.dragover { border-color: #ec4899; background: rgba(236, 72, 153, 0.07); }
+}
+
+@keyframes gradientShift {
+  0%   { background-position: 0% 50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+::-webkit-scrollbar        { width: 5px; height: 5px; }
+::-webkit-scrollbar-track  { background: rgba(0,0,0,0.04); }
+::-webkit-scrollbar-thumb  { background: linear-gradient(135deg, #667eea, #ec4899); border-radius: 3px; }
