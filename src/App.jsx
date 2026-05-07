@@ -1,9 +1,10 @@
 import React from 'react'
-import { Routes, Route, Navigate } from 'react-router-dom'
+import { Routes, Route, Navigate, useLocation } from 'react-router-dom'
 import { AppProvider, useApp } from './context/AppContext'
 import ToastContainer from './components/ui/ToastContainer'
 import Layout from './components/layout/Layout'
 import Auth from './pages/Auth'
+import ProfileCompletion from './pages/ProfileCompletion'
 import Dashboard from './pages/Dashboard'
 import Aulas from './pages/Aulas'
 import Attendance from './pages/Attendance'
@@ -23,10 +24,24 @@ function Loader() {
   )
 }
 
+function isProfileComplete(user) {
+  if (!user) return false
+  const m = user.user_metadata || {}
+  return Boolean(m.phone && m.birth_date && m.teaching_experience)
+}
+
 function AuthGuard({ children }) {
-  const { session, loading } = useApp()
+  const { session, loading, user } = useApp()
+  const location = useLocation()
+
   if (loading) return <Loader />
   if (!session) return <Navigate to="/login" replace />
+
+  // Perfil incompleto → completar antes de acceder a la app
+  if (!isProfileComplete(user) && location.pathname !== '/complete-profile') {
+    return <Navigate to="/complete-profile" replace />
+  }
+
   return children
 }
 
@@ -48,7 +63,13 @@ function AppRoutes() {
     <>
       <ToastContainer />
       <Routes>
+        {/* Rutas públicas */}
         <Route path="/login" element={<GuestGuard><Auth /></GuestGuard>} />
+
+        {/* Completar perfil — autenticado pero sin Layout */}
+        <Route path="/complete-profile" element={<AuthGuard><ProfileCompletion /></AuthGuard>} />
+
+        {/* App principal */}
         <Route path="/" element={<AuthGuard><Layout /></AuthGuard>}>
           <Route index                element={<Dashboard />} />
           <Route path="aulas"         element={<Aulas />} />
@@ -58,6 +79,7 @@ function AppRoutes() {
           <Route path="perfil"        element={<Profile />} />
           <Route path="moderador"     element={<ModeratorGuard><Moderator /></ModeratorGuard>} />
         </Route>
+
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </>

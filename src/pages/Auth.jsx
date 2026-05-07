@@ -5,6 +5,24 @@ import { supabase } from '../lib/supabase'
 
 const INPUT = 'w-full px-4 py-3 rounded-xl bg-white/20 border border-white/30 text-white placeholder-white/55 focus:outline-none focus:ring-2 focus:ring-white/50 text-sm'
 
+function RoleCard({ value, selected, onChange, icon, title, description }) {
+  return (
+    <button
+      type="button"
+      onClick={() => onChange(value)}
+      className={`flex-1 flex flex-col items-center gap-1.5 p-3 rounded-xl border-2 transition-all text-center
+        ${selected
+          ? 'border-white bg-white/20 text-white'
+          : 'border-white/20 bg-white/5 text-white/60 hover:border-white/40 hover:bg-white/10'
+        }`}
+    >
+      <span className="text-2xl">{icon}</span>
+      <span className="font-semibold text-xs leading-tight">{title}</span>
+      <span className="text-[11px] leading-snug opacity-75">{description}</span>
+    </button>
+  )
+}
+
 export default function Auth() {
   const [mode, setMode] = useState('login') // login | register | reset
   const [email, setEmail]                           = useState('')
@@ -17,6 +35,7 @@ export default function Auth() {
   const [cdsExpiry, setCdsExpiry]                   = useState('')
   const [receivedHolySpirit, setReceivedHolySpirit] = useState(false)
   const [teachingExperience, setTeachingExperience] = useState('')
+  const [teacherType, setTeacherType]               = useState('titular')
 
   const { login, register, resetPassword, loginWithGoogle, submitting } = useAuth()
   const { showToast } = useApp()
@@ -35,7 +54,7 @@ export default function Auth() {
       const result = await register({
         email, password, confirmPassword,
         fullName, birthDate, phone,
-        hasCds, cdsExpiry, receivedHolySpirit, teachingExperience,
+        hasCds, cdsExpiry, receivedHolySpirit, teachingExperience, teacherType,
       })
       if (result === 'confirm') { setMode('login'); setPassword(''); setConfirmPassword('') }
 
@@ -92,6 +111,28 @@ export default function Auth() {
           {/* Campos extra — register */}
           {mode === 'register' && (
             <div className="space-y-3 pt-1 border-t border-white/20">
+              {/* Selector de rol */}
+              <div>
+                <p className="text-white/70 text-xs mb-2">¿Qué rol cumplirás?</p>
+                <div className="flex gap-2">
+                  <RoleCard
+                    value="titular"
+                    selected={teacherType === 'titular'}
+                    onChange={setTeacherType}
+                    icon="🎓"
+                    title="Profesor titular"
+                    description="Diriges tu propia clase"
+                  />
+                  <RoleCard
+                    value="auxiliar"
+                    selected={teacherType === 'auxiliar'}
+                    onChange={setTeacherType}
+                    icon="🤝"
+                    title="Ayudante"
+                    description="Apoyas al titular"
+                  />
+                </div>
+              </div>
               <input
                 type="text" placeholder="Nombre completo y apellidos"
                 value={fullName} onChange={e => setFullName(e.target.value)}

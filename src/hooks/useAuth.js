@@ -64,7 +64,7 @@ export function useAuth() {
     return true
   }
 
-  async function register({ email, password, confirmPassword, fullName, birthDate, phone, hasCds, cdsExpiry, receivedHolySpirit, teachingExperience }) {
+  async function register({ email, password, confirmPassword, fullName, birthDate, phone, hasCds, cdsExpiry, receivedHolySpirit, teachingExperience, teacherType = 'titular' }) {
     if (!isValidEmail(email))          { showToast('Correo inválido.', 'warning'); return false }
     const typo = getTypoSuggestion(email)
     if (typo)                          { showToast(`¿Quisiste escribir ${typo}?`, 'warning'); return false }
@@ -92,6 +92,7 @@ export function useAuth() {
           cds_expiry_date: hasCds && cdsExpiry ? cdsExpiry : null,
           received_holy_spirit: receivedHolySpirit,
           teaching_experience: teachingExperience.trim(),
+          teacher_type: teacherType,
         },
       },
     })
