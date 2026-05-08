@@ -3,16 +3,16 @@ import Modal from '../ui/Modal'
 
 const DAYS       = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo']
 const CATEGORIES = [
-  { value: 'corderitos', label: 'Corderitos' },
-  { value: 'soldaditos', label: 'Soldaditos' },
-  { value: 'vencedores', label: 'Vencedores' },
-  { value: 'otros',      label: 'Otros' },
+  { value: 'semillitas',     label: 'Semillitas'     },
+  { value: 'conquistadores', label: 'Conquistadores' },
+  { value: 'valientes',      label: 'Valientes'      },
+  { value: 'otros',          label: 'Otros'          },
 ]
 
 const FIELD = 'w-full px-3 py-2 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent'
 
 const EMPTY = {
-  name: '', category: 'corderitos', teacher: '',
+  name: '', category: 'semillitas', teacher: '',
   classroom: '', day: 'Lunes', time: '09:00', description: '',
 }
 

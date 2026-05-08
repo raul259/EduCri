@@ -13,9 +13,9 @@ const COLORS = [
 const SAFE_COLOR_RE = /^from-[a-z0-9-]+ to-[a-z0-9-]+$/i
 
 const DEFAULT_AULAS = [
-  { id: 1, name: 'Corderitos',  category: 'corderitos', teacher: 'Prof. Cordero',  classroom: 'Sala C1', day: 'Lunes',      time: '09:00', description: '', pdfName: 'temario_corderitos.pdf', pdfPath: null, color: 'from-blue-500 to-cyan-400' },
-  { id: 2, name: 'Soldaditos',  category: 'soldaditos', teacher: 'Prof. Valiente', classroom: 'Sala S1', day: 'Miércoles', time: '14:00', description: '', pdfName: 'temario_soldaditos.pdf', pdfPath: null, color: 'from-purple-500 to-pink-500' },
-  { id: 3, name: 'Vencedores',  category: 'vencedores', teacher: 'Prof. Victoria', classroom: 'Sala V1', day: 'Viernes',   time: '11:00', description: '', pdfName: 'temario_vencedores.pdf', pdfPath: null, color: 'from-pink-500 to-orange-400' },
+  { id: 1, name: 'Semillitas',     category: 'semillitas',     teacher: 'Prof. Semilla',   classroom: 'Sala S1', day: 'Lunes',      time: '09:00', description: '', pdfName: 'temario_semillitas.pdf',     pdfPath: null, color: 'from-blue-500 to-cyan-400' },
+  { id: 2, name: 'Conquistadores', category: 'conquistadores', teacher: 'Prof. Valiente',  classroom: 'Sala C1', day: 'Miércoles', time: '14:00', description: '', pdfName: 'temario_conquistadores.pdf', pdfPath: null, color: 'from-purple-500 to-pink-500' },
+  { id: 3, name: 'Valientes',      category: 'valientes',      teacher: 'Prof. Victoria',  classroom: 'Sala V1', day: 'Viernes',   time: '11:00', description: '', pdfName: 'temario_valientes.pdf',      pdfPath: null, color: 'from-pink-500 to-orange-400' },
 ]
 
 // pdf_url en BD almacena la ruta de Storage (permanente), no una URL firmada

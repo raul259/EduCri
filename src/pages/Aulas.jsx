@@ -7,9 +7,9 @@ import Modal from '../components/ui/Modal'
 
 const FILTERS = [
   { key: 'todas',      label: 'Todas' },
-  { key: 'corderitos', label: 'Corderitos' },
-  { key: 'soldaditos', label: 'Soldaditos' },
-  { key: 'vencedores', label: 'Vencedores' },
+  { key: 'semillitas',     label: 'Semillitas'     },
+  { key: 'conquistadores', label: 'Conquistadores' },
+  { key: 'valientes',      label: 'Valientes'      },
   { key: 'otros',      label: 'Otros' },
 ]
 

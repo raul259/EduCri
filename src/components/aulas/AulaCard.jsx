@@ -1,6 +1,6 @@
 import React from 'react'
 
-const CATEGORY_LABELS = { corderitos: 'Corderitos', soldaditos: 'Soldaditos', vencedores: 'Vencedores', otros: 'Otros' }
+const CATEGORY_LABELS = { semillitas: 'Semillitas', conquistadores: 'Conquistadores', valientes: 'Valientes', otros: 'Otros' }
 const SAFE_COLOR_RE   = /^from-[a-z0-9-]+ to-[a-z0-9-]+$/i
 
 export default function AulaCard({ aula, onViewSyllabus, onDelete }) {

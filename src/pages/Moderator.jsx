@@ -8,10 +8,10 @@ const TYPE_LABEL = { titular: 'Titular', auxiliar: 'Ayudante' }
 const TYPE_ICON  = { titular: '🎓', auxiliar: '🤝' }
 
 const CATEGORY_OPTS = [
-  { value: 'corderitos', label: 'Corderitos' },
-  { value: 'soldaditos',  label: 'Soldaditos' },
-  { value: 'vencedores',  label: 'Vencedores' },
-  { value: 'otros',       label: 'Otros' },
+  { value: 'semillitas',     label: 'Semillitas'     },
+  { value: 'conquistadores', label: 'Conquistadores' },
+  { value: 'valientes',      label: 'Valientes'      },
+  { value: 'otros',          label: 'Otros'          },
 ]
 
 // ── Hook perfiles ────────────────────────────────────────────
@@ -112,7 +112,7 @@ function StudentsTab({ approved }) {
   const { students, loading, addStudent, removeStudent } = useStudents()
   const [search,    setSearch]    = useState('')
   const [catFilter, setCatFilter] = useState('')
-  const [form,      setForm]      = useState({ fullName: '', classCategory: 'corderitos', teacherId: '' })
+  const [form,      setForm]      = useState({ fullName: '', classCategory: 'semillitas', teacherId: '' })
   const [saving,    setSaving]    = useState(false)
 
   const visible = students.filter(s => {
