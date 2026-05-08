@@ -46,13 +46,15 @@ export default function AulaCard({ aula, onViewSyllabus, onDelete }) {
             <i className="fas fa-file-pdf" aria-hidden="true" />
             Temario
           </button>
-          <button
-            onClick={() => onDelete(aula.id)}
-            className="px-3 py-2 bg-red-50 text-red-600 rounded-lg hover:bg-red-100 transition-colors"
-            aria-label={`Eliminar ${aula.name}`}
-          >
-            <i className="fas fa-trash text-sm" aria-hidden="true" />
-          </button>
+          {onDelete && (
+            <button
+              onClick={() => onDelete(aula.id)}
+              className="px-3 py-2 bg-red-50 text-red-600 rounded-lg hover:bg-red-100 transition-colors"
+              aria-label={`Eliminar ${aula.name}`}
+            >
+              <i className="fas fa-trash text-sm" aria-hidden="true" />
+            </button>
+          )}
         </div>
       </div>
     </article>
