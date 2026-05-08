@@ -10,12 +10,10 @@ export default function AulaCard({ aula, onViewSyllabus, onDelete }) {
   return (
     <article className="bg-white rounded-2xl shadow-sm overflow-hidden card-hover border border-gray-100">
       {/* Cabecera de color */}
-      <div className={`h-28 bg-gradient-to-r ${safeColor} p-5 relative overflow-hidden`}>
+      <div className={`h-28 bg-gradient-to-r ${safeColor} px-5 relative overflow-hidden flex items-center justify-center`}>
         <div className="absolute top-0 right-0 w-28 h-28 bg-white/10 rounded-full -mr-8 -mt-8" aria-hidden />
         <div className="absolute bottom-0 left-0 w-20 h-20 bg-white/10 rounded-full -ml-8 -mb-8"  aria-hidden />
-        <div className="relative z-10">
-          <h3 className="font-display text-xl font-bold text-white leading-tight truncate">{aula.name}</h3>
-        </div>
+        <h3 className="relative z-10 font-display text-2xl font-bold text-white text-center leading-tight">{aula.name}</h3>
       </div>
 
       {/* Cuerpo */}
