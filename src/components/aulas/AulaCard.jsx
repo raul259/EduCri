@@ -14,9 +14,6 @@ export default function AulaCard({ aula, onViewSyllabus, onDelete }) {
         <div className="absolute top-0 right-0 w-28 h-28 bg-white/10 rounded-full -mr-8 -mt-8" aria-hidden />
         <div className="absolute bottom-0 left-0 w-20 h-20 bg-white/10 rounded-full -ml-8 -mb-8"  aria-hidden />
         <div className="relative z-10">
-          <span className="inline-block px-2.5 py-0.5 bg-white/25 rounded-full text-white text-xs font-medium mb-2">
-            {catLabel}
-          </span>
           <h3 className="font-display text-xl font-bold text-white leading-tight truncate">{aula.name}</h3>
         </div>
       </div>
