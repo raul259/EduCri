@@ -111,17 +111,18 @@ function ActiveRow({ profile, onChangeRole }) {
 const SAFE_COLOR_RE = /^from-[a-z0-9-]+ to-[a-z0-9-]+$/i
 
 function ClasesTab({ approved }) {
-  const { showToast } = useApp()
+  const { user, showToast } = useApp()
   const [classes,     setClasses]     = useState([])
   const [loadingCls,  setLoadingCls]  = useState(true)
   const [saving,      setSaving]      = useState({})
+  const [uploading,   setUploading]   = useState({})
   const [assignments, setAssignments] = useState({})
 
   useEffect(() => {
     if (!supabase) return
     setLoadingCls(true)
     supabase.from('classes')
-      .select('id, name, category, user_id, teacher, assistant_teacher, color')
+      .select('id, name, category, user_id, teacher, assistant_teacher, color, pdf_name, pdf_url')
       .order('name')
       .then(({ data }) => {
         setClasses(data ?? [])
@@ -134,6 +135,24 @@ function ClasesTab({ approved }) {
 
   function setAssign(classId, key, value) {
     setAssignments(prev => ({ ...prev, [classId]: { ...(prev[classId] || {}), [key]: value } }))
+  }
+
+  async function handlePdfUpload(cls, file) {
+    if (!file || file.type !== 'application/pdf') { showToast('Solo se permiten archivos PDF.', 'warning'); return }
+    setUploading(prev => ({ ...prev, [cls.id]: true }))
+    try {
+      const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_')
+      const path     = `${user.id}/${Date.now()}_${safeName}`
+      const { error: upErr } = await supabase.storage.from('syllabi').upload(path, file, { upsert: true, contentType: 'application/pdf' })
+      if (upErr) throw upErr
+      await supabase.from('classes').update({ pdf_url: path, pdf_name: file.name }).eq('id', cls.id)
+      setClasses(prev => prev.map(c => c.id === cls.id ? { ...c, pdf_url: path, pdf_name: file.name } : c))
+      showToast('Temario subido correctamente.', 'success')
+    } catch {
+      showToast('No se pudo subir el PDF.', 'error')
+    } finally {
+      setUploading(prev => ({ ...prev, [cls.id]: false }))
+    }
   }
 
   async function handleSave(cls) {
@@ -232,7 +251,33 @@ function ClasesTab({ approved }) {
                 </div>
               </div>
 
-              <div className="flex justify-end">
+              {/* Temario PDF */}
+              <div className="border-t border-gray-100 pt-3">
+                <p className="text-xs font-medium text-gray-500 mb-2">📄 Temario</p>
+                <div className="flex items-center gap-3">
+                  {cls.pdf_name ? (
+                    <span className="flex items-center gap-1.5 text-xs text-green-600 bg-green-50 px-3 py-1.5 rounded-lg border border-green-200 truncate max-w-[200px]">
+                      <i className="fas fa-file-pdf text-red-400" />{cls.pdf_name}
+                    </span>
+                  ) : (
+                    <span className="text-xs text-gray-400">Sin temario subido</span>
+                  )}
+                  <label className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium cursor-pointer transition-colors
+                    ${uploading[cls.id] ? 'bg-gray-100 text-gray-400' : 'bg-blue-50 text-blue-600 hover:bg-blue-100 border border-blue-200'}`}>
+                    {uploading[cls.id]
+                      ? <><i className="fas fa-spinner fa-spin" /> Subiendo...</>
+                      : <><i className="fas fa-upload" /> {cls.pdf_name ? 'Cambiar PDF' : 'Subir PDF'}</>
+                    }
+                    <input
+                      type="file" accept="application/pdf" className="hidden"
+                      disabled={uploading[cls.id]}
+                      onChange={e => { if (e.target.files[0]) handlePdfUpload(cls, e.target.files[0]); e.target.value = '' }}
+                    />
+                  </label>
+                </div>
+              </div>
+
+              <div className="flex justify-end pt-1">
                 <button
                   onClick={() => handleSave(cls)}
                   disabled={saving[cls.id]}
