@@ -162,17 +162,13 @@ export default function Profile() {
 
       {/* ── Cabecera ── */}
       <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-        <div className="h-20 bg-gradient-to-r from-blue-500 to-pink-500" />
-        <div className="px-6 pb-6">
-          <div className="flex items-end gap-4 -mt-10 mb-4">
-            <img src={avatar} alt="" className="w-20 h-20 rounded-2xl shadow-md border-4 border-white" />
-            <div className="mb-1">
-              <h1 className="font-display text-xl font-bold text-gray-900">{name}</h1>
-              <p className="text-sm text-gray-500">{user?.email}</p>
-            </div>
-          </div>
+        <div className="h-24 bg-gradient-to-r from-blue-500 to-pink-500" />
+        <div className="px-6 pb-6 flex flex-col items-center text-center">
+          <img src={avatar} alt="" className="w-20 h-20 rounded-full shadow-md border-4 border-white -mt-10 mb-3" />
+          <h1 className="font-display text-xl font-bold text-gray-900">{name}</h1>
+          <p className="text-sm text-gray-500 mb-4">{user?.email}</p>
 
-          <div className="flex flex-wrap gap-2">
+          <div className="flex flex-wrap gap-2 justify-center">
             {role !== 'moderador' && (
               <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium border ${status.color}`}>
                 <i className={`fas ${status.icon}`} />
