@@ -107,6 +107,139 @@ function ActiveRow({ profile, onChangeRole }) {
   )
 }
 
+// ── Asignación de profesores a clases ───────────────────────
+const SAFE_COLOR_RE = /^from-[a-z0-9-]+ to-[a-z0-9-]+$/i
+
+function ClasesTab({ approved }) {
+  const { showToast } = useApp()
+  const [classes,     setClasses]     = useState([])
+  const [loadingCls,  setLoadingCls]  = useState(true)
+  const [saving,      setSaving]      = useState({})
+  const [assignments, setAssignments] = useState({})
+
+  useEffect(() => {
+    if (!supabase) return
+    setLoadingCls(true)
+    supabase.from('classes')
+      .select('id, name, category, user_id, teacher, assistant_teacher, color')
+      .order('name')
+      .then(({ data }) => {
+        setClasses(data ?? [])
+        const init = {}
+        ;(data ?? []).forEach(c => { init[c.id] = { titularId: c.user_id || '', ayudanteId: '' } })
+        setAssignments(init)
+        setLoadingCls(false)
+      })
+  }, [])
+
+  function setAssign(classId, key, value) {
+    setAssignments(prev => ({ ...prev, [classId]: { ...(prev[classId] || {}), [key]: value } }))
+  }
+
+  async function handleSave(cls) {
+    const assign  = assignments[cls.id] || {}
+    const titular = approved.find(p => p.user_id === assign.titularId)
+    const ayudante = approved.find(p => p.user_id === assign.ayudanteId)
+
+    setSaving(prev => ({ ...prev, [cls.id]: true }))
+    try {
+      await supabase.from('classes').update({
+        user_id:           assign.titularId || null,
+        teacher:           titular?.full_name  || cls.teacher,
+        assistant_teacher: ayudante?.full_name || null,
+      }).eq('id', cls.id)
+
+      if (assign.titularId) {
+        await supabase.from('students')
+          .update({ teacher_id: assign.titularId })
+          .eq('class_category', cls.category)
+      }
+
+      setClasses(prev => prev.map(c => c.id === cls.id ? {
+        ...c,
+        user_id:           assign.titularId,
+        teacher:           titular?.full_name  || c.teacher,
+        assistant_teacher: ayudante?.full_name || null,
+      } : c))
+      showToast('Asignación guardada.', 'success')
+    } catch {
+      showToast('No se pudo guardar.', 'error')
+    } finally {
+      setSaving(prev => ({ ...prev, [cls.id]: false }))
+    }
+  }
+
+  if (loadingCls) return <div className="bg-white rounded-2xl p-12 text-center text-gray-400"><i className="fas fa-spinner fa-spin text-3xl" /></div>
+  if (!classes.length) return <Empty icon="fa-chalkboard" text="No hay clases creadas." />
+
+  return (
+    <div className="space-y-4">
+      {classes.map(cls => {
+        const assign  = assignments[cls.id] || {}
+        const color   = SAFE_COLOR_RE.test(cls.color) ? cls.color : 'from-blue-500 to-cyan-400'
+        const catLabel = CATEGORY_OPTS.find(c => c.value === cls.category)?.label ?? cls.category
+        const titulares = approved.filter(p => p.teacher_type === 'titular')
+        const ayudantes = approved.filter(p => p.teacher_type === 'auxiliar')
+
+        return (
+          <div key={cls.id} className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+            <div className={`bg-gradient-to-r ${color} px-5 py-3 flex items-center gap-3`}>
+              <h3 className="font-display font-bold text-white">{cls.name}</h3>
+              <span className="text-white/70 text-xs">{catLabel}</span>
+            </div>
+
+            <div className="p-5 space-y-3">
+              {/* Info actual */}
+              {(cls.teacher || cls.assistant_teacher) && (
+                <div className="flex flex-wrap gap-2 text-xs text-gray-500">
+                  {cls.teacher         && <span className="flex items-center gap-1"><span>🎓</span>{cls.teacher}</span>}
+                  {cls.assistant_teacher && <span className="flex items-center gap-1"><span>🤝</span>{cls.assistant_teacher}</span>}
+                </div>
+              )}
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs font-medium text-gray-500 mb-1">🎓 Profesor titular</label>
+                  <select
+                    value={assign.titularId || ''}
+                    onChange={e => setAssign(cls.id, 'titularId', e.target.value)}
+                    className="w-full px-3 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
+                  >
+                    <option value="">Sin asignar</option>
+                    {titulares.map(p => <option key={p.user_id} value={p.user_id}>{p.full_name}</option>)}
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-medium text-gray-500 mb-1">🤝 Ayudante</label>
+                  <select
+                    value={assign.ayudanteId || ''}
+                    onChange={e => setAssign(cls.id, 'ayudanteId', e.target.value)}
+                    className="w-full px-3 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
+                  >
+                    <option value="">Sin asignar</option>
+                    {ayudantes.map(p => <option key={p.user_id} value={p.user_id}>{p.full_name}</option>)}
+                  </select>
+                </div>
+              </div>
+
+              <div className="flex justify-end">
+                <button
+                  onClick={() => handleSave(cls)}
+                  disabled={saving[cls.id]}
+                  className="px-5 py-2 bg-gradient-to-r from-blue-500 to-pink-500 text-white rounded-xl text-sm font-semibold hover:brightness-110 transition-all disabled:opacity-60"
+                >
+                  {saving[cls.id] ? <i className="fas fa-spinner fa-spin" /> : <><i className="fas fa-save mr-1.5" />Guardar</>}
+                </button>
+              </div>
+            </div>
+          </div>
+        )
+      })}
+    </div>
+  )
+}
+
 // ── Gestión de alumnos ───────────────────────────────────────
 function StudentsTab({ approved }) {
   const { showToast } = useApp()
@@ -272,10 +405,11 @@ export default function Moderator() {
   }
 
   const TABS = [
-    { key: 'pending',   label: 'Pendientes', count: pending.length,  color: 'text-amber-600' },
-    { key: 'active',    label: 'Profesores', count: active.length,   color: 'text-green-600' },
-    { key: 'students',  label: 'Alumnos',    count: null,            color: 'text-blue-600'  },
-    { key: 'rejected',  label: 'Rechazados', count: rejected.length, color: 'text-red-500'   },
+    { key: 'pending',   label: 'Pendientes', count: pending.length,  color: 'text-amber-600'  },
+    { key: 'active',    label: 'Profesores', count: active.length,   color: 'text-green-600'  },
+    { key: 'classes',   label: 'Clases',     count: null,            color: 'text-purple-600' },
+    { key: 'students',  label: 'Alumnos',    count: null,            color: 'text-blue-600'   },
+    { key: 'rejected',  label: 'Rechazados', count: rejected.length, color: 'text-red-500'    },
   ]
 
   return (
@@ -315,6 +449,7 @@ export default function Moderator() {
               : <Empty icon="fa-users" text="No hay profesores aprobados aún." />
           )}
 
+          {tab === 'classes'  && <ClasesTab  approved={approved} />}
           {tab === 'students' && <StudentsTab approved={approved} />}
 
           {tab === 'rejected' && (
