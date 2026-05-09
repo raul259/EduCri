@@ -99,6 +99,13 @@ export function useAuth() {
 
     if (error) { setSubmitting(false); showToast(authError(error, 'register'), 'error'); return false }
 
+    // Supabase devuelve identities vacío cuando el email ya está registrado (con confirmación activa)
+    if (data.user?.identities?.length === 0) {
+      setSubmitting(false)
+      showToast('Ese correo ya está registrado. Inicia sesión.', 'warning')
+      return false
+    }
+
     // Crear perfil de profesor en estado pendiente para que aparezca en el panel del moderador
     if (data.user) {
       await supabase.from('teacher_profiles').upsert({
