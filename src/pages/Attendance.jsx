@@ -73,9 +73,8 @@ export default function Attendance() {
     setSearch('')
   }
 
-  // Al cambiar clase o fecha, resetear para que el profesor pulse Cargar explícitamente
-  function handleAulaChange(id) { setSelectedAulaId(id); setLoaded(false) }
-  function handleDateChange(d)  { setDate(d);             setLoaded(false) }
+  function handleAulaChange(id) { setSelectedAulaId(id); if (id && date)           setLoaded(true); else setLoaded(false) }
+  function handleDateChange(d)  { setDate(d);             if (selectedAulaId && d) setLoaded(true); else setLoaded(false) }
 
   const filtered = students.filter(s =>
     !search || s.full_name.toLowerCase().includes(search.toLowerCase())
