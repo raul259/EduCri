@@ -5,7 +5,7 @@ import { useApp } from '../../context/AppContext'
 const NAV_ITEMS = [
   { to: '/',            icon: 'fa-home',           label: 'Dashboard',    roles: ['profesor', 'moderador'] },
   { to: '/aulas',       icon: 'fa-chalkboard',     label: 'Aulas',        roles: ['moderador'] },
-  { to: '/calendario',  icon: 'fa-calendar-alt',   label: 'Calendario',   roles: ['moderador'] },
+  { to: '/calendario',  icon: 'fa-calendar-alt',   label: 'Calendario',   roles: ['profesor', 'moderador'] },
   { to: '/asistencia',  icon: 'fa-clipboard-check', label: 'Asistencia',  roles: ['profesor', 'moderador'] },
   { to: '/notificaciones', icon: 'fa-bell',        label: 'Notificaciones', roles: ['profesor', 'moderador'] },
   { to: '/perfil',      icon: 'fa-user-gear',      label: 'Perfil',       roles: ['profesor', 'moderador'] },

@@ -5,6 +5,7 @@ import { useApp } from '../../context/AppContext'
 const PROFESOR_ITEMS = [
   { to: '/',               icon: 'fa-home',            label: 'Inicio'     },
   { to: '/asistencia',     icon: 'fa-clipboard-check', label: 'Asistencia' },
+  { to: '/calendario',     icon: 'fa-calendar-alt',    label: 'Calendario' },
   { to: '/notificaciones', icon: 'fa-bell',            label: 'Avisos'     },
   { to: '/perfil',         icon: 'fa-user-gear',       label: 'Perfil'     },
 ]
