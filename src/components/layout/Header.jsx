@@ -1,6 +1,7 @@
 import React from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { useApp } from '../../context/AppContext'
+import { useUnreadCount } from '../../hooks/useUnreadCount'
 
 const TITLES = {
   '/':               'Dashboard',
@@ -14,6 +15,7 @@ const TITLES = {
 
 export default function Header() {
   const { user, role } = useApp()
+  const unread = useUnreadCount()
   const location = useLocation()
   const navigate = useNavigate()
   const title  = TITLES[location.pathname] ?? 'EduCri'
@@ -36,6 +38,11 @@ export default function Header() {
           aria-label="Notificaciones"
         >
           <i className="fas fa-bell text-lg" aria-hidden="true" />
+          {unread > 0 && (
+            <span className="absolute top-1 right-1 w-4 h-4 bg-red-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center">
+              {unread > 9 ? '9+' : unread}
+            </span>
+          )}
         </button>
         <div className="flex items-center gap-3 pl-4 border-l border-gray-200">
           <img src={avatar} alt="" className="w-9 h-9 rounded-full shadow-sm" loading="lazy" />
