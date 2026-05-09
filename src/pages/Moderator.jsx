@@ -147,7 +147,18 @@ function ClasesTab({ approved }) {
       if (upErr) throw upErr
       await supabase.from('classes').update({ pdf_url: path, pdf_name: file.name }).eq('id', cls.id)
       setClasses(prev => prev.map(c => c.id === cls.id ? { ...c, pdf_url: path, pdf_name: file.name } : c))
-      showToast('Temario subido correctamente.', 'success')
+
+      // Notificar al profesor asignado
+      if (cls.user_id) {
+        await supabase.from('teacher_tasks').insert({
+          teacher_id:     cls.user_id,
+          class_category: cls.category,
+          title:          `Nuevo temario disponible: ${cls.name}`,
+          notes:          'El moderador ha subido el temario para tu clase. Ya puedes verlo desde el apartado Aulas.',
+          assigned_by:    user.id,
+        })
+      }
+      showToast('Temario subido y profesor notificado.', 'success')
     } catch {
       showToast('No se pudo subir el PDF.', 'error')
     } finally {

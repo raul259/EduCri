@@ -39,7 +39,7 @@ function mapRow(row) {
 }
 
 export function useAulas() {
-  const { user, showToast } = useApp()
+  const { user, role, showToast } = useApp()
   const [aulas, setAulas]     = useState([])
   const [loading, setLoading] = useState(true)
 
@@ -51,11 +51,11 @@ export function useAulas() {
     }
 
     setLoading(true)
-    const { data, error } = await supabase
+    let query = supabase
       .from('classes')
       .select('id,name,category,teacher,classroom,day,time,description,pdf_name,pdf_url,color')
-      .eq('user_id', user.id)
-      .order('id', { ascending: true })
+    if (role !== 'moderador') query = query.eq('user_id', user.id)
+    const { data, error } = await query.order('id', { ascending: true })
 
     if (error) {
       console.error('Error loading aulas', error)
@@ -95,7 +95,7 @@ export function useAulas() {
       setAulas(data.map(mapRow))
     }
     setLoading(false)
-  }, [user, showToast])
+  }, [user, role, showToast])
 
   useEffect(() => { load() }, [load])
 
