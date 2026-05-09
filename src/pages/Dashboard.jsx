@@ -33,7 +33,16 @@ function StatCard({ title, value, icon, variant = 'blue' }) {
   )
 }
 
-function UpcomingCard({ aula }) {
+function getNextSunday(fromToday = false) {
+  const today = new Date()
+  const day = today.getDay()
+  const diff = fromToday && day === 0 ? 7 : (day === 0 ? 0 : 7 - day)
+  const sun = new Date(today)
+  sun.setDate(today.getDate() + diff)
+  return sun
+}
+
+function AulaRow({ aula, label }) {
   const navigate = useNavigate()
   const safeColor = SAFE_COLOR_RE.test(aula.color) ? aula.color : 'from-blue-500 to-cyan-400'
   return (
@@ -42,7 +51,7 @@ function UpcomingCard({ aula }) {
       className="flex items-center gap-4 p-4 bg-white rounded-xl border border-gray-100 hover:shadow-md transition-all cursor-pointer"
     >
       <div className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${safeColor} flex flex-col items-center justify-center text-white shadow flex-shrink-0`}>
-        <span className="text-[10px] font-bold opacity-80 uppercase">HOY</span>
+        <span className="text-[10px] font-bold opacity-80 uppercase">{label}</span>
         <span className="text-base font-bold leading-none">{aula.time}</span>
       </div>
       <div className="flex-1 min-w-0">
@@ -64,9 +73,10 @@ export default function Dashboard() {
   const [attendancePct, setAttendancePct] = useState(null)
   const [loadingStats, setLoadingStats]   = useState(false)
 
-  const todayName    = DAYS_ES[new Date().getDay()]
-  const todayClasses = aulas.filter(a => String(a.day || '').toLowerCase() === todayName)
-    .sort((a, b) => a.time.localeCompare(b.time))
+  const isToday      = new Date().getDay() === 0        // domingo = 0
+  const todayClasses = isToday ? [...aulas].sort((a, b) => a.time.localeCompare(b.time)) : []
+  const nextSunday   = getNextSunday(isToday)           // próximo domingo (si hoy es domingo, el siguiente)
+  const nextSundayStr = nextSunday.toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long' })
 
   useEffect(() => {
     if (!supabase || !user?.id) return
@@ -95,20 +105,40 @@ export default function Dashboard() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Clases de hoy */}
+        {/* Clases de hoy — solo si es domingo */}
+        {isToday && (
+          <section className="bg-white rounded-2xl shadow-sm p-6 lg:col-span-2">
+            <h2 className="font-display font-bold text-gray-800 mb-4 flex items-center gap-2">
+              <i className="fas fa-calendar-day text-blue-500" aria-hidden="true" />
+              Clases de hoy
+            </h2>
+            {aulasLoading ? (
+              <p className="text-gray-400 text-sm">Cargando...</p>
+            ) : (
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                {todayClasses.map(a => <AulaRow key={a.id} aula={a} label="HOY" />)}
+              </div>
+            )}
+          </section>
+        )}
+
+        {/* Próxima clase */}
         <section className="bg-white rounded-2xl shadow-sm p-6">
-          <h2 className="font-display font-bold text-gray-800 mb-4 flex items-center gap-2">
-            <i className="fas fa-calendar-day text-blue-500" aria-hidden="true" />
-            Clases de hoy
+          <h2 className="font-display font-bold text-gray-800 mb-1 flex items-center gap-2">
+            <i className="fas fa-calendar-alt text-pink-500" aria-hidden="true" />
+            Próxima clase
           </h2>
+          <p className="text-xs text-gray-400 capitalize mb-4">{nextSundayStr}</p>
           {aulasLoading ? (
             <p className="text-gray-400 text-sm">Cargando...</p>
-          ) : todayClasses.length ? (
+          ) : aulas.length ? (
             <div className="space-y-3">
-              {todayClasses.map(a => <UpcomingCard key={a.id} aula={a} />)}
+              {[...aulas].sort((a, b) => a.time.localeCompare(b.time)).map(a => (
+                <AulaRow key={a.id} aula={a} label={nextSunday.toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit' })} />
+              ))}
             </div>
           ) : (
-            <p className="text-gray-400 text-sm py-4 text-center">No hay clases programadas para hoy.</p>
+            <p className="text-gray-400 text-sm py-4 text-center">No hay clases configuradas.</p>
           )}
         </section>
 
