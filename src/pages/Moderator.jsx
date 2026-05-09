@@ -306,12 +306,22 @@ function ClasesTab({ approved }) {
 }
 
 // ── Gestión de alumnos ───────────────────────────────────────
+function calcAge(birthDate) {
+  if (!birthDate) return null
+  const b = new Date(birthDate)
+  const today = new Date()
+  let age = today.getFullYear() - b.getFullYear()
+  const m = today.getMonth() - b.getMonth()
+  if (m < 0 || (m === 0 && today.getDate() < b.getDate())) age--
+  return age
+}
+
 function StudentsTab({ approved }) {
   const { showToast } = useApp()
   const { students, loading, addStudent, removeStudent } = useStudents()
   const [search,    setSearch]    = useState('')
   const [catFilter, setCatFilter] = useState('')
-  const [form,      setForm]      = useState({ fullName: '', classCategory: 'semillitas', teacherId: '' })
+  const [form,      setForm]      = useState({ fullName: '', classCategory: 'semillitas', teacherId: '', birthDate: '', authorized: false, parentName: '', parentPhone: '' })
   const [saving,    setSaving]    = useState(false)
 
   const visible = students.filter(s => {
@@ -330,7 +340,7 @@ function StudentsTab({ approved }) {
     try {
       await addStudent(form)
       showToast('Alumno añadido.', 'success')
-      setForm(prev => ({ ...prev, fullName: '' }))
+      setForm(prev => ({ ...prev, fullName: '', birthDate: '', parentName: '', parentPhone: '', authorized: false }))
     } catch (err) {
       showToast(err?.message || 'No se pudo añadir el alumno.', 'error')
     } finally {
@@ -353,27 +363,35 @@ function StudentsTab({ approved }) {
       {/* Formulario añadir */}
       <form onSubmit={handleAdd} className="bg-white rounded-2xl shadow-sm p-5 space-y-3">
         <h3 className="font-semibold text-gray-800 text-sm">Añadir alumno</h3>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-          <input
-            type="text" placeholder="Nombre completo *"
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+          <input type="text" placeholder="Nombre completo *" required
             value={form.fullName} onChange={e => setForm(p => ({ ...p, fullName: e.target.value }))}
-            className="px-3 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-blue-300 lg:col-span-1"
-            required
-          />
-          <select
-            value={form.classCategory} onChange={e => setForm(p => ({ ...p, classCategory: e.target.value }))}
-            className="px-3 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-blue-300"
-          >
+            className="px-3 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-blue-300" />
+          <select value={form.classCategory} onChange={e => setForm(p => ({ ...p, classCategory: e.target.value }))}
+            className="px-3 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-blue-300">
             {CATEGORY_OPTS.map(c => <option key={c.value} value={c.value}>{c.label}</option>)}
           </select>
-          <select
-            value={form.teacherId} onChange={e => setForm(p => ({ ...p, teacherId: e.target.value }))}
-            className="px-3 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-blue-300"
-            required
-          >
+          <select value={form.teacherId} onChange={e => setForm(p => ({ ...p, teacherId: e.target.value }))} required
+            className="px-3 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-blue-300">
             <option value="">Profesor responsable *</option>
             {approved.map(p => <option key={p.user_id} value={p.user_id}>{p.full_name} ({TYPE_LABEL[p.teacher_type]})</option>)}
           </select>
+          <input type="date" placeholder="Fecha nacimiento"
+            value={form.birthDate} onChange={e => setForm(p => ({ ...p, birthDate: e.target.value }))}
+            className="px-3 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-blue-300" />
+          <input type="text" placeholder="Nombre del padre/madre"
+            value={form.parentName} onChange={e => setForm(p => ({ ...p, parentName: e.target.value }))}
+            className="px-3 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-blue-300" />
+          <input type="tel" placeholder="Teléfono del padre/madre"
+            value={form.parentPhone} onChange={e => setForm(p => ({ ...p, parentPhone: e.target.value }))}
+            className="px-3 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-blue-300" />
+        </div>
+        <div className="flex items-center justify-between">
+          <label className="flex items-center gap-2 cursor-pointer text-sm text-gray-700">
+            <input type="checkbox" checked={form.authorized} onChange={e => setForm(p => ({ ...p, authorized: e.target.checked }))}
+              className="w-4 h-4 rounded accent-blue-500" />
+            Autorizado por los padres
+          </label>
           <button type="submit" disabled={saving} className="px-4 py-2.5 bg-gradient-to-r from-blue-500 to-pink-500 text-white rounded-xl text-sm font-semibold hover:brightness-110 transition-all disabled:opacity-60">
             {saving ? <i className="fas fa-spinner fa-spin" /> : <><i className="fas fa-plus mr-1.5" />Añadir</>}
           </button>
@@ -414,10 +432,18 @@ function StudentsTab({ approved }) {
                     {s.full_name.charAt(0).toUpperCase()}
                   </div>
                   <div className="min-w-0">
-                    <p className="font-medium text-gray-800 truncate text-sm">{s.full_name}</p>
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <p className="font-medium text-gray-800 truncate text-sm">{s.full_name}</p>
+                      {s.authorized
+                        ? <span className="text-xs px-1.5 py-0.5 bg-green-100 text-green-600 rounded-full">✓ Autorizado</span>
+                        : <span className="text-xs px-1.5 py-0.5 bg-red-100 text-red-500 rounded-full">✗ Sin autorizar</span>
+                      }
+                    </div>
                     <p className="text-xs text-gray-400">
                       {CATEGORY_OPTS.find(c => c.value === s.class_category)?.label ?? s.class_category}
-                      {s.teacher_id && <> · {teacherMap[s.teacher_id] ?? 'Profesor'}</>}
+                      {s.birth_date && <> · {calcAge(s.birth_date)} años</>}
+                      {s.parent_name && <> · {s.parent_name}</>}
+                      {s.parent_phone && <> · {s.parent_phone}</>}
                     </p>
                   </div>
                 </div>

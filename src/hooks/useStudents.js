@@ -13,7 +13,7 @@ export function useStudents() {
 
     const { data, error } = await supabase
       .from('students')
-      .select('id, full_name, class_category, teacher_id, created_at')
+      .select('id, full_name, class_category, teacher_id, birth_date, authorized, parent_name, parent_phone, created_at')
       .is('deleted_at', null)
       .order('full_name', { ascending: true })
 
@@ -28,16 +28,20 @@ export function useStudents() {
 
   useEffect(() => { load() }, [load])
 
-  async function addStudent({ fullName, classCategory, teacherId }) {
+  async function addStudent({ fullName, classCategory, teacherId, birthDate, authorized, parentName, parentPhone }) {
     const { data, error } = await supabase
       .from('students')
       .insert({
         full_name:      fullName.trim(),
         class_category: classCategory,
-        teacher_id:     teacherId || null,
+        teacher_id:     teacherId   || null,
+        birth_date:     birthDate   || null,
+        authorized:     authorized  ?? false,
+        parent_name:    parentName  || null,
+        parent_phone:   parentPhone || null,
         created_by:     user.id,
       })
-      .select('id, full_name, class_category, teacher_id')
+      .select('id, full_name, class_category, teacher_id, birth_date, authorized, parent_name, parent_phone')
       .single()
 
     if (error) throw error
