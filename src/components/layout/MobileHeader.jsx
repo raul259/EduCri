@@ -5,8 +5,11 @@ import { useUnreadCount } from '../../hooks/useUnreadCount'
 
 export default function MobileHeader() {
   const navigate  = useNavigate()
-  const { signOut } = useApp()
+  const { signOut, role, teacherProfile } = useApp()
   const unread = useUnreadCount()
+  const roleLabel = role === 'moderador'
+    ? 'Moderador'
+    : teacherProfile?.teacher_type === 'auxiliar' ? 'Ayudante' : 'Profesor titular'
 
   async function handleLogout() {
     if (!window.confirm('¿Cerrar sesión?')) return
@@ -18,7 +21,10 @@ export default function MobileHeader() {
     <header className="lg:hidden bg-gradient-to-r from-blue-600 to-pink-500 text-white px-4 py-3 sticky top-0 z-40 shadow-md flex items-center justify-between">
       <div className="flex items-center gap-2">
         <span className="text-2xl" aria-hidden>🐑</span>
-        <span className="font-display font-bold text-xl">EduCri</span>
+        <div>
+          <span className="font-display font-bold text-xl block leading-none">EduCri</span>
+          <span className="text-white/70 text-xs">{roleLabel}</span>
+        </div>
       </div>
       <div className="flex items-center gap-1">
         <button

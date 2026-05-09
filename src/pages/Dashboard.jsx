@@ -96,13 +96,15 @@ export default function Dashboard() {
 
   return (
     <div className="space-y-6">
-      {/* Stats */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <StatCard title="Total Aulas"   value={aulasLoading ? '—' : aulas.length}      icon="fa-chalkboard"     variant="blue" />
-        <StatCard title="Clases Hoy"   value={aulasLoading ? '—' : todayClasses.length} icon="fa-clock"          variant="pink" />
-        <StatCard title="Asistencia"   value={loadingStats || attendancePct === null ? '—' : `${attendancePct}%`} icon="fa-users" variant="purple" />
-        <StatCard title="Sección"      value={role === 'moderador' ? 'Mod' : 'Prof'}    icon="fa-user-graduate"  variant="yellow" />
-      </div>
+      {/* Stats — solo moderador */}
+      {role === 'moderador' && (
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+          <StatCard title="Total Aulas" value={aulasLoading ? '—' : aulas.length}                                    icon="fa-chalkboard"    variant="blue"   />
+          <StatCard title="Clases Hoy"  value={aulasLoading ? '—' : todayClasses.length}                             icon="fa-clock"         variant="pink"   />
+          <StatCard title="Asistencia"  value={loadingStats || attendancePct === null ? '—' : `${attendancePct}%`}   icon="fa-users"         variant="purple" />
+          <StatCard title="Sección"     value="Mod"                                                                   icon="fa-user-graduate" variant="yellow" />
+        </div>
+      )}
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Clases de hoy — solo si es domingo */}
