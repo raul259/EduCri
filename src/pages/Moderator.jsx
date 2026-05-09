@@ -38,12 +38,16 @@ function useTeacherProfiles() {
   async function approve(userId) {
     const { error } = await supabase.from('teacher_profiles').update({ approval_status: 'approved', approval_notes: null }).eq('user_id', userId)
     if (error) throw error
+    // Desbloquear login por si fue rechazado previamente
+    await supabase.rpc('unban_teacher', { p_user_id: userId })
     setProfiles(prev => prev.map(p => p.user_id === userId ? { ...p, approval_status: 'approved', approval_notes: null } : p))
   }
 
   async function reject(userId, notes) {
     const { error } = await supabase.from('teacher_profiles').update({ approval_status: 'rejected', approval_notes: notes || null }).eq('user_id', userId)
     if (error) throw error
+    // Bloquear login del usuario rechazado
+    await supabase.rpc('ban_teacher', { p_user_id: userId })
     setProfiles(prev => prev.map(p => p.user_id === userId ? { ...p, approval_status: 'rejected', approval_notes: notes } : p))
   }
 
