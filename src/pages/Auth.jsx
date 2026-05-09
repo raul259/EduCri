@@ -25,6 +25,14 @@ function RoleCard({ value, selected, onChange, icon, title, description }) {
 
 export default function Auth() {
   const [mode, setMode] = useState('login') // login | register | reset
+
+  function changeMode(newMode) {
+    setMode(newMode)
+    setPassword('')
+    setConfirmPassword('')
+    setShowPwd(false)
+    setShowPwd2(false)
+  }
   const [email, setEmail]                           = useState('')
   const [password, setPassword]                     = useState('')
   const [confirmPassword, setConfirmPassword]       = useState('')
@@ -58,11 +66,11 @@ export default function Auth() {
         fullName, birthDate, phone,
         hasCds, cdsExpiry, receivedHolySpirit, teachingExperience, teacherType,
       })
-      if (result === 'confirm') { setMode('login'); setPassword(''); setConfirmPassword('') }
+      if (result === 'confirm') { changeMode('login') }
 
     } else {
       const ok = await resetPassword(email)
-      if (ok) setMode('login')
+      if (ok) changeMode('login')
     }
   }
 
@@ -224,9 +232,9 @@ export default function Auth() {
           {mode === 'login' && (
             <>
               <span>¿No tienes cuenta? </span>
-              <button onClick={() => setMode('register')} className="text-white font-semibold hover:underline">Regístrate</button>
+              <button onClick={() => changeMode('register')} className="text-white font-semibold hover:underline">Regístrate</button>
               <div className="mt-2">
-                <button onClick={() => setMode('reset')} className="text-white/50 text-xs hover:text-white/80 hover:underline">
+                <button onClick={() => changeMode('reset')} className="text-white/50 text-xs hover:text-white/80 hover:underline">
                   ¿Olvidaste tu contraseña?
                 </button>
               </div>
@@ -235,13 +243,13 @@ export default function Auth() {
           {mode === 'register' && (
             <>
               <span>¿Ya tienes cuenta? </span>
-              <button onClick={() => setMode('login')} className="text-white font-semibold hover:underline">Inicia sesión</button>
+              <button onClick={() => changeMode('login')} className="text-white font-semibold hover:underline">Inicia sesión</button>
             </>
           )}
           {mode === 'reset' && (
             <>
               <span>¿Recuerdas tu contraseña? </span>
-              <button onClick={() => setMode('login')} className="text-white font-semibold hover:underline">Inicia sesión</button>
+              <button onClick={() => changeMode('login')} className="text-white font-semibold hover:underline">Inicia sesión</button>
             </>
           )}
         </div>
