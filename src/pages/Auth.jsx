@@ -113,7 +113,9 @@ export default function Auth() {
             <div className="relative">
               <input
                 type={showPwd2 ? 'text' : 'password'} placeholder="Confirmar contraseña"
-                value={confirmPassword} onChange={e => setConfirmPassword(e.target.value)}
+                value={confirmPassword}
+                onChange={e => setConfirmPassword(e.target.value)}
+                onBlur={e => { if (e.target.value && e.target.value !== password) showToast('Las contraseñas no coinciden.', 'warning') }}
                 className={INPUT + ' pr-10'} required autoComplete="new-password"
               />
               <button type="button" onClick={() => setShowPwd2(p => !p)}
