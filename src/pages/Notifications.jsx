@@ -1,6 +1,15 @@
 import React, { useState, useEffect, useCallback } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { useApp } from '../context/AppContext'
 import { supabase } from '../lib/supabase'
+
+function getTaskRoute(task) {
+  const title = (task.title || '').toLowerCase()
+  if (title.includes('pendiente de aprobación')) return '/moderador'
+  if (title.includes('temario'))                 return '/aulas'
+  if (title.includes('asistencia'))              return '/asistencia'
+  return null
+}
 
 function useNotifications() {
   const { user, showToast } = useApp()
@@ -47,6 +56,13 @@ const CATEGORY_LABELS = {
 export default function Notifications() {
   const { teacherProfile, role } = useApp()
   const { tasks, loading, markDone } = useNotifications()
+  const navigate = useNavigate()
+
+  async function handleClick(task) {
+    await markDone(task.id)
+    const route = getTaskRoute(task)
+    if (route) navigate(route)
+  }
 
   return (
     <div className="max-w-2xl mx-auto space-y-5">
@@ -102,37 +118,42 @@ export default function Notifications() {
           </div>
         ) : (
           <div className="space-y-3">
-            {tasks.map(task => (
-              <div key={task.id} className="flex items-start gap-3 p-4 bg-blue-50 border border-blue-100 rounded-xl">
-                <i className="fas fa-bell text-blue-400 mt-0.5 flex-shrink-0" />
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-semibold text-gray-800">{task.title}</p>
-                  {task.notes && (
-                    <p className="text-xs text-gray-500 mt-0.5">{task.notes}</p>
-                  )}
-                  <div className="flex flex-wrap gap-3 mt-1.5">
-                    {task.class_category && (
-                      <span className="text-xs text-blue-500">
-                        <i className="fas fa-chalkboard mr-1" />
-                        {CATEGORY_LABELS[task.class_category] ?? task.class_category}
-                      </span>
-                    )}
-                    {task.created_at && (
-                      <span className="text-xs text-gray-400">
-                        <i className="fas fa-clock mr-1" />
-                        {new Date(task.created_at).toLocaleDateString('es-ES')}
-                      </span>
-                    )}
-                  </div>
-                </div>
-                <button
-                  onClick={() => markDone(task.id)}
-                  className="px-3 py-1.5 text-xs font-medium text-blue-600 bg-white border border-blue-200 rounded-lg hover:bg-blue-50 transition-colors flex-shrink-0"
+            {tasks.map(task => {
+              const hasRoute = Boolean(getTaskRoute(task))
+              return (
+                <div
+                  key={task.id}
+                  onClick={() => handleClick(task)}
+                  className={`flex items-start gap-3 p-4 bg-blue-50 border border-blue-100 rounded-xl transition-all
+                    ${hasRoute ? 'cursor-pointer hover:bg-blue-100 hover:shadow-sm' : ''}`}
                 >
-                  Marcar leído
-                </button>
-              </div>
-            ))}
+                  <i className="fas fa-bell text-blue-400 mt-0.5 flex-shrink-0" />
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-semibold text-gray-800">{task.title}</p>
+                    {task.notes && (
+                      <p className="text-xs text-gray-500 mt-0.5">{task.notes}</p>
+                    )}
+                    <div className="flex flex-wrap gap-3 mt-1.5">
+                      {task.class_category && (
+                        <span className="text-xs text-blue-500">
+                          <i className="fas fa-chalkboard mr-1" />
+                          {CATEGORY_LABELS[task.class_category] ?? task.class_category}
+                        </span>
+                      )}
+                      {task.created_at && (
+                        <span className="text-xs text-gray-400">
+                          <i className="fas fa-clock mr-1" />
+                          {new Date(task.created_at).toLocaleDateString('es-ES')}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                  {hasRoute && (
+                    <i className="fas fa-chevron-right text-blue-300 text-xs mt-1 flex-shrink-0" />
+                  )}
+                </div>
+              )
+            })}
           </div>
         )}
       </div>
