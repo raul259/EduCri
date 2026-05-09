@@ -96,10 +96,27 @@ export function useAuth() {
         },
       },
     })
-    setSubmitting(false)
 
-    if (error) { showToast(authError(error, 'register'), 'error'); return false }
-    if (!data.session) return 'confirm' // email confirmation required
+    if (error) { setSubmitting(false); showToast(authError(error, 'register'), 'error'); return false }
+
+    // Crear perfil de profesor en estado pendiente para que aparezca en el panel del moderador
+    if (data.user) {
+      await supabase.from('teacher_profiles').upsert({
+        user_id:              data.user.id,
+        full_name:            fullName.trim(),
+        birth_date:           birthDate,
+        phone:                phone.trim(),
+        has_cds:              hasCds,
+        cds_expiry_date:      hasCds && cdsExpiry ? cdsExpiry : null,
+        received_holy_spirit: receivedHolySpirit,
+        teaching_experience:  teachingExperience.trim(),
+        teacher_type:         teacherType,
+        approval_status:      'pending',
+      }, { onConflict: 'user_id' })
+    }
+
+    setSubmitting(false)
+    if (!data.session) return 'confirm'
     return true
   }
 
