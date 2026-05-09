@@ -162,9 +162,10 @@ export default function Attendance() {
           {loaded && students.length > 0 && (
             <button
               onClick={() => exportCSV(students, records, selectedAula?.name ?? 'clase', date)}
-              className="px-4 py-2.5 bg-emerald-50 text-emerald-700 rounded-xl text-sm font-medium hover:bg-emerald-100 transition-colors"
+              className="px-3 py-2.5 bg-emerald-50 text-emerald-700 rounded-xl text-sm font-medium hover:bg-emerald-100 transition-colors"
+              aria-label="Exportar CSV"
             >
-              <i className="fas fa-file-csv mr-2" />CSV
+              <i className="fas fa-download" />
             </button>
           )}
         </div>
