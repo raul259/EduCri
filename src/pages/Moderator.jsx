@@ -420,7 +420,7 @@ function StudentsTab({ approved }) {
           <label className="flex items-center gap-2 cursor-pointer text-sm text-gray-700">
             <input type="checkbox" checked={form.authorized} onChange={e => setForm(p => ({ ...p, authorized: e.target.checked }))}
               className="w-4 h-4 rounded accent-blue-500" />
-            Autorizado por los padres
+            Consentimiento firmado en secretaría (clases + uso de imagen)
           </label>
           <button type="submit" disabled={saving} className="px-4 py-2.5 bg-gradient-to-r from-blue-500 to-pink-500 text-white rounded-xl text-sm font-semibold hover:brightness-110 transition-all disabled:opacity-60">
             {saving ? <i className="fas fa-spinner fa-spin" /> : <><i className="fas fa-plus mr-1.5" />Añadir</>}
@@ -465,8 +465,8 @@ function StudentsTab({ approved }) {
                     <div className="flex items-center gap-2 flex-wrap">
                       <p className="font-medium text-gray-800 truncate text-sm">{s.full_name}</p>
                       {s.authorized
-                        ? <span className="text-xs px-1.5 py-0.5 bg-green-100 text-green-600 rounded-full">✓ Autorizado</span>
-                        : <span className="text-xs px-1.5 py-0.5 bg-red-100 text-red-500 rounded-full">✗ Sin autorizar</span>
+                        ? <span className="text-xs px-1.5 py-0.5 bg-green-100 text-green-600 rounded-full">✓ Consentimiento firmado</span>
+                        : <span className="text-xs px-1.5 py-0.5 bg-red-100 text-red-500 rounded-full">✗ Sin consentimiento</span>
                       }
                     </div>
                     <p className="text-xs text-gray-400">
@@ -535,7 +535,7 @@ function StudentsTab({ approved }) {
             <label className="flex items-center gap-2 cursor-pointer text-sm text-gray-700">
               <input type="checkbox" checked={editForm.authorized} onChange={e => setEditForm(p => ({ ...p, authorized: e.target.checked }))}
                 className="w-4 h-4 rounded accent-blue-500" />
-              Autorizado por los padres
+              Consentimiento firmado en secretaría (clases + uso de imagen)
             </label>
             <div className="flex gap-3 pt-2">
               <button onClick={() => setEditTarget(null)} className="flex-1 py-2.5 rounded-xl border border-gray-200 text-gray-500 text-sm hover:bg-gray-50">Cancelar</button>
