@@ -6,6 +6,7 @@ const CATEGORIES = [
   { value: 'semillitas',     label: 'Semillitas'     },
   { value: 'conquistadores', label: 'Conquistadores' },
   { value: 'valientes',      label: 'Valientes'      },
+  { value: 'sala_cuna',      label: 'Sala Cuna'      },
   { value: 'otros',          label: 'Otros'          },
 ]
 

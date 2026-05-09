@@ -4,7 +4,7 @@ import { useApp } from '../context/AppContext'
 import { useAulas } from '../hooks/useAulas'
 import { supabase } from '../lib/supabase'
 
-const CATEGORY_NAMES = { semillitas: 'Semillitas', conquistadores: 'Conquistadores', valientes: 'Valientes', otros: 'Otros' }
+const CATEGORY_NAMES = { semillitas: 'Semillitas', conquistadores: 'Conquistadores', valientes: 'Valientes', sala_cuna: 'Sala Cuna', otros: 'Otros' }
 const DAYS_ES = { 0: 'domingo', 1: 'lunes', 2: 'martes', 3: 'miércoles', 4: 'jueves', 5: 'viernes', 6: 'sábado' }
 
 const SAFE_COLOR_RE = /^from-[a-z0-9-]+ to-[a-z0-9-]+$/i

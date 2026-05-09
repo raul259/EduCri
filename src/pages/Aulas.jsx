@@ -10,6 +10,7 @@ const FILTERS = [
   { key: 'semillitas',     label: 'Semillitas'     },
   { key: 'conquistadores', label: 'Conquistadores' },
   { key: 'valientes',      label: 'Valientes'      },
+  { key: 'sala_cuna',      label: 'Sala Cuna'      },
   { key: 'otros',      label: 'Otros' },
 ]
 
