@@ -1,38 +1,49 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { supabase } from '../lib/supabase'
 import { useApp } from '../context/AppContext'
 
 export function useUnreadCount() {
   const { user } = useApp()
   const [count, setCount] = useState(0)
-
-  async function fetchCount(userId) {
-    const { count: c } = await supabase
-      .from('teacher_tasks')
-      .select('id', { count: 'exact', head: true })
-      .eq('teacher_id', userId)
-      .is('deleted_at', null)
-    setCount(c ?? 0)
-  }
+  const channelRef = useRef(null)
 
   useEffect(() => {
     if (!supabase || !user?.id) return
 
-    fetchCount(user.id)
+    async function fetchCount() {
+      const { count: c } = await supabase
+        .from('teacher_tasks')
+        .select('id', { count: 'exact', head: true })
+        .eq('teacher_id', user.id)
+        .is('deleted_at', null)
+      setCount(c ?? 0)
+    }
 
-    // Suscripción en tiempo real a teacher_tasks del usuario actual
+    fetchCount()
+
+    // Limpiar canal anterior si existe
+    if (channelRef.current) {
+      supabase.removeChannel(channelRef.current)
+      channelRef.current = null
+    }
+
     const channel = supabase
-      .channel(`unread-${user.id}`)
+      .channel(`unread-${user.id}-${Date.now()}`)
       .on('postgres_changes', {
         event: '*',
         schema: 'public',
         table: 'teacher_tasks',
         filter: `teacher_id=eq.${user.id}`,
-      }, () => fetchCount(user.id))
+      }, fetchCount)
       .subscribe()
 
-    return () => supabase.removeChannel(channel)
-  }, [user])
+    channelRef.current = channel
+
+    return () => {
+      supabase.removeChannel(channel)
+      channelRef.current = null
+    }
+  }, [user?.id])
 
   return count
 }
