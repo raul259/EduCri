@@ -106,9 +106,9 @@ export function useAuth() {
       return false
     }
 
-    // Crear perfil de profesor en estado pendiente para que aparezca en el panel del moderador
+    // Crear perfil de profesor en estado pendiente
     if (data.user) {
-      await supabase.from('teacher_profiles').upsert({
+      const { error: profileErr } = await supabase.from('teacher_profiles').insert({
         user_id:              data.user.id,
         full_name:            fullName.trim(),
         birth_date:           birthDate,
@@ -119,7 +119,11 @@ export function useAuth() {
         teaching_experience:  teachingExperience.trim(),
         teacher_type:         teacherType,
         approval_status:      'pending',
-      }, { onConflict: 'user_id' })
+      })
+      if (profileErr) {
+        console.error('Error creando teacher_profile:', profileErr)
+        showToast('Cuenta creada pero hubo un problema al guardar el perfil. Contacta al moderador.', 'warning')
+      }
     }
 
     setSubmitting(false)
