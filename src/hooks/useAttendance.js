@@ -45,6 +45,17 @@ export function useAttendance({ classId, classCategory, date }) {
 
   useEffect(() => { load() }, [load])
 
+  async function clearAttendance(studentId) {
+    if (!supabase || !user?.id) return
+    await supabase
+      .from('attendance_records')
+      .delete()
+      .eq('teacher_id', user.id)
+      .eq('student_id', Number(studentId))
+      .eq('attendance_date', date)
+    setRecords(prev => { const next = { ...prev }; delete next[studentId]; return next })
+  }
+
   async function markAttendance(studentId, status) {
     if (!supabase || !user?.id) return
     const existing = records[studentId] ?? {}
@@ -102,5 +113,5 @@ export function useAttendance({ classId, classCategory, date }) {
     { present: 0, absent: 0, late: 0 }
   )
 
-  return { students, records, loading, counts, reload: load, markAttendance, saveNote }
+  return { students, records, loading, counts, reload: load, markAttendance, clearAttendance, saveNote }
 }
