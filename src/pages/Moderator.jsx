@@ -137,9 +137,18 @@ function ClasesTab({ approved }) {
   }
 
   async function handleSave(cls) {
-    const assign  = assignments[cls.id] || {}
-    const titular = approved.find(p => p.user_id === assign.titularId)
+    const assign   = assignments[cls.id] || {}
+    const titular  = approved.find(p => p.user_id === assign.titularId)
     const ayudante = approved.find(p => p.user_id === assign.ayudanteId)
+
+    // Validar que el titular no esté ya asignado a otra clase
+    if (assign.titularId) {
+      const conflict = classes.find(c => c.id !== cls.id && c.user_id === assign.titularId)
+      if (conflict) {
+        showToast(`${titular?.full_name} ya está asignado a ${conflict.name}. Un titular solo puede tener una clase.`, 'warning')
+        return
+      }
+    }
 
     setSaving(prev => ({ ...prev, [cls.id]: true }))
     try {

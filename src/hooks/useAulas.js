@@ -66,8 +66,17 @@ export function useAulas() {
     }
 
     if (!data.length) {
-      // Primer acceso: sembrar aulas por defecto
-      const payload = DEFAULT_AULAS.map(a => ({
+      // Primer acceso: sembrar solo si no existen ya esas categorías en la BD
+      const { data: existing } = await supabase
+        .from('classes').select('category')
+      const existingCats = new Set((existing ?? []).map(r => r.category))
+      const toSeed = DEFAULT_AULAS.filter(a => !existingCats.has(a.category))
+
+      if (!toSeed.length) {
+        setAulas(DEFAULT_AULAS); setLoading(false); return
+      }
+
+      const payload = toSeed.map(a => ({
         user_id: user.id, name: a.name, category: a.category,
         teacher: a.teacher, classroom: a.classroom, day: a.day,
         time: a.time, description: a.description,
