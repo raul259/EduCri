@@ -318,11 +318,14 @@ function calcAge(birthDate) {
 
 function StudentsTab({ approved }) {
   const { showToast } = useApp()
-  const { students, loading, addStudent, removeStudent } = useStudents()
-  const [search,    setSearch]    = useState('')
-  const [catFilter, setCatFilter] = useState('')
-  const [form,      setForm]      = useState({ fullName: '', classCategory: 'semillitas', teacherId: '', birthDate: '', authorized: false, parentName: '', parentPhone: '' })
-  const [saving,    setSaving]    = useState(false)
+  const { students, loading, addStudent, updateStudent, removeStudent } = useStudents()
+  const [search,     setSearch]     = useState('')
+  const [catFilter,  setCatFilter]  = useState('')
+  const [form,       setForm]       = useState({ fullName: '', classCategory: 'semillitas', teacherId: '', birthDate: '', authorized: false, parentName: '', parentPhone: '' })
+  const [saving,     setSaving]     = useState(false)
+  const [editTarget, setEditTarget] = useState(null)
+  const [editForm,   setEditForm]   = useState({})
+  const [editSaving, setEditSaving] = useState(false)
 
   const visible = students.filter(s => {
     const matchSearch = !search    || s.full_name.toLowerCase().includes(search.toLowerCase())
@@ -345,6 +348,33 @@ function StudentsTab({ approved }) {
       showToast(err?.message || 'No se pudo añadir el alumno.', 'error')
     } finally {
       setSaving(false)
+    }
+  }
+
+  function openEdit(s) {
+    setEditTarget(s)
+    setEditForm({
+      fullName:      s.full_name,
+      classCategory: s.class_category,
+      teacherId:     s.teacher_id    || '',
+      birthDate:     s.birth_date    || '',
+      authorized:    s.authorized    ?? false,
+      parentName:    s.parent_name   || '',
+      parentPhone:   s.parent_phone  || '',
+    })
+  }
+
+  async function handleEditSave() {
+    if (!editForm.fullName?.trim()) { showToast('El nombre es obligatorio.', 'warning'); return }
+    setEditSaving(true)
+    try {
+      await updateStudent(editTarget.id, editForm)
+      showToast('Alumno actualizado.', 'success')
+      setEditTarget(null)
+    } catch {
+      showToast('No se pudo actualizar.', 'error')
+    } finally {
+      setEditSaving(false)
     }
   }
 
@@ -447,18 +477,76 @@ function StudentsTab({ approved }) {
                     </p>
                   </div>
                 </div>
-                <button
-                  onClick={() => handleRemove(s)}
-                  className="text-red-400 hover:text-red-600 transition-colors p-1.5 rounded-lg hover:bg-red-50 flex-shrink-0"
-                  aria-label={`Eliminar ${s.full_name}`}
-                >
-                  <i className="fas fa-trash text-sm" />
-                </button>
+                <div className="flex items-center gap-1 flex-shrink-0">
+                  <button
+                    onClick={() => openEdit(s)}
+                    className="text-blue-400 hover:text-blue-600 transition-colors p-1.5 rounded-lg hover:bg-blue-50"
+                    aria-label={`Editar ${s.full_name}`}
+                  >
+                    <i className="fas fa-pen text-sm" />
+                  </button>
+                  <button
+                    onClick={() => handleRemove(s)}
+                    className="text-red-400 hover:text-red-600 transition-colors p-1.5 rounded-lg hover:bg-red-50"
+                    aria-label={`Eliminar ${s.full_name}`}
+                  >
+                    <i className="fas fa-trash text-sm" />
+                  </button>
+                </div>
               </div>
             ))}
           </div>
         )}
       </div>
+
+      {/* ── Modal editar alumno ── */}
+      <Modal isOpen={Boolean(editTarget)} onClose={() => setEditTarget(null)} title="Editar alumno" size="sm">
+        {editTarget && (
+          <div className="space-y-3">
+            <div>
+              <label className="block text-xs font-medium text-gray-500 mb-1">Nombre completo</label>
+              <input type="text" value={editForm.fullName} onChange={e => setEditForm(p => ({ ...p, fullName: e.target.value }))}
+                className="w-full px-3 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400" />
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label className="block text-xs font-medium text-gray-500 mb-1">Categoría</label>
+                <select value={editForm.classCategory} onChange={e => setEditForm(p => ({ ...p, classCategory: e.target.value }))}
+                  className="w-full px-3 py-2 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400">
+                  {CATEGORY_OPTS.map(c => <option key={c.value} value={c.value}>{c.label}</option>)}
+                </select>
+              </div>
+              <div>
+                <label className="block text-xs font-medium text-gray-500 mb-1">Fecha nacimiento</label>
+                <input type="date" value={editForm.birthDate} onChange={e => setEditForm(p => ({ ...p, birthDate: e.target.value }))}
+                  className="w-full px-3 py-2 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400" />
+              </div>
+            </div>
+            <div>
+              <label className="block text-xs font-medium text-gray-500 mb-1">Nombre del padre/madre</label>
+              <input type="text" value={editForm.parentName} onChange={e => setEditForm(p => ({ ...p, parentName: e.target.value }))}
+                className="w-full px-3 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400" />
+            </div>
+            <div>
+              <label className="block text-xs font-medium text-gray-500 mb-1">Teléfono</label>
+              <input type="tel" value={editForm.parentPhone} onChange={e => setEditForm(p => ({ ...p, parentPhone: e.target.value }))}
+                className="w-full px-3 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400" />
+            </div>
+            <label className="flex items-center gap-2 cursor-pointer text-sm text-gray-700">
+              <input type="checkbox" checked={editForm.authorized} onChange={e => setEditForm(p => ({ ...p, authorized: e.target.checked }))}
+                className="w-4 h-4 rounded accent-blue-500" />
+              Autorizado por los padres
+            </label>
+            <div className="flex gap-3 pt-2">
+              <button onClick={() => setEditTarget(null)} className="flex-1 py-2.5 rounded-xl border border-gray-200 text-gray-500 text-sm hover:bg-gray-50">Cancelar</button>
+              <button onClick={handleEditSave} disabled={editSaving}
+                className="flex-1 py-2.5 rounded-xl bg-gradient-to-r from-blue-500 to-pink-500 text-white text-sm font-semibold hover:brightness-110 disabled:opacity-60">
+                {editSaving ? <i className="fas fa-spinner fa-spin" /> : 'Guardar'}
+              </button>
+            </div>
+          </div>
+        )}
+      </Modal>
     </div>
   )
 }

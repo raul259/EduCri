@@ -50,6 +50,32 @@ export function useStudents() {
     )
   }
 
+  async function updateStudent(studentId, fields) {
+    const { error } = await supabase
+      .from('students')
+      .update({
+        full_name:    fields.fullName?.trim(),
+        class_category: fields.classCategory,
+        teacher_id:   fields.teacherId   || null,
+        birth_date:   fields.birthDate   || null,
+        authorized:   fields.authorized  ?? false,
+        parent_name:  fields.parentName  || null,
+        parent_phone: fields.parentPhone || null,
+      })
+      .eq('id', studentId)
+    if (error) throw error
+    setStudents(prev => prev.map(s => s.id === studentId ? {
+      ...s,
+      full_name:      fields.fullName?.trim() ?? s.full_name,
+      class_category: fields.classCategory    ?? s.class_category,
+      teacher_id:     fields.teacherId        || null,
+      birth_date:     fields.birthDate        || null,
+      authorized:     fields.authorized       ?? false,
+      parent_name:    fields.parentName       || null,
+      parent_phone:   fields.parentPhone      || null,
+    } : s))
+  }
+
   async function removeStudent(studentId) {
     const { error } = await supabase
       .from('students')
@@ -60,5 +86,5 @@ export function useStudents() {
     setStudents(prev => prev.filter(s => s.id !== studentId))
   }
 
-  return { students, loading, addStudent, removeStudent, reload: load }
+  return { students, loading, addStudent, updateStudent, removeStudent, reload: load }
 }
