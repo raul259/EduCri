@@ -28,6 +28,8 @@ export default function Auth() {
   const [email, setEmail]                           = useState('')
   const [password, setPassword]                     = useState('')
   const [confirmPassword, setConfirmPassword]       = useState('')
+  const [showPwd,    setShowPwd]    = useState(false)
+  const [showPwd2,   setShowPwd2]   = useState(false)
   const [fullName, setFullName]                     = useState('')
   const [birthDate, setBirthDate]                   = useState('')
   const [phone, setPhone]                           = useState('')
@@ -91,21 +93,35 @@ export default function Auth() {
 
           {/* Contraseña — login y register */}
           {(mode === 'login' || mode === 'register') && (
-            <input
-              type="password" placeholder="Contraseña"
-              value={password} onChange={e => setPassword(e.target.value)}
-              className={INPUT} required
-              autoComplete={mode === 'login' ? 'current-password' : 'new-password'}
-            />
+            <div className="relative">
+              <input
+                type={showPwd ? 'text' : 'password'} placeholder="Contraseña"
+                value={password} onChange={e => setPassword(e.target.value)}
+                className={INPUT + ' pr-10'} required
+                autoComplete={mode === 'login' ? 'current-password' : 'new-password'}
+              />
+              <button type="button" onClick={() => setShowPwd(p => !p)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-white/50 hover:text-white transition-colors"
+                aria-label={showPwd ? 'Ocultar contraseña' : 'Mostrar contraseña'}>
+                <i className={`fas ${showPwd ? 'fa-eye-slash' : 'fa-eye'} text-sm`} />
+              </button>
+            </div>
           )}
 
           {/* Confirmar contraseña — register */}
           {mode === 'register' && (
-            <input
-              type="password" placeholder="Confirmar contraseña"
-              value={confirmPassword} onChange={e => setConfirmPassword(e.target.value)}
-              className={INPUT} required autoComplete="new-password"
-            />
+            <div className="relative">
+              <input
+                type={showPwd2 ? 'text' : 'password'} placeholder="Confirmar contraseña"
+                value={confirmPassword} onChange={e => setConfirmPassword(e.target.value)}
+                className={INPUT + ' pr-10'} required autoComplete="new-password"
+              />
+              <button type="button" onClick={() => setShowPwd2(p => !p)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-white/50 hover:text-white transition-colors"
+                aria-label={showPwd2 ? 'Ocultar contraseña' : 'Mostrar contraseña'}>
+                <i className={`fas ${showPwd2 ? 'fa-eye-slash' : 'fa-eye'} text-sm`} />
+              </button>
+            </div>
           )}
 
           {/* Campos extra — register */}
