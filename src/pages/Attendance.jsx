@@ -85,7 +85,7 @@ export default function Attendance() {
   return (
     <div className="space-y-5">
       {/* Selector */}
-      <form onSubmit={handleLoad} className="bg-white rounded-2xl shadow-sm p-5">
+      <div className="bg-white rounded-2xl shadow-sm p-5">
         <div className="flex flex-wrap gap-3 items-end">
           <div className="flex-1 min-w-[200px]">
             <label className="block text-xs font-medium text-gray-600 mb-1">Clase</label>
@@ -115,12 +115,15 @@ export default function Attendance() {
             />
           </div>
 
-          <button
-            type="submit"
-            className="px-5 py-2.5 bg-gradient-to-r from-blue-500 to-pink-500 text-white rounded-xl text-sm font-semibold hover:brightness-110 transition-all"
-          >
-            <i className="fas fa-search mr-2" />Cargar
-          </button>
+          {loaded && (
+            <button
+              type="button"
+              onClick={() => reload()}
+              className="px-5 py-2.5 bg-gradient-to-r from-blue-500 to-pink-500 text-white rounded-xl text-sm font-semibold hover:brightness-110 transition-all"
+            >
+              <i className="fas fa-sync-alt mr-2" />Recargar
+            </button>
+          )}
 
           {loaded && students.length > 0 && (
             <button
@@ -132,7 +135,7 @@ export default function Attendance() {
             </button>
           )}
         </div>
-      </form>
+      </div>
 
       {/* Stats */}
       {loaded && students.length > 0 && (
