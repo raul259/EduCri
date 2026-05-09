@@ -107,9 +107,9 @@ export default function Aulas() {
 
       {/* Grid */}
       {loading ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+        <div className="flex flex-col gap-4">
           {[1, 2, 3].map(i => (
-            <div key={i} className="bg-white rounded-2xl shadow-sm border border-gray-100 h-56 animate-pulse" />
+            <div key={i} className="bg-white rounded-2xl shadow-sm border border-gray-100 h-28 animate-pulse" />
           ))}
         </div>
       ) : visible.length === 0 ? (
@@ -118,7 +118,7 @@ export default function Aulas() {
           <p className="text-sm">No hay aulas en esta categoría.</p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+        <div className="flex flex-col gap-4">
           {visible.map(aula => (
             <AulaCard
               key={aula.id}
