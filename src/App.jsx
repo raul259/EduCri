@@ -75,9 +75,9 @@ function AuthGuard({ children }) {
   // Moderadores: acceso total sin restricciones de aprobación
   if (role === 'moderador') return children
 
-  // Profesores: deben estar aprobados
+  // Profesores: solo acceden si están explícitamente aprobados
   const status = teacherProfile?.approval_status
-  if ((status === 'pending' || status === 'rejected') && pathname !== '/pending-approval') {
+  if (status !== 'approved' && pathname !== '/pending-approval') {
     return <Navigate to="/pending-approval" replace />
   }
 

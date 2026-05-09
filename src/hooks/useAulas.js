@@ -66,14 +66,19 @@ export function useAulas() {
     }
 
     if (!data.length) {
-      // Primer acceso: sembrar solo si no existen ya esas categorías en la BD
-      const { data: existing } = await supabase
-        .from('classes').select('category')
+      // Solo el moderador puede sembrar clases por defecto
+      if (role !== 'moderador') {
+        setAulas([])
+        setLoading(false)
+        return
+      }
+
+      const { data: existing } = await supabase.from('classes').select('category')
       const existingCats = new Set((existing ?? []).map(r => r.category))
       const toSeed = DEFAULT_AULAS.filter(a => !existingCats.has(a.category))
 
       if (!toSeed.length) {
-        setAulas(DEFAULT_AULAS); setLoading(false); return
+        setAulas([]); setLoading(false); return
       }
 
       const payload = toSeed.map(a => ({
@@ -87,7 +92,7 @@ export function useAulas() {
         .select('id,name,category,teacher,classroom,day,time,description,pdf_name,pdf_url,color')
       if (seedErr) {
         console.error('Error seeding aulas', seedErr)
-        setAulas(DEFAULT_AULAS)
+        setAulas([])
       } else {
         setAulas(seeded.map(mapRow))
       }
