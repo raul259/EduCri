@@ -10,11 +10,11 @@ const PROFESOR_ITEMS = [
 ]
 
 const MODERADOR_ITEMS = [
-  { to: '/',           icon: 'fa-home',            label: 'Inicio'     },
-  { to: '/aulas',      icon: 'fa-chalkboard',      label: 'Aulas'      },
-  { to: '/asistencia', icon: 'fa-clipboard-check', label: 'Asistencia' },
-  { to: '/perfil',     icon: 'fa-user-gear',       label: 'Perfil'     },
-  { to: '/moderador',  icon: 'fa-user-shield',     label: 'Mod'        },
+  { to: '/',           icon: 'fa-home',         label: 'Inicio'    },
+  { to: '/aulas',      icon: 'fa-chalkboard',   label: 'Aulas'     },
+  { to: '/calendario', icon: 'fa-calendar-alt', label: 'Calendario'},
+  { to: '/perfil',     icon: 'fa-user-gear',    label: 'Perfil'    },
+  { to: '/moderador',  icon: 'fa-user-shield',  label: 'Mod'       },
 ]
 
 export default function MobileNav() {
