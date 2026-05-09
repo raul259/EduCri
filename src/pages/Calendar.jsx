@@ -3,8 +3,8 @@ import { useAulas } from '../hooks/useAulas'
 
 const DAYS_ES   = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb']
 const MONTHS_ES = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre']
-const DAY_TO_NUM = { Domingo:0, Lunes:1, Martes:2, 'Miércoles':3, Jueves:4, Viernes:5, 'Sábado':6 }
 const SAFE_COLOR_RE = /^from-[a-z0-9-]+ to-[a-z0-9-]+$/i
+const SUNDAY = 0
 
 export default function Calendar() {
   const { aulas, loading } = useAulas()
@@ -18,14 +18,6 @@ export default function Calendar() {
   function prev() { setCur(c => c.month === 0  ? { year: c.year - 1, month: 11 } : { ...c, month: c.month - 1 }) }
   function next() { setCur(c => c.month === 11 ? { year: c.year + 1, month: 0  } : { ...c, month: c.month + 1 }) }
 
-  const aulasByWeekday = useMemo(() => {
-    const map = {}
-    aulas.forEach(a => {
-      const n = DAY_TO_NUM[a.day]
-      if (n !== undefined) { if (!map[n]) map[n] = []; map[n].push(a) }
-    })
-    return map
-  }, [aulas])
 
   const cells = []
   for (let i = 0; i < firstDay; i++) cells.push(null)
@@ -66,7 +58,7 @@ export default function Calendar() {
             if (!day) return <div key={`e-${i}`} className="min-h-[80px] border-r border-b border-gray-50 bg-gray-50/50" />
 
             const weekday = (firstDay + day - 1) % 7
-            const clases  = aulasByWeekday[weekday] ?? []
+            const clases  = weekday === SUNDAY ? aulas : []
 
             return (
               <div
@@ -107,7 +99,7 @@ export default function Calendar() {
                   <div className={`w-3 h-3 rounded-full bg-gradient-to-r ${color} flex-shrink-0`} />
                   <div className="min-w-0">
                     <p className="text-sm font-medium text-gray-800 truncate">{a.name}</p>
-                    <p className="text-xs text-gray-400">{a.day} · {a.time} · {a.classroom}</p>
+                    <p className="text-xs text-gray-400">Domingo · {a.time} · {a.classroom}</p>
                   </div>
                 </div>
               )
