@@ -594,12 +594,12 @@ export default function Moderator() {
   return (
     <div className="space-y-5">
       {/* Tabs */}
-      <div className="flex gap-1 bg-gray-100 rounded-xl p-1 overflow-x-auto">
+      <div className="flex gap-1 bg-gray-100 rounded-xl p-1 overflow-x-auto scrollbar-none">
         {TABS.map(t => (
           <button
             key={t.key}
             onClick={() => setTab(t.key)}
-            className={`flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg text-sm font-medium transition-all whitespace-nowrap min-w-[80px]
+            className={`flex-shrink-0 flex items-center justify-center gap-1.5 px-4 py-2 rounded-lg text-sm font-medium transition-all whitespace-nowrap
               ${tab === t.key ? 'bg-white shadow-sm text-gray-800' : 'text-gray-500 hover:text-gray-700'}`}
           >
             {t.label}
