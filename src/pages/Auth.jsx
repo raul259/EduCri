@@ -189,11 +189,16 @@ export default function Auth() {
                 />
                 He recibido el Espíritu Santo
               </label>
-              <textarea
-                rows={3} placeholder="Experiencia previa: pedagogía, cursos bíblicos, talleres..."
-                value={teachingExperience} onChange={e => setTeachingExperience(e.target.value)}
-                className={INPUT + ' resize-none'} required
-              />
+              <div>
+                <label className="block text-white/75 text-xs font-semibold mb-1">
+                  Experiencia previa *
+                </label>
+                <textarea
+                  rows={3} placeholder="Ej: Pedagogía, cursos bíblicos, talleres, años de experiencia..."
+                  value={teachingExperience} onChange={e => setTeachingExperience(e.target.value)}
+                  className={INPUT + ' resize-none'} required
+                />
+              </div>
             </div>
           )}
 

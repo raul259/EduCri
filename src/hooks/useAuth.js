@@ -72,7 +72,7 @@ export function useAuth() {
     if (!birthDate)                    { showToast('Selecciona tu fecha de nacimiento.', 'warning'); return false }
     if (!hasMinimumAge(birthDate, 18)) { showToast('Debes ser mayor de 18 años.', 'warning'); return false }
     if (!isValidE164Phone(phone))      { showToast('Teléfono en formato E.164 (ej: +34600111222).', 'warning'); return false }
-    if (teachingExperience.trim().length < 10) { showToast('Describe tu experiencia previa.', 'warning'); return false }
+    if (teachingExperience.trim().length < 3) { showToast('Describe tu experiencia previa.', 'warning'); return false }
     if (password.length < 8)           { showToast('Contraseña mínimo 8 caracteres.', 'warning'); return false }
     if (!/[A-Z]/.test(password) || !/[a-z]/.test(password) || !/[0-9]/.test(password)) {
       showToast('Contraseña debe tener mayúscula, minúscula y número.', 'warning'); return false
