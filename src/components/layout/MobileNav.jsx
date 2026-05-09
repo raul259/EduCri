@@ -2,18 +2,24 @@ import React from 'react'
 import { NavLink } from 'react-router-dom'
 import { useApp } from '../../context/AppContext'
 
-const BASE_ITEMS = [
-  { to: '/',              icon: 'fa-home',            label: 'Inicio'    },
-  { to: '/asistencia',   icon: 'fa-clipboard-check', label: 'Asistencia' },
-  { to: '/notificaciones', icon: 'fa-bell',           label: 'Avisos'    },
-  { to: '/perfil',        icon: 'fa-user-gear',       label: 'Perfil'    },
+const PROFESOR_ITEMS = [
+  { to: '/',               icon: 'fa-home',            label: 'Inicio'     },
+  { to: '/asistencia',     icon: 'fa-clipboard-check', label: 'Asistencia' },
+  { to: '/notificaciones', icon: 'fa-bell',            label: 'Avisos'     },
+  { to: '/perfil',         icon: 'fa-user-gear',       label: 'Perfil'     },
 ]
 
-const MOD_ITEM = { to: '/moderador', icon: 'fa-user-shield', label: 'Mod' }
+const MODERADOR_ITEMS = [
+  { to: '/',           icon: 'fa-home',            label: 'Inicio'     },
+  { to: '/aulas',      icon: 'fa-chalkboard',      label: 'Aulas'      },
+  { to: '/asistencia', icon: 'fa-clipboard-check', label: 'Asistencia' },
+  { to: '/perfil',     icon: 'fa-user-gear',       label: 'Perfil'     },
+  { to: '/moderador',  icon: 'fa-user-shield',     label: 'Mod'        },
+]
 
 export default function MobileNav() {
   const { role } = useApp()
-  const items = role === 'moderador' ? [...BASE_ITEMS, MOD_ITEM] : BASE_ITEMS
+  const items = role === 'moderador' ? MODERADOR_ITEMS : PROFESOR_ITEMS
 
   return (
     <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-gray-900 border-t border-white/10 flex" aria-label="Navegación móvil">
