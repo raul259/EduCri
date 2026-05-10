@@ -1,14 +1,17 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect } from 'react'
 import { supabase } from '../lib/supabase'
 import { useApp } from '../context/AppContext'
+
+let _seq = 0
 
 export function useUnreadCount() {
   const { user } = useApp()
   const [count, setCount] = useState(0)
-  const channelRef = useRef(null)
 
   useEffect(() => {
     if (!supabase || !user?.id) return
+
+    let active = true
 
     async function fetchCount() {
       const { count: c } = await supabase
@@ -16,19 +19,14 @@ export function useUnreadCount() {
         .select('id', { count: 'exact', head: true })
         .eq('teacher_id', user.id)
         .is('deleted_at', null)
-      setCount(c ?? 0)
+      if (active) setCount(c ?? 0)
     }
 
     fetchCount()
 
-    // Limpiar canal anterior si existe
-    if (channelRef.current) {
-      supabase.removeChannel(channelRef.current)
-      channelRef.current = null
-    }
-
+    // Contador de módulo: garantiza nombre único incluso si Date.now() repite
     const channel = supabase
-      .channel(`unread-${user.id}-${Date.now()}`)
+      .channel(`unread-${user.id}-${++_seq}`)
       .on('postgres_changes', {
         event: '*',
         schema: 'public',
@@ -37,11 +35,9 @@ export function useUnreadCount() {
       }, fetchCount)
       .subscribe()
 
-    channelRef.current = channel
-
     return () => {
+      active = false
       supabase.removeChannel(channel)
-      channelRef.current = null
     }
   }, [user?.id])
 
