@@ -56,7 +56,16 @@ export function AppProvider({ children }) {
   }, [])
 
   // ── Cargar perfil cuando cambia el usuario ──────────────────
+  // Dependencia: solo el ID del usuario, no el objeto session completo.
+  // El token se refresca periódicamente generando un nuevo objeto session
+  // con el mismo usuario — si usáramos [session] se relanzaría el fetch
+  // y una respuesta nula transitoria redirige a /pending-approval.
+  const userId = session?.user?.id ?? null
+
   useEffect(() => {
+    // session aún no se ha resuelto
+    if (session === undefined) return
+
     const user = session?.user ?? null
 
     if (!user) {
@@ -71,15 +80,28 @@ export function AppProvider({ children }) {
     }
 
     setTeacherProfile(undefined) // cargando
-    loadTeacherProfile(user).then(profile => setTeacherProfile(profile ?? null))
-  }, [session])
+    loadTeacherProfile(user).then(profile => {
+      if (profile !== undefined) {
+        // null = sin perfil, objeto = perfil cargado
+        setTeacherProfile(profile)
+      } else {
+        // La consulta falló (ej. JWT aún no propagado al cliente).
+        // Reintentamos una vez después de 900ms.
+        setTimeout(() => {
+          loadTeacherProfile(user).then(p => setTeacherProfile(p ?? null))
+        }, 900)
+      }
+    })
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [userId])
 
   // ── Recargar perfil manualmente (ej: botón "Comprobar estado") ─
   const reloadTeacherProfile = useCallback(async () => {
     const user = session?.user ?? null
     if (!user) return
     const profile = await loadTeacherProfile(user)
-    setTeacherProfile(profile ?? null)
+    // undefined = falló la consulta, no sobreescribir el perfil actual
+    if (profile !== undefined) setTeacherProfile(profile)
   }, [session])
 
   // ── Cerrar sesión ───────────────────────────────────────────

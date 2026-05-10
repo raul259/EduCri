@@ -91,13 +91,18 @@ export async function loadTeacherProfile(user) {
     return { approval_status: 'approved', teacher_type: 'titular' }
   }
 
-  const { data } = await supabase
+  const { data, error } = await supabase
     .from('teacher_profiles')
     .select('approval_status, teacher_type, approval_notes, cds_expiry_date, full_name')
     .eq('user_id', user.id)
-    .single()
+    .maybeSingle()
 
-  return data ?? null
+  if (error) {
+    console.warn('[loadTeacherProfile] error:', error.code, error.message)
+    return undefined  // señal de "falló la consulta" (distinto de "sin perfil")
+  }
+
+  return data  // null = sin fila, objeto = perfil cargado
 }
 
 // ── 5. Llamadas a APIs protegidas ───────────────────────────────────────────

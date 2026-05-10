@@ -1,9 +1,11 @@
 import React, { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { useApp } from '../context/AppContext'
 
 export default function PendingApproval() {
   const { teacherProfile, reloadTeacherProfile, signOut, user } = useApp()
   const [checking, setChecking] = useState(false)
+  const navigate = useNavigate()
 
   const status  = teacherProfile?.approval_status ?? 'pending'
   const notes   = teacherProfile?.approval_notes
@@ -13,6 +15,7 @@ export default function PendingApproval() {
     setChecking(true)
     await reloadTeacherProfile()
     setChecking(false)
+    navigate('/', { replace: true })
   }
 
   const isRejected = status === 'rejected'
